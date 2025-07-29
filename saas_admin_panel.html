@@ -828,38 +828,4 @@
                     `);
                 }
                  if (editBtn.matches('.edit-dish-btn')) {
-                    const dishId = editBtn.dataset.dishId;
-                    const dishName = editBtn.dataset.dishName;
-                    const dishCategory = editBtn.dataset.dishCategory;
-                    const allCategories = Object.keys(await fetchWithAuth('/api/menu'));
-                    
-                    openModal(`
-                        <form id="edit-dish-form" data-dish-id="${dishId}" class="card w-full max-w-md modal-content">
-                             <h2 class="text-2xl font-bold font-serif mb-4">Modifier le Plat</h2>
-                             <div class="space-y-4">
-                                <div>
-                                    <label for="edit-dish-name" class="block text-sm font-medium text-gray-700">Nom du plat</label>
-                                    <input type="text" id="edit-dish-name" value="${dishName}" class="form-input" required>
-                                </div>
-                                <div>
-                                    <label for="edit-dish-category" class="block text-sm font-medium text-gray-700">Catégorie</label>
-                                    <input type="text" id="edit-dish-category" value="${dishCategory}" list="edit-category-suggestions" class="form-input" required>
-                                    <datalist id="edit-category-suggestions">
-                                        ${allCategories.map(cat => `<option value="${cat}"></option>`).join('')}
-                                    </datalist>
-                                </div>
-                             </div>
-                             <div class="flex justify-end gap-2 mt-4">
-                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
-                                <button type="submit" class="bg-brand-accent text-white px-4 py-2 rounded-lg font-bold">Enregistrer</button>
-                            </div>
-                        </form>
-                    `);
-                }
-            }
-        });
-
-    });
-    </script>
-</body>
-</html>
+                    const dishId =
