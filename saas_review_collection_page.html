@@ -842,4 +842,37 @@
                 appContent.classList.remove('hidden');
                 
                 applyBranding();
-               
+                renderAllSections();
+                setupEventListeners();
+
+                const googleBtn = document.getElementById('google-btn');
+                const tripadvisorBtn = document.getElementById('tripadvisor-btn');
+                
+                if (restaurantData.links && restaurantData.links.google) {
+                    googleBtn.href = restaurantData.links.google;
+                    googleBtn.classList.remove('hidden');
+                } else {
+                    googleBtn.classList.add('hidden');
+                }
+                if (restaurantData.links && restaurantData.links.tripadvisor) {
+                    tripadvisorBtn.href = restaurantData.links.tripadvisor;
+                    tripadvisorBtn.classList.remove('hidden');
+                } else {
+                    tripadvisorBtn.classList.add('hidden');
+                }
+
+                if (!restaurantData.languages || restaurantData.languages.length <= 1) {
+                    reviewData.lang = restaurantData.languages[0] || 'fr';
+                    translatePage();
+                    goToSection(1);
+                } else {
+                    goToSection(0);
+                }
+            }
+        }
+
+        init();
+    });
+    </script>
+</body>
+</html>
