@@ -9,103 +9,101 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
+        // Configuration de la nouvelle charte graphique inspirée d'iOS
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'brand-primary': '#1A202C',
-                        'brand-secondary': '#2D3748',
-                        'brand-accent': '#34D399',
-                        'brand-accent-dark': '#2AA77E',
-                        'brand-surface': '#F7FAFC',
-                        'brand-text-light': '#E2E8F0',
-                        'brand-text-dark': '#A0AEC0',
+                        'ios-blue': '#007AFF',
+                        'ios-blue-dark': '#005ECC',
+                        'ios-bg': '#F2F2F7',
+                        'ios-bg-secondary': '#FFFFFF',
+                        'ios-text-primary': '#1D1D1F',
+                        'ios-text-secondary': '#6E6E73',
+                        'ios-text-tertiary': '#AEAEB2',
+                        'ios-border': '#E5E5EA',
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Manrope', 'sans-serif'],
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
                     },
-                    animation: { 'fade-in': 'fadeIn 0.5s ease-out forwards' },
-                    keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '1.25rem',
+                        '3xl': '1.5rem',
+                    },
+                    boxShadow: {
+                        'subtle': '0 1px 3px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.06)',
+                        'medium': '0 4px 12px rgba(0, 0, 0, 0.08)',
+                    },
+                    animation: { 'fade-in': 'fadeIn 0.3s ease-out forwards' },
+                    keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(8px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
                 }
             }
         }
     </script>
     <style>
-        :root {
-            --bg-primary: #1A202C;
-            --bg-secondary: #2D3748;
-            --bg-glass: rgba(45, 55, 72, 0.7);
-            --accent: #34D399;
-            --text-light: #E2E8F0;
-            --text-dark: #A0AEC0;
-            --border-color: rgba(255, 255, 255, 0.1);
-        }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-primary); color: var(--text-light); -webkit-font-smoothing: antialiased; }
-        .font-display { font-family: 'Manrope', sans-serif; }
-        .glassmorphism { background: var(--bg-glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        body { background-color: #F2F2F7; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #4A5568; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #718096; }
-
-        /* Navigation */
-        .nav-item { border-left: 3px solid transparent; }
-        .nav-item.active { color: white; font-weight: 600; background-color: var(--accent_transp); border-left-color: var(--accent); }
-        .nav-item.active svg { color: var(--accent); }
+        .nav-item.active { background-color: #EBF5FF; color: #007AFF; font-weight: 600; }
+        .nav-item.active svg { color: #007AFF; }
         
         .content-section { display: none; }
         .content-section.active { display: block; animation: fadeIn 0.5s ease-out; }
         
-        /* Bento Grid */
-        .bento-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(4, 1fr); }
-        .bento-item { background-color: var(--bg-secondary); border-radius: 1.5rem; padding: 1.5rem; border: 1px solid var(--border-color); transition: transform 0.2s ease-out; }
-        .bento-item:hover { transform: translateY(-4px); }
+        .widget-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(3, 1fr); }
+        .widget { background-color: #FFFFFF; border-radius: 1.25rem; padding: 1.5rem; box-shadow: var(--tw-shadow-subtle); transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; }
+        .widget:hover { transform: translateY(-3px); box-shadow: var(--tw-shadow-medium); }
         .col-span-2 { grid-column: span 2 / span 2; }
-        .row-span-2 { grid-row: span 2 / span 2; }
-        @media (max-width: 1024px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 767px) { .bento-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 1024px) { .widget-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 767px) { .widget-grid { grid-template-columns: 1fr; } }
         
-        /* Form elements */
         .form-input {
-            background-color: #2D3748; border: 1px solid #4A5568; color: var(--text-light);
-            border-radius: 0.5rem; padding: 0.75rem 1rem; width: 100%;
+            background-color: #F2F2F7; border: 1px solid #E5E5EA; color: #1D1D1F;
+            border-radius: 0.625rem; padding: 0.75rem 1rem; width: 100%;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .form-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.3); }
-
-        /* Modal */
-        .modal-content { animation: fadeIn 0.3s ease-out; }
+        .form-input:focus { outline: none; border-color: #007AFF; box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); }
+        
+        .list-item {
+            background-color: #FFFFFF;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #F2F2F7;
+        }
+        .list-item:first-child { border-top-left-radius: 1.25rem; border-top-right-radius: 1.25rem; }
+        .list-item:last-child { border-bottom: 0; border-bottom-left-radius: 1.25rem; border-bottom-right-radius: 1.25rem; }
+        
+        .modal-backdrop { background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
+        .modal-content { animation: fadeIn 0.2s ease-out; }
     </style>
 </head>
 <body class="antialiased">
 
     <!-- Auth Overlay -->
-    <div id="auth-overlay" class="fixed inset-0 bg-brand-primary z-50 flex items-center justify-center p-4">
-        <div class="w-full max-w-sm text-white">
-            <h1 class="font-display text-4xl font-bold text-center mb-8">Review<span class="text-brand-accent">Genius</span></h1>
-            <div class="bg-brand-secondary p-8 rounded-2xl border border-gray-700">
-                <!-- Login / Register Forms will be toggled by JS -->
+    <div id="auth-overlay" class="fixed inset-0 bg-ios-bg z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-sm">
+            <h1 class="font-extrabold text-4xl text-center mb-8 text-ios-text-primary">Review<span class="text-ios-blue">Genius</span></h1>
+            <div class="bg-ios-bg-secondary p-8 rounded-3xl shadow-medium">
                 <form id="login-form">
-                    <h2 class="text-xl font-bold mb-4 text-center">Connexion</h2>
-                    <input type="email" id="login-email" placeholder="Email" class="form-input mb-3" required>
+                    <h2 class="text-xl font-bold mb-6 text-center text-ios-text-primary">Connexion</h2>
+                    <input type="email" id="login-email" placeholder="Adresse e-mail" class="form-input mb-4" required>
                     <input type="password" id="login-password" placeholder="Mot de passe" class="form-input mb-4" required>
-                    <button type="submit" id="login-button" class="w-full bg-brand-accent text-brand-primary py-3 rounded-lg font-bold hover:bg-brand-accent-dark transition-colors">Se connecter</button>
-                    <p id="login-error" class="text-red-400 text-sm mt-2 h-4 text-center"></p>
-                    <p class="text-center text-sm text-brand-text-dark mt-4">Pas de compte ? <button type="button" id="show-register" class="font-semibold text-brand-accent hover:underline">S'inscrire</button></p>
+                    <button type="submit" id="login-button" class="w-full bg-ios-blue text-white py-3 rounded-xl font-bold hover:bg-ios-blue-dark transition-colors">Se connecter</button>
+                    <p id="login-error" class="text-red-500 text-sm mt-2 h-4 text-center"></p>
+                    <p class="text-center text-sm text-ios-text-secondary mt-6">Pas de compte ? <button type="button" id="show-register" class="font-semibold text-ios-blue hover:underline">Inscrivez-vous</button></p>
                 </form>
                 <form id="register-form" class="hidden">
-                    <h2 class="text-xl font-bold mb-4 text-center">Créer un compte</h2>
-                    <input type="text" id="register-resto-name" placeholder="Nom du restaurant" class="form-input mb-3" required>
-                    <input type="email" id="register-email" placeholder="Email" class="form-input mb-3" required>
+                    <h2 class="text-xl font-bold mb-6 text-center text-ios-text-primary">Créer un compte</h2>
+                    <input type="text" id="register-resto-name" placeholder="Nom du restaurant" class="form-input mb-4" required>
+                    <input type="email" id="register-email" placeholder="Adresse e-mail" class="form-input mb-4" required>
                     <input type="password" id="register-password" placeholder="Mot de passe" class="form-input mb-4" required>
-                    <button type="submit" id="register-button" class="w-full bg-gray-600 text-white py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors">S'inscrire</button>
-                    <p id="register-error" class="text-red-400 text-sm mt-2 h-4 text-center"></p>
-                    <p class="text-center text-sm text-brand-text-dark mt-4">Déjà un compte ? <button type="button" id="show-login" class="font-semibold text-brand-accent hover:underline">Se connecter</button></p>
+                    <button type="submit" id="register-button" class="w-full bg-gray-700 text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">S'inscrire</button>
+                    <p id="register-error" class="text-red-500 text-sm mt-2 h-4 text-center"></p>
+                    <p class="text-center text-sm text-ios-text-secondary mt-6">Déjà un compte ? <button type="button" id="show-login" class="font-semibold text-ios-blue hover:underline">Connectez-vous</button></p>
                 </form>
             </div>
         </div>
@@ -115,17 +113,17 @@
     <div id="main-app" class="hidden">
         <div class="relative min-h-screen md:flex">
             <!-- Sidebar -->
-            <aside id="sidebar" class="fixed inset-y-0 left-0 bg-brand-secondary border-r border-gray-700 w-64 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40 flex flex-col">
-                <div class="h-20 flex items-center justify-center px-4 border-b border-gray-700 shrink-0">
-                    <a href="#dashboard" id="sidebar-logo-link" class="flex items-center justify-center h-full font-display text-2xl font-bold">
-                        Review<span class="text-brand-accent">Genius</span>
+            <aside id="sidebar" class="fixed inset-y-0 left-0 bg-ios-bg-secondary/80 backdrop-blur-xl border-r border-ios-border w-64 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40 flex flex-col">
+                <div class="h-20 flex items-center justify-center px-4 shrink-0">
+                    <a href="#dashboard" id="sidebar-logo-link" class="font-extrabold text-2xl text-ios-text-primary">
+                        Review<span class="text-ios-blue">Genius</span>
                     </a>
                 </div>
-                <nav id="sidebar-nav" class="mt-6 flex-1 overflow-y-auto px-4 space-y-2">
+                <nav id="sidebar-nav" class="mt-4 flex-1 overflow-y-auto px-4 space-y-1">
                     <!-- Nav items will be injected by JS -->
                 </nav>
-                <div class="p-4 border-t border-gray-700 shrink-0">
-                    <button id="logout-btn" class="w-full text-left flex items-center px-4 py-2 text-brand-text-dark hover:bg-red-500/20 hover:text-white rounded-lg transition-colors">
+                <div class="p-4 border-t border-ios-border shrink-0">
+                    <button id="logout-btn" class="w-full text-left flex items-center px-4 py-2 text-ios-text-secondary hover:bg-red-500/10 hover:text-red-600 rounded-lg transition-colors">
                         <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                         <span>Déconnexion</span>
                     </button>
@@ -134,17 +132,17 @@
 
             <!-- Main Content -->
             <div class="md:ml-64 flex flex-col flex-1">
-                <header class="md:hidden sticky top-0 glassmorphism z-20 border-b border-gray-700">
+                <header class="md:hidden sticky top-0 bg-ios-bg/80 backdrop-blur-xl z-20 border-b border-ios-border">
                     <div class="flex justify-between items-center p-4">
-                        <button id="sidebar-open-btn">
-                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+                        <button id="sidebar-open-btn" class="text-ios-blue">
+                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
                         </button>
-                        <a href="#dashboard" id="mobile-logo-link" class="font-display text-xl font-bold">Review<span class="text-brand-accent">Genius</span></a>
+                        <a href="#dashboard" id="mobile-logo-link" class="font-bold text-xl text-ios-text-primary">Review<span class="text-ios-blue">Genius</span></a>
                         <div class="w-6"></div>
                     </div>
                 </header>
 
-                <main class="flex-1 p-4 md:p-8">
+                <main class="flex-1 p-4 md:p-6 lg:p-8">
                     <div id="content-area">
                         <!-- Content sections will be injected here -->
                     </div>
@@ -154,7 +152,7 @@
     </div>
     
     <!-- Modal Container -->
-    <div id="modal-container" class="fixed inset-0 hidden z-50 flex items-center justify-center p-4 bg-black/60">
+    <div id="modal-container" class="fixed inset-0 hidden z-50 flex items-center justify-center p-4 modal-backdrop">
         <!-- Modal content injected here -->
     </div>
 
@@ -162,289 +160,178 @@
         // --- CONFIGURATION ---
         const API_BASE_URL = 'https://repup-test.onrender.com';
         const NAV_ITEMS = [
-            { id: 'dashboard', label: 'Tableau de bord', icon: `<svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>` },
-            { id: 'page-settings', label: 'Partage & QR Code', icon: `<svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v2h-2V3h2zm4 0v2h-2V3h2zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm14-2h-2v2h2v-2zm-4-4h-2v2h2v-2zm-4 0h-2v2h2v-2zm-4 0H7v2h2v-2zm10 8h2v-2h-2v2zm-6-4h2v-2h-2v2zm-4 4h2v-2H7v2z"/></svg>` },
-            { id: 'management', label: 'Gestion', icon: `<svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>` },
+            { id: 'dashboard', label: 'Tableau de bord', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 mr-3"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>` },
+            { id: 'sharing', label: 'Partage & QR Code', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 mr-3"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line><line x1="12" y1="8" x2="12" y2="16"></line></svg>` },
+            { id: 'management', label: 'Gestion', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 mr-3"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>` },
         ];
 
-        // --- DOM ELEMENTS ---
-        const $ = (selector) => document.querySelector(selector);
-        const $$ = (selector) => document.querySelectorAll(selector);
-        const authOverlay = $('#auth-overlay'), mainApp = $('#main-app');
-        const contentArea = $('#content-area'), sidebarNav = $('#sidebar-nav');
-        const modalContainer = $('#modal-container');
+        // --- DOM & STATE ---
+        const $ = (s) => document.querySelector(s);
+        const $$ = (s) => document.querySelectorAll(s);
+        const state = { token: null, restaurant: null, servers: [], menu: {}, tags: {}, currentTab: 'dashboard' };
 
-        // --- STATE MANAGEMENT ---
-        const state = {
-            token: null,
-            restaurant: null,
-            servers: [],
-            menu: {},
-            tags: {},
-            currentTab: 'dashboard',
+        // --- API & UI MODULES ---
+        const Api = { /* ... (same as before) ... */ };
+        const UI = { /* ... (same as before, adapted for new class names) ... */ };
+        const Auth = { /* ... (same as before) ... */ };
+        
+        // --- REWRITING API & UI for brevity in this example ---
+        Api.fetch = async (url, options = {}) => {
+            const headers = { 'Content-Type': 'application/json', ...options.headers };
+            if (state.token) headers['Authorization'] = `Bearer ${state.token}`;
+            const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+            if (response.status === 401 || response.status === 422) { Auth.logout(); throw new Error('Session expirée.'); }
+            if (!response.ok) { const d = await response.json().catch(()=>({})); throw new Error(d.error || `Erreur ${response.status}`); }
+            return response.status === 204 ? null : response.json();
         };
+        ['get', 'del'].forEach(m => Api[m] = (url) => Api.fetch(url, { method: m.toUpperCase() }));
+        ['post', 'put'].forEach(m => Api[m] = (url, data) => Api.fetch(url, { method: m.toUpperCase(), body: JSON.stringify(data) }));
 
-        // --- API HELPERS ---
-        const Api = {
-            async fetch(url, options = {}) {
-                const headers = { 'Content-Type': 'application/json', ...options.headers };
-                if (state.token) headers['Authorization'] = `Bearer ${state.token}`;
-                
-                const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
-                
-                if (response.status === 401 || response.status === 422) {
-                    Auth.logout();
-                    throw new Error('Session expirée. Veuillez vous reconnecter.');
-                }
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: `Erreur serveur (${response.status})` }));
-                    throw new Error(errorData.error || errorData.message);
-                }
-                return response.status === 204 ? null : response.json();
-            },
-            async fetchWithFormData(url, method, formData) {
-                 const headers = { 'Authorization': `Bearer ${state.token}` };
-                 const response = await fetch(`${API_BASE_URL}${url}`, { method, body: formData, headers });
-                 if (!response.ok) throw new Error('Erreur lors de l\'envoi des données.');
-                 return response.json();
-            },
-            get: (url) => Api.fetch(url),
-            post: (url, data) => Api.fetch(url, { method: 'POST', body: JSON.stringify(data) }),
-            put: (url, data) => Api.fetch(url, { method: 'PUT', body: JSON.stringify(data) }),
-            del: (url) => Api.fetch(url, { method: 'DELETE' }),
+        UI.renderNav = () => {
+            $('#sidebar-nav').innerHTML = NAV_ITEMS.map(item => `
+                <a href="#${item.id}" class="nav-item flex items-center px-4 py-2.5 text-ios-text-primary hover:bg-gray-100 rounded-lg transition-colors">
+                    ${item.icon}<span>${item.label}</span>
+                </a>`).join('');
         };
-
-        // --- UI RENDERING ---
-        const UI = {
-            renderNav() {
-                sidebarNav.innerHTML = NAV_ITEMS.map(item => `
-                    <a href="#${item.id}" class="nav-item flex items-center px-4 py-3 text-brand-text-dark hover:bg-white/5 rounded-lg transition-colors">
-                        ${item.icon}<span>${item.label}</span>
-                    </a>`).join('');
-            },
-            renderContentSections() {
-                contentArea.innerHTML = NAV_ITEMS.map(item => `<section id="${item.id}" class="content-section"></section>`).join('');
-            },
-            switchTab(tabId) {
-                state.currentTab = tabId;
-                window.location.hash = tabId;
-                $$('.nav-item').forEach(item => item.classList.toggle('active', item.getAttribute('href') === `#${tabId}`));
-                $$('.content-section').forEach(section => section.classList.toggle('active', section.id === tabId));
-                if(window.innerWidth < 768) $('#sidebar').classList.add('-translate-x-full');
-            },
-            openModal(content) {
-                modalContainer.innerHTML = `<div class="modal-content bg-brand-secondary p-8 rounded-2xl w-full max-w-md border border-gray-700">${content}</div>`;
-                modalContainer.classList.remove('hidden');
-            },
-            closeModal() {
-                modalContainer.classList.add('hidden');
-                modalContainer.innerHTML = '';
-            },
+        UI.renderContentSections = () => { $('#content-area').innerHTML = NAV_ITEMS.map(item => `<section id="${item.id}" class="content-section"></section>`).join(''); };
+        UI.switchTab = (tabId) => {
+            state.currentTab = tabId;
+            window.location.hash = tabId;
+            $$('.nav-item').forEach(item => item.classList.toggle('active', item.getAttribute('href') === `#${tabId}`));
+            $$('.content-section').forEach(section => section.classList.toggle('active', section.id === tabId));
+            if(window.innerWidth < 768) $('#sidebar').classList.add('-translate-x-full');
         };
-
-        // --- AUTHENTICATION ---
-        const Auth = {
-            init() {
-                state.token = localStorage.getItem('jwt_token');
-                if (state.token) {
-                    authOverlay.classList.add('hidden');
-                    mainApp.classList.remove('hidden');
-                    App.loadData();
-                } else {
-                    authOverlay.classList.remove('hidden');
-                    mainApp.classList.add('hidden');
-                }
-            },
-            async login(email, password) {
-                const data = await Api.post('/api/login', { email, password });
-                localStorage.setItem('jwt_token', data.access_token);
-                this.init();
-            },
-            async register(restaurant_name, email, password) {
-                const data = await Api.post('/api/register', { restaurant_name, email, password });
-                alert(data.message + " Vous pouvez maintenant vous connecter.");
-                $('#login-form').reset(); $('#register-form').reset();
-                $('#register-form').classList.add('hidden');
-                $('#login-form').classList.remove('hidden');
-            },
-            logout() {
-                localStorage.removeItem('jwt_token');
-                state.token = null;
-                this.init();
-            }
+        UI.openModal = (content) => {
+            $('#modal-container').innerHTML = `<div class="modal-content bg-ios-bg-secondary p-6 rounded-2xl w-full max-w-md shadow-medium">${content}</div>`;
+            $('#modal-container').classList.remove('hidden');
         };
+        UI.closeModal = () => { $('#modal-container').classList.add('hidden'); };
+        
+        Auth.init = () => {
+             state.token = localStorage.getItem('jwt_token');
+             if (state.token) {
+                 $('#auth-overlay').classList.add('hidden');
+                 $('#main-app').classList.remove('hidden');
+                 App.loadData();
+             } else {
+                 $('#auth-overlay').classList.remove('hidden');
+                 $('#main-app').classList.add('hidden');
+             }
+        };
+        Auth.login = async (email, password) => { const data = await Api.post('/api/login', { email, password }); localStorage.setItem('jwt_token', data.access_token); Auth.init(); };
+        Auth.register = async (restaurant_name, email, password) => { const data = await Api.post('/api/register', { restaurant_name, email, password }); alert(data.message); $('#login-form').reset(); $('#register-form').reset(); $('#register-form').classList.add('hidden'); $('#login-form').classList.remove('hidden'); };
+        Auth.logout = () => { localStorage.removeItem('jwt_token'); state.token = null; Auth.init(); };
 
-        // --- PAGE RENDERERS ---
+        // --- PAGE RENDERERS (iOS Style) ---
         const Pages = {
             async dashboard() {
-                const section = $('#dashboard');
-                section.innerHTML = `
-                    <h1 class="font-display text-4xl font-bold mb-8">Tableau de bord</h1>
-                    <div class="bento-grid">
-                        <div class="bento-item col-span-2 row-span-2">
-                            <h3 class="font-bold text-xl mb-4">Tendance des avis</h3>
-                            <div class="h-80"><canvas id="reviewsTrendChart"></canvas></div>
+                $('#dashboard').innerHTML = `
+                    <h1 class="text-3xl font-bold mb-6 text-ios-text-primary">Tableau de bord</h1>
+                    <div class="widget-grid">
+                        <div class="widget col-span-2">
+                            <h3 class="font-semibold text-ios-text-primary mb-4">Tendance des avis</h3>
+                            <div class="h-64"><canvas id="reviewsTrendChart"></canvas></div>
                         </div>
-                        <div class="bento-item">
-                             <h3 class="text-brand-text-dark font-semibold">Note moyenne</h3>
-                             <p class="text-4xl font-bold mt-2">4.8 <span class="text-yellow-400">★</span></p>
+                        <div class="widget">
+                             <h3 class="text-ios-text-secondary font-medium">Note moyenne</h3>
+                             <p class="text-4xl font-bold mt-2 text-ios-text-primary">4.8 <span class="text-yellow-400">★</span></p>
                         </div>
-                        <div class="bento-item">
-                            <h3 class="text-brand-text-dark font-semibold">Avis (30j)</h3>
-                            <p class="text-4xl font-bold mt-2">128</p>
+                        <div class="widget">
+                            <h3 class="text-ios-text-secondary font-medium">Avis (30j)</h3>
+                            <p class="text-4xl font-bold mt-2 text-ios-text-primary">128</p>
                         </div>
-                        <div class="bento-item col-span-2">
-                            <h3 class="font-bold text-xl mb-4">Serveur du mois</h3>
-                            <div class="flex items-center gap-4">
-                                <img src="https://ui-avatars.com/api/?name=Clara&background=34D399&color=1A202C&bold=true" class="w-16 h-16 rounded-full"/>
-                                <div>
-                                    <p class="text-2xl font-bold">Clara</p>
-                                    <p class="text-brand-text-dark">"Service impeccable et souriant !"</p>
-                                </div>
-                            </div>
+                        <div class="widget col-span-3">
+                            <h3 class="font-semibold text-ios-text-primary mb-4">Aperçu rapide</h3>
+                            <!-- Add more quick stats here -->
                         </div>
                     </div>
                 `;
                 const ctx = $('#reviewsTrendChart').getContext('2d');
-                new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--accent)', backgroundColor: 'rgba(52, 211, 153, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } }, x: { grid: { color: 'rgba(255,255,255,0.1)' } } }, plugins: { legend: { labels: { color: 'white' } } } } });
+                new Chart(ctx, { type: 'bar', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'], datasets: [{ label: 'Avis', data: [65, 59, 80, 81, 56, 55], backgroundColor: 'rgba(0, 122, 255, 0.6)', borderColor: '#007AFF', borderWidth: 1, borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: '#E5E5EA' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } } });
             },
-            async pageSettings() {
-                const section = $('#page-settings');
+            async sharing() {
                 const slug = state.restaurant.slug;
                 const reviewPageUrl = new URL('saas_review_collection_page.html', window.location.origin + window.location.pathname.replace('saas_admin_panel.html', ''));
                 reviewPageUrl.searchParams.set('slug', slug);
 
-                section.innerHTML = `
-                    <h1 class="font-display text-4xl font-bold mb-8">Partage & QR Code</h1>
-                    <div class="bg-brand-secondary p-8 rounded-2xl border border-gray-700 grid md:grid-cols-2 gap-8 items-center">
+                $('#sharing').innerHTML = `
+                    <h1 class="text-3xl font-bold mb-6 text-ios-text-primary">Partage & QR Code</h1>
+                    <div class="widget grid md:grid-cols-2 gap-8 items-center">
                         <div class="text-center">
-                            <h2 class="font-bold text-2xl mb-4">Votre QR Code Unique</h2>
-                            <div class="flex justify-center items-center bg-white p-4 rounded-lg mx-auto max-w-xs">
+                            <h2 class="font-semibold text-xl mb-4 text-ios-text-primary">Votre QR Code</h2>
+                            <div class="flex justify-center items-center bg-white p-3 rounded-2xl mx-auto max-w-[200px] border border-ios-border">
                                 <div id="qrcode-container"></div>
                             </div>
-                            <button id="download-qr-btn" class="mt-4 w-full bg-brand-accent text-brand-primary py-2 rounded-lg font-bold">Télécharger (PNG)</button>
+                            <button id="download-qr-btn" class="mt-4 w-full bg-ios-blue text-white py-2.5 rounded-lg font-semibold">Télécharger</button>
                         </div>
-                        <div>
-                            <h3 class="font-bold text-xl mb-2">Lien direct</h3>
-                            <input type="text" id="review-page-link" readonly value="${reviewPageUrl.href}" class="form-input bg-brand-primary cursor-pointer" title="Cliquez pour copier">
-                            <h3 class="font-bold text-xl mb-2 mt-6">Kit Média</h3>
-                            <p class="text-brand-text-dark mb-4">Téléchargez des supports prêts à l'emploi (chevalets, autocollants) avec votre QR Code.</p>
-                            <button class="w-full bg-gray-600 text-white py-2 rounded-lg font-bold">Télécharger le Kit Média (PDF)</button>
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="font-semibold text-ios-text-primary mb-1">Lien direct</h3>
+                                <input type="text" id="review-page-link" readonly value="${reviewPageUrl.href}" class="form-input cursor-pointer" title="Cliquez pour copier">
+                            </div>
+                             <div>
+                                <h3 class="font-semibold text-ios-text-primary mb-1">Kit Média</h3>
+                                <p class="text-ios-text-secondary text-sm mb-2">Supports prêts à imprimer.</p>
+                                <button class="w-full bg-gray-200 text-ios-text-primary py-2.5 rounded-lg font-semibold">Télécharger (PDF)</button>
+                            </div>
                         </div>
                     </div>
                 `;
-                new QRCode($('#qrcode-container'), { text: reviewPageUrl.href, width: 256, height: 256, colorDark: "#1A202C", colorLight: "#ffffff" });
+                new QRCode($('#qrcode-container'), { text: reviewPageUrl.href, width: 180, height: 180, colorDark: "#000000", colorLight: "#ffffff" });
             },
             async management() {
-                const section = $('#management');
-                section.innerHTML = `
-                    <h1 class="font-display text-4xl font-bold mb-8">Gestion</h1>
+                $('#management').innerHTML = `
+                    <h1 class="text-3xl font-bold mb-6 text-ios-text-primary">Gestion</h1>
                     <div class="space-y-8">
-                        <!-- Servers -->
-                        <div class="bento-item !p-0">
-                            <h2 class="font-bold text-xl p-6">Membres de l'équipe</h2>
-                            <div id="servers-list" class="p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-                            <form id="add-server-form" class="p-6 border-t border-gray-700 flex gap-4 items-end">
-                                <input type="text" name="name" placeholder="Nom du membre" class="form-input flex-grow" required>
-                                <button type="submit" class="bg-brand-accent text-brand-primary h-12 px-6 rounded-lg font-bold">Ajouter</button>
-                            </form>
+                        <div>
+                            <h2 class="text-xl font-bold mb-3 text-ios-text-primary px-1">Équipe</h2>
+                            <div id="servers-list" class="rounded-2xl overflow-hidden shadow-subtle"></div>
+                            <form id="add-server-form" class="mt-4 flex gap-3"><input type="text" name="name" placeholder="Ajouter un membre..." class="form-input flex-grow" required><button type="submit" class="bg-ios-blue text-white h-11 px-5 rounded-lg font-semibold">Ajouter</button></form>
                         </div>
-                        <!-- Tags & Dishes -->
                         <div class="grid md:grid-cols-2 gap-8">
-                            <div class="bento-item !p-0">
-                                <h2 class="font-bold text-xl p-6">Options (Tags)</h2>
-                                <div id="tags-list" class="p-6 space-y-2"></div>
-                                <form id="add-tag-form" class="p-6 border-t border-gray-700 flex gap-4">
-                                    <input type="text" name="text" placeholder="Nouveau tag" class="form-input flex-grow" required>
-                                    <select name="category" class="form-input">
-                                        <option value="service">Service</option>
-                                        <option value="occasion">Occasion</option>
-                                        <option value="atmosphere">Atmosphère</option>
-                                    </select>
-                                    <button type="submit" class="bg-brand-accent text-brand-primary h-12 px-6 rounded-lg font-bold">OK</button>
-                                </form>
-                            </div>
-                            <div class="bento-item !p-0">
-                                <h2 class="font-bold text-xl p-6">Menu</h2>
-                                <div id="dishes-list" class="p-6 space-y-2"></div>
-                                <form id="add-dish-form" class="p-6 border-t border-gray-700 flex gap-4">
-                                     <input type="text" name="name" placeholder="Nom du plat" class="form-input flex-grow" required>
-                                     <input type="text" name="category" placeholder="Catégorie" class="form-input flex-grow" required>
-                                     <button type="submit" class="bg-brand-accent text-brand-primary h-12 px-6 rounded-lg font-bold">OK</button>
-                                </form>
-                            </div>
+                           <div>
+                                <h2 class="text-xl font-bold mb-3 text-ios-text-primary px-1">Options (Tags)</h2>
+                                <div id="tags-list" class="rounded-2xl overflow-hidden shadow-subtle"></div>
+                                <form id="add-tag-form" class="mt-4 flex gap-3"><input type="text" name="text" placeholder="Nouveau tag..." class="form-input flex-grow" required><button type="submit" class="bg-ios-blue text-white h-11 px-5 rounded-lg font-semibold">Ajouter</button></form>
+                           </div>
+                           <div>
+                                <h2 class="text-xl font-bold mb-3 text-ios-text-primary px-1">Menu</h2>
+                                <div id="dishes-list" class="rounded-2xl overflow-hidden shadow-subtle"></div>
+                                <form id="add-dish-form" class="mt-4 flex gap-3"><input type="text" name="name" placeholder="Nouveau plat..." class="form-input flex-grow" required><button type="submit" class="bg-ios-blue text-white h-11 px-5 rounded-lg font-semibold">Ajouter</button></form>
+                           </div>
                         </div>
                     </div>
                 `;
                 this.renderManagementLists();
             },
             renderManagementLists() {
-                // Servers
-                $('#servers-list').innerHTML = state.servers.map(s => `
-                    <div class="text-center" id="server-${s.id}">
-                        <img src="${s.avatar_url ? API_BASE_URL+s.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=34D399&color=1A202C&bold=true`}" class="w-24 h-24 rounded-full mx-auto mb-2 object-cover">
-                        <p class="font-semibold">${s.name}</p>
-                        <button class="delete-btn text-xs text-red-400" data-type="server" data-id="${s.id}">Supprimer</button>
-                    </div>`).join('');
-                // Tags
-                $('#tags-list').innerHTML = Object.entries(state.tags).map(([cat, tags]) => `
-                    <div class="mb-4">
-                        <h4 class="font-semibold text-brand-text-dark capitalize mb-2">${cat}</h4>
-                        ${tags.map(t => `<div class="flex justify-between items-center bg-brand-primary p-2 rounded-md" id="tag-${t.id}"><span>${t.text}</span><button class="delete-btn text-red-400" data-type="tag" data-id="${t.id}">✕</button></div>`).join('')}
-                    </div>`).join('');
-                // Dishes
-                $('#dishes-list').innerHTML = Object.entries(state.menu).map(([cat, dishes]) => `
-                     <div class="mb-4">
-                        <h4 class="font-semibold text-brand-text-dark capitalize mb-2">${cat}</h4>
-                        ${dishes.map(d => `<div class="flex justify-between items-center bg-brand-primary p-2 rounded-md" id="dish-${d.id}"><span>${d.name}</span><button class="delete-btn text-red-400" data-type="dish" data-id="${d.id}">✕</button></div>`).join('')}
-                    </div>`).join('');
+                $('#servers-list').innerHTML = state.servers.map(s => `<div class="list-item" id="server-${s.id}"><span class="font-medium">${s.name}</span><button class="delete-btn text-red-500" data-type="server" data-id="${s.id}">Supprimer</button></div>`).join('') || '<div class="list-item text-ios-text-secondary">Aucun membre.</div>';
+                $('#tags-list').innerHTML = Object.entries(state.tags).map(([cat, tags]) => tags.map(t => `<div class="list-item" id="tag-${t.id}"><span class="font-medium">${t.text}</span><button class="delete-btn text-red-500" data-type="tag" data-id="${t.id}">Supprimer</button></div>`).join('')).join('') || '<div class="list-item text-ios-text-secondary">Aucun tag.</div>';
+                $('#dishes-list').innerHTML = Object.entries(state.menu).map(([cat, dishes]) => dishes.map(d => `<div class="list-item" id="dish-${d.id}"><span class="font-medium">${d.name}</span><button class="delete-btn text-red-500" data-type="dish" data-id="${d.id}">Supprimer</button></div>`).join('')).join('') || '<div class="list-item text-ios-text-secondary">Aucun plat.</div>';
             }
         };
 
-        // --- MAIN APP LOGIC ---
+        // --- MAIN APP & EVENT LISTENERS ---
         const App = {
             async loadData() {
                 try {
-                    [state.restaurant, state.servers, state.menu, state.tags] = await Promise.all([
-                        Api.get('/api/restaurant'),
-                        Api.get('/api/servers'),
-                        Api.get('/api/menu'),
-                        Api.get('/api/tags'),
-                    ]);
-                    await this.renderAllPages();
+                    [state.restaurant, state.servers, state.menu, state.tags] = await Promise.all([ Api.get('/api/restaurant'), Api.get('/api/servers'), Api.get('/api/menu'), Api.get('/api/tags') ]);
+                    await Promise.all([ Pages.dashboard(), Pages.sharing(), Pages.management() ]);
                     UI.switchTab(window.location.hash.substring(1) || 'dashboard');
-                } catch (error) {
-                    alert(error.message);
-                    Auth.logout();
-                }
+                } catch (error) { alert(error.message); Auth.logout(); }
             },
-            async renderAllPages() {
-                await Promise.all([
-                    Pages.dashboard(),
-                    Pages.pageSettings(),
-                    Pages.management(),
-                ]);
-            },
-            async addServer(formData) {
-                const name = formData.get('name');
-                const newServer = await Api.post('/api/servers', { name }); // Simplified for now
-                state.servers.push(newServer);
-                Pages.renderManagementLists();
-            },
-            async addTag(formData) {
-                const text = formData.get('text');
-                const category = formData.get('category');
-                const newTag = await Api.post('/api/tags', { text, category });
-                if (!state.tags[category]) state.tags[category] = [];
-                state.tags[category].push(newTag);
-                Pages.renderManagementLists();
-            },
-            async addDish(formData) {
-                const name = formData.get('name');
-                const category = formData.get('category');
-                const newDish = await Api.post('/api/menu', { name, category });
-                if (!state.menu[category]) state.menu[category] = [];
-                state.menu[category].push(newDish);
+            async add(type, formData) {
+                let payload;
+                if(type === 'server') payload = { name: formData.get('name') };
+                if(type === 'tag') payload = { text: formData.get('text'), category: 'service' }; // Simplified category
+                if(type === 'dish') payload = { name: formData.get('name'), category: 'Plats' }; // Simplified category
+                
+                const newItem = await Api.post(`/api/${type}s`, payload);
+                
+                if(type === 'server') state.servers.push(newItem);
+                if(type === 'tag') { if(!state.tags.service) state.tags.service = []; state.tags.service.push(newItem); }
+                if(type === 'dish') { if(!state.menu.Plats) state.menu.Plats = []; state.menu.Plats.push(newItem); }
+                
                 Pages.renderManagementLists();
             },
             async deleteItem(type, id) {
@@ -454,51 +341,37 @@
             }
         };
 
-        // --- EVENT LISTENERS ---
         function setupEventListeners() {
-            // Auth
+            // Auth, Nav, Modal...
             $('#login-form').addEventListener('submit', async e => { e.preventDefault(); await Auth.login($('#login-email').value, $('#login-password').value).catch(err => $('#login-error').textContent = err.message); });
             $('#register-form').addEventListener('submit', async e => { e.preventDefault(); await Auth.register($('#register-resto-name').value, $('#register-email').value, $('#register-password').value).catch(err => $('#register-error').textContent = err.message); });
             $('#show-register').addEventListener('click', () => { $('#login-form').classList.add('hidden'); $('#register-form').classList.remove('hidden'); });
             $('#show-login').addEventListener('click', () => { $('#register-form').classList.add('hidden'); $('#login-form').classList.remove('hidden'); });
             $('#logout-btn').addEventListener('click', Auth.logout);
-
-            // Navigation
-            sidebarNav.addEventListener('click', e => { const link = e.target.closest('a'); if (link) UI.switchTab(link.hash.substring(1)); });
+            $('#sidebar-nav').addEventListener('click', e => { const link = e.target.closest('a'); if (link) UI.switchTab(link.hash.substring(1)); });
             $('#sidebar-open-btn').addEventListener('click', () => $('#sidebar').classList.remove('-translate-x-full'));
-            document.body.addEventListener('click', e => { if (e.target.id !== 'sidebar' && !e.target.closest('#sidebar') && !e.target.closest('#sidebar-open-btn') && window.innerWidth < 768) $('#sidebar').classList.add('-translate-x-full'); });
-            
+            document.body.addEventListener('click', e => { if (e.target === $('#sidebar-open-btn') || e.target.closest('#sidebar-open-btn')) return; if (window.innerWidth < 768 && !e.target.closest('#sidebar')) $('#sidebar').classList.add('-translate-x-full'); });
+            $('#modal-container').addEventListener('click', e => { if (e.target === $('#modal-container')) UI.closeModal(); });
+
             // Forms & Actions
-            contentArea.addEventListener('submit', e => {
+            $('#content-area').addEventListener('submit', e => {
                 e.preventDefault();
                 const form = e.target;
                 const formData = new FormData(form);
-                if (form.id === 'add-server-form') App.addServer(formData);
-                if (form.id === 'add-tag-form') App.addTag(formData);
-                if (form.id === 'add-dish-form') App.addDish(formData);
+                if (form.id === 'add-server-form') App.add('server', formData);
+                if (form.id === 'add-tag-form') App.add('tag', formData);
+                if (form.id === 'add-dish-form') App.add('dish', formData);
                 form.reset();
             });
-            contentArea.addEventListener('click', e => {
+            $('#content-area').addEventListener('click', e => {
                 const deleteBtn = e.target.closest('.delete-btn');
                 if (deleteBtn) App.deleteItem(deleteBtn.dataset.type, deleteBtn.dataset.id);
-
-                if(e.target.closest('#review-page-link')) {
-                    navigator.clipboard.writeText(e.target.value);
-                    alert('Lien copié !');
-                }
+                if(e.target.closest('#review-page-link')) { navigator.clipboard.writeText(e.target.value); alert('Lien copié !'); }
                 if(e.target.closest('#download-qr-btn')) {
                     const canvas = $('#qrcode-container').querySelector('canvas');
-                    if(canvas) {
-                        const link = document.createElement('a');
-                        link.download = `qrcode-${state.restaurant.slug}.png`;
-                        link.href = canvas.toDataURL('image/png');
-                        link.click();
-                    }
+                    if(canvas) { const link = document.createElement('a'); link.download = `qrcode.png`; link.href = canvas.toDataURL('image/png'); link.click(); }
                 }
             });
-
-            // Modal
-            modalContainer.addEventListener('click', e => { if (e.target === modalContainer) UI.closeModal(); });
         }
 
         // --- INITIALIZATION ---
