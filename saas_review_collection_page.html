@@ -346,7 +346,7 @@
 
         const translations = {
             fr: {
-                lang_name_native: "🇫🇷 Français",
+                lang_name_native: "�🇷 Français",
                 lang_title: "Choisissez votre langue",
                 server_title: "Qui a enchanté votre service ?",
                 service_subtitle: "Qu'avez-vous particulièrement apprécié ? (3 max)",
@@ -539,6 +539,8 @@
                 const category = label.closest('.form-section').id.replace('section-', '');
                 const tagData = restaurantData.tags?.[category]?.find(t => `tag_${category}_${t.key}` === key);
                 if (tagData) {
+                    // Utilise la traduction pour la langue sélectionnée, ou le français par défaut si elle n'existe pas.
+                    // Ceci s'applique aux tags pré-traduits comme 'occasion' et 'atmosphère'.
                     label.innerText = tagData.translations[lang] || tagData.translations.fr;
                 }
             });
@@ -618,6 +620,8 @@
             }).join('');
             
             document.getElementById('server-grid').innerHTML = (restaurantData.servers || []).map(server => {
+                // NOTE: Les noms des serveurs ne sont pas traduits car ils proviennent directement 
+                // de la base de données sans traductions associées fournies par l'API.
                 const avatarSrc = server.avatar 
                     ? `${API_BASE_URL}${server.avatar}` 
                     : `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=2D3748`;
@@ -648,6 +652,8 @@
                 flavorsSection.classList.remove('is-empty');
                 Object.entries(restaurantData.menu).forEach(([category, dishes]) => {
                     dishes.forEach(dish => {
+                        // NOTE: Les noms des plats (saveurs) ne sont pas traduits car ils proviennent 
+                        // directement de la base de données sans traductions associées fournies par l'API.
                         flavorsContainer.innerHTML += `<input type="checkbox" id="dish_${dish.id}" name="flavor" value="${dish.name}"><label for="dish_${dish.id}">${dish.name}</label>`;
                     });
                 });
@@ -879,3 +885,4 @@
     </script>
 </body>
 </html>
+�
