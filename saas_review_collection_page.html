@@ -461,7 +461,7 @@
                 api_key_error: "Erro: A chave da API não está configurada. Por favor, entre em contato com o proprietário do site."
             },
             it: {
-                lang_name_native: "🇮🇹 Italiano",
+                lang_name_native: "�🇹 Italiano",
                 lang_title: "Scegli la tua lingua",
                 server_title: "Chi ti ha servito?",
                 service_subtitle: "Cosa hai apprezzato in particolare? (massimo 3)",
@@ -611,4 +611,259 @@
                 const avatarSrc = server.avatar 
                     ? `${API_BASE_URL}${server.avatar}` 
                     : `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=2D3748`;
+                return `
+                    <div class="selection-item" data-server-name="${server.name}">
+                        <img src="${avatarSrc}" alt="${server.name}">
+                        <span>${server.name}</span>
+                    </div>`;
+            }).join('');
+
+            for (const category in restaurantData.tags) {
+                const container = document.getElementById(`${category}-tags`);
+                if (container) {
+                    container.innerHTML = restaurantData.tags[category].map(tag => {
+                        const id = `tag_${category}_${tag.key}`;
+                        const type = category === 'occasion' ? 'radio' : 'checkbox';
+                        const name = category === 'occasion' ? 'occasion' : category;
+                        const labelText = tag.translations[reviewData.lang] || tag.translations.fr;
+                        return `<input type="${type}" id="${id}" name="${name}" value="${tag.key}"><label for="${id}">${labelText}</label>`;
+                    }).join('');
+                }
+            }
+
+            const flavorsContainer = document.getElementById('flavors-tags');
+            const flavorsSection = document.getElementById('section-flavors');
+            flavorsContainer.innerHTML = '';
+            if(restaurantData.menu && Object.keys(restaurantData.menu).length > 0) {
+                flavorsSection.classList.remove('is-empty');
+                Object.entries(restaurantData.menu).forEach(([category, dishes]) => {
+                    dishes.forEach(dish => {
+                        flavorsContainer.innerHTML += `<input type="checkbox" id="dish_${dish.id}" name="flavor" value="${dish.name}"><label for="dish_${dish.id}">${dish.name}</label>`;
+                    });
+                });
+            } else {
+                flavorsSection.classList.add('is-empty');
+            }
+
+            translatePage();
+        }
+
+        function updateNavButtons() {
+            backBtn.style.visibility = currentSectionIndex > 0 ? 'visible' : 'hidden';
+            if (currentSectionIndex === sectionOrder.indexOf('feedback')) {
+                nextBtn.innerText = getTranslation('nav_generate');
+            } else {
+                nextBtn.innerText = getTranslation('nav_next');
+            }
+        }
+
+        function goToSection(index) {
+            const sectionId = `section-${sectionOrder[index]}`;
+            const sectionElement = document.getElementById(sectionId);
+            if (sectionElement && sectionElement.classList.contains('is-empty')) {
+                const direction = index > currentSectionIndex ? 1 : -1;
+                goToSection(index + direction);
+                return;
+            }
+            
+            currentSectionIndex = index;
+            sections.forEach((s) => s.classList.remove('active'));
+            if(sectionElement) sectionElement.classList.add('active');
+            updateNavButtons();
+        }
+        
+        async function generateReview() {
+            goToSection(sectionOrder.indexOf('result'));
+            navButtons.style.display = 'none';
+            document.getElementById('generation-loader').classList.remove('hidden');
+            document.getElementById('result-display').classList.add('hidden');
+
+            const promptParts = [];
+            
+            const getTranslatedText = (key, category) => {
+                const tag = restaurantData.tags?.[category]?.find(t => t.key === key);
+                return tag ? (tag.translations[reviewData.lang] || tag.translations.fr) : key;
+            };
+
+            promptParts.push(`Rédige un avis de restaurant en langue "${reviewData.lang}" pour "${restaurantData.name}". Le ton doit être positif et engageant. Voici les détails de l'expérience :`);
+            if (reviewData.server) promptParts.push(`- Le service a été assuré par ${reviewData.server}.`);
+            if (reviewData.serviceQualities.length > 0) {
+                const translatedQualities = reviewData.serviceQualities.map(key => getTranslatedText(key, 'service'));
+                promptParts.push(`- Qualités du service remarquées : ${translatedQualities.join(', ')}.`);
+            }
+            if (reviewData.occasion) {
+                 const translatedOccasion = getTranslatedText(reviewData.occasion, 'occasion');
+                promptParts.push(`- L'occasion de la visite était : ${translatedOccasion}.`);
+            }
+            if (reviewData.flavors.length > 0) promptParts.push(`- Plats et saveurs particulièrement appréciés : ${reviewData.flavors.join(', ')}.`);
+            if (reviewData.atmosphere.length > 0) {
+                const translatedAtmosphere = reviewData.atmosphere.map(key => getTranslatedText(key, 'atmosphere'));
+                promptParts.push(`- Points forts de l'atmosphère : ${translatedAtmosphere.join(', ')}.`);
+            }
+            if (reviewData.privateFeedback) promptParts.push(`Ne mentionne pas la suggestion privée suivante dans l'avis public : "${reviewData.privateFeedback}"`);
+            promptParts.push("Termine par une recommandation chaleureuse.");
+            
+            const prompt = promptParts.join('\n');
+
+            try {
+                const apiUrl = `${API_BASE_URL}/api/generate-review`;
+                const payload = { prompt: prompt };
                 
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || `Erreur serveur: ${response.status}`);
+                }
+                
+                if (result.review) {
+                    const reviewDisplay = document.getElementById('review-text-display');
+                    reviewDisplay.innerText = result.review.trim();
+                } else {
+                    throw new Error("La réponse du serveur est valide mais le contenu est manquant.");
+                }
+
+            } catch (error) {
+                console.error("Error in generateReview function:", error);
+                document.getElementById('review-text-display').innerText = error.message;
+            } finally {
+                document.querySelector('[data-translate-key="result_title"]').innerHTML = getTranslation("result_title");
+                document.querySelector('[data-translate-key="result_title"]').classList.add('js-no-translate-overwrite');
+                document.querySelector('[data-translate-key="result_subtitle"]').innerHTML = getTranslation("result_subtitle");
+                document.querySelector('[data-translate-key="result_thank_you"]').innerHTML = getTranslation("result_thank_you");
+                document.querySelector('[data-translate-key="result_follow_steps"]').innerHTML = getTranslation("result_follow_steps");
+                document.querySelector('[data-translate-key="result_step1"]').innerHTML = getTranslation("result_step1");
+                document.querySelector('[data-translate-key="result_step2"]').innerHTML = getTranslation("result_step2");
+                document.querySelector('[data-translate-key="copy_button"]').innerHTML = getTranslation("copy_button");
+                document.querySelector('[data-translate-key="publish_on_google"]').innerHTML = getTranslation("publish_on_google");
+                document.querySelector('[data-translate-key="publish_on_tripadvisor"]').innerHTML = getTranslation("publish_on_tripadvisor");
+
+                document.getElementById('generation-loader').classList.add('hidden');
+                document.getElementById('result-display').classList.remove('hidden');
+            }
+        }
+
+        function setupEventListeners() {
+            nextBtn.addEventListener('click', () => {
+                if (currentSectionIndex < sectionOrder.length - 1) {
+                    if (sectionOrder[currentSectionIndex] === 'feedback') {
+                        reviewData.privateFeedback = document.getElementById('feedback-textarea').value;
+                        generateReview();
+                    } else {
+                        goToSection(currentSectionIndex + 1);
+                    }
+                }
+            });
+            backBtn.addEventListener('click', () => {
+                if (currentSectionIndex > 0) goToSection(currentSectionIndex - 1);
+            });
+
+            document.querySelector('#section-lang').addEventListener('click', e => {
+                if(e.target.dataset.langSelect) {
+                    reviewData.lang = e.target.dataset.langSelect;
+                    translatePage();
+                    goToSection(currentSectionIndex + 1);
+                }
+            });
+
+            document.getElementById('server-grid').addEventListener('click', e => {
+                const serverItem = e.target.closest('.selection-item');
+                if (serverItem) {
+                    document.querySelectorAll('#server-grid .selection-item').forEach(i => i.classList.remove('selected'));
+                    serverItem.classList.add('selected');
+                    reviewData.server = serverItem.dataset.serverName;
+                    document.getElementById('service-qualities-container').classList.remove('hidden');
+                }
+            });
+
+            function setupCheckboxLimit(containerId, category, limit) {
+                const container = document.getElementById(containerId);
+                const notificationEl = container.parentElement.querySelector('.limit-notification');
+                container.addEventListener('change', e => {
+                    if (e.target.type === 'checkbox') {
+                        const checked = container.querySelectorAll('input:checked');
+                        reviewData[category] = Array.from(checked).map(cb => cb.value);
+                        
+                        if (checked.length >= limit) {
+                            container.querySelectorAll('input:not(:checked)').forEach(cb => cb.disabled = true);
+                            if(notificationEl) {
+                                notificationEl.innerText = getTranslation('limit_reached', limit);
+                                notificationEl.classList.remove('hidden');
+                            }
+                        } else {
+                            container.querySelectorAll('input').forEach(cb => cb.disabled = false);
+                            if(notificationEl) notificationEl.classList.add('hidden');
+                        }
+                    }
+                });
+            }
+            setupCheckboxLimit('service-tags', 'serviceQualities', 3);
+            setupCheckboxLimit('flavors-tags', 'flavors', 6);
+            setupCheckboxLimit('atmosphere-tags', 'atmosphere', 3);
+
+            document.getElementById('occasion-tags').addEventListener('change', e => {
+                if(e.target.name === 'occasion') {
+                    reviewData.occasion = e.target.value;
+                }
+            });
+
+            document.getElementById('copy-btn').addEventListener('click', () => {
+                const reviewText = document.getElementById('review-text-display').innerText;
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = reviewText;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                alert('Texte copié !');
+            });
+        }
+
+        async function init() {
+            reviewContainer.classList.add('loaded');
+            const success = await fetchRestaurantData();
+            if (success) {
+                loader.classList.add('hidden');
+                appContent.classList.remove('hidden');
+                
+                applyBranding();
+                renderAllSections();
+                setupEventListeners();
+
+                const googleBtn = document.getElementById('google-btn');
+                const tripadvisorBtn = document.getElementById('tripadvisor-btn');
+                
+                if (restaurantData.links && restaurantData.links.google) {
+                    googleBtn.href = restaurantData.links.google;
+                    googleBtn.classList.remove('hidden');
+                } else {
+                    googleBtn.classList.add('hidden');
+                }
+                if (restaurantData.links && restaurantData.links.tripadvisor) {
+                    tripadvisorBtn.href = restaurantData.links.tripadvisor;
+                    tripadvisorBtn.classList.remove('hidden');
+                } else {
+                    tripadvisorBtn.classList.add('hidden');
+                }
+
+                if (!restaurantData.languages || restaurantData.languages.length <= 1) {
+                    reviewData.lang = restaurantData.languages[0] || 'fr';
+                    translatePage();
+                    goToSection(1);
+                } else {
+                    goToSection(0);
+                }
+            }
+        }
+
+        init();
+    });
+    </script>
+</body>
+</html>
+�
