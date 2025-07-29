@@ -270,7 +270,7 @@
                     </div>
                 </div>
                 <div id="result-display" class="hidden">
-                    <h1 data-translate-key="result_title">Une soirée mémorable ?</h1>
+                    <h2 data-translate-key="result_title" class="font-serif text-2xl font-semibold mb-2">Une soirée mémorable ?</h2>
                     <p class="subtitle" data-translate-key="result_subtitle">Votre avis est la touche finale de votre expérience.</p>
                     
                     <div class="contribution-box">
@@ -290,7 +290,7 @@
 
                     <div id="result-buttons" class="mt-6 space-y-3">
                         <button id="copy-btn" class="button secondary" data-translate-key="copy_button">Copier le texte</button>
-                        <a id="google-btn" href="#" target="_blank" class="button" data-translate-key="publish_on_google">Publier mon avis sur Google</a>
+                        <a id="google-btn" href="#" target="_blank" class="button" data-translate-key="publish_on_google">Publier sur Google</a>
                         <a id="tripadvisor-btn" href="#" target="_blank" class="button hidden" data-translate-key="publish_on_tripadvisor">Publier sur TripAdvisor</a>
                     </div>
                 </div>
@@ -346,7 +346,7 @@
                 result_step1: "1. Cliquez sur 'Copier le texte'.",
                 result_step2: "2. Cliquez sur 'Publier sur Google' et collez votre avis.",
                 copy_button: "Copier le texte",
-                publish_on_google: "Publier mon avis sur Google",
+                publish_on_google: "Publier sur Google",
                 publish_on_tripadvisor: "Publier sur TripAdvisor",
                 loading_restaurant: "Chargement...",
                 nav_next: "Suivant",
@@ -388,7 +388,7 @@
             es: { lang_name_native: "🇪🇸 Español" },
             pt: { lang_name_native: "🇵🇹 Português" },
             it: { lang_name_native: "🇮🇹 Italiano" },
-            zh: { lang_name_native: "�🇳 简体中文" }
+            zh: { lang_name_native: "🇨🇳 简体中文" }
         };
 
         function getTranslation(key, ...args) {
@@ -400,7 +400,10 @@
         function translatePage() {
             document.querySelectorAll('[data-translate-key]').forEach(el => {
                 const key = el.dataset.translateKey;
-                el.innerHTML = getTranslation(key);
+                // Ne pas écraser le contenu des éléments qui ont déjà été modifiés (comme le titre h2)
+                if (!el.classList.contains('js-no-translate-overwrite')) {
+                    el.innerHTML = getTranslation(key);
+                }
             });
             nextBtn.innerText = getTranslation('nav_next');
             backBtn.innerText = getTranslation('nav_back');
@@ -439,7 +442,6 @@
             const color = restaurantData.primaryColor || '#BF5B3F';
             root.style.setProperty('--brand-color', color);
             
-            // CORRECTION: Logique de parsing des couleurs plus robuste pour éviter les erreurs
             if (/^#([0-9A-F]{3}){1,2}$/i.test(color)) {
                 const hex = color.substring(1);
                 const isShort = hex.length === 3;
@@ -465,7 +467,6 @@
             }).join('');
             
             document.getElementById('server-grid').innerHTML = restaurantData.servers.map(server => {
-                // CORRECTION: Utilisation de `server.avatar` au lieu de `server.avatar_url`
                 const avatarSrc = server.avatar 
                     ? `${API_BASE_URL}${server.avatar}` 
                     : `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=555555`;
@@ -577,7 +578,18 @@
                 console.error("Error in generateReview function:", error);
                 document.getElementById('review-text-display').innerText = error.message;
             } finally {
-                translatePage(); // Re-translate the result page specifically
+                // On s'assure que les textes fixes de la page de résultat sont bien traduits
+                document.querySelector('[data-translate-key="result_title"]').innerHTML = getTranslation("result_title");
+                document.querySelector('[data-translate-key="result_title"]').classList.add('js-no-translate-overwrite');
+                document.querySelector('[data-translate-key="result_subtitle"]').innerHTML = getTranslation("result_subtitle");
+                document.querySelector('[data-translate-key="result_thank_you"]').innerHTML = getTranslation("result_thank_you");
+                document.querySelector('[data-translate-key="result_follow_steps"]').innerHTML = getTranslation("result_follow_steps");
+                document.querySelector('[data-translate-key="result_step1"]').innerHTML = getTranslation("result_step1");
+                document.querySelector('[data-translate-key="result_step2"]').innerHTML = getTranslation("result_step2");
+                document.querySelector('[data-translate-key="copy_button"]').innerHTML = getTranslation("copy_button");
+                document.querySelector('[data-translate-key="publish_on_google"]').innerHTML = getTranslation("publish_on_google");
+                document.querySelector('[data-translate-key="publish_on_tripadvisor"]').innerHTML = getTranslation("publish_on_tripadvisor");
+
                 document.getElementById('generation-loader').classList.add('hidden');
                 document.getElementById('result-display').classList.remove('hidden');
             }
@@ -673,14 +685,12 @@
                 const googleBtn = document.getElementById('google-btn');
                 const tripadvisorBtn = document.getElementById('tripadvisor-btn');
                 
-                // CORRECTION: Utilisation de `restaurantData.links.google`
                 if (restaurantData.links && restaurantData.links.google) {
                     googleBtn.href = restaurantData.links.google;
                     googleBtn.classList.remove('hidden');
                 } else {
                     googleBtn.classList.add('hidden');
                 }
-                // CORRECTION: Utilisation de `restaurantData.links.tripadvisor`
                 if (restaurantData.links && restaurantData.links.tripadvisor) {
                     tripadvisorBtn.href = restaurantData.links.tripadvisor;
                     tripadvisorBtn.classList.remove('hidden');
@@ -703,4 +713,3 @@
     </script>
 </body>
 </html>
-�
