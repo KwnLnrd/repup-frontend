@@ -731,16 +731,17 @@
                     throw new Error(result.error || `Erreur serveur: ${response.status}`);
                 }
                 
-                if (result.review) {
+                // CORRECTION : Vérification plus robuste de la réponse
+                if (result.review && typeof result.review === 'string') {
                     const reviewDisplay = document.getElementById('review-text-display');
                     reviewDisplay.innerText = result.review.trim();
                 } else {
-                    throw new Error("La réponse du serveur est valide mais le contenu est manquant.");
+                    throw new Error("La réponse du serveur est valide mais le contenu de l'avis est manquant ou incorrect.");
                 }
 
             } catch (error) {
                 console.error("Error in generateReview function:", error);
-                document.getElementById('review-text-display').innerText = error.message;
+                document.getElementById('review-text-display').innerText = `Désolé, une erreur est survenue lors de la génération de votre avis.\n\nDétail : ${error.message}`;
             } finally {
                 document.querySelector('[data-translate-key="result_title"]').innerHTML = getTranslation("result_title");
                 document.querySelector('[data-translate-key="result_title"]').classList.add('js-no-translate-overwrite');
@@ -852,12 +853,14 @@
                     googleBtn.href = restaurantData.links.google;
                     googleBtn.classList.remove('hidden');
                 } else {
+                    googleBtn.href = '#';
                     googleBtn.classList.add('hidden');
                 }
                 if (restaurantData.links && restaurantData.links.tripadvisor) {
                     tripadvisorBtn.href = restaurantData.links.tripadvisor;
                     tripadvisorBtn.classList.remove('hidden');
                 } else {
+                    tripadvisorBtn.href = '#';
                     tripadvisorBtn.classList.add('hidden');
                 }
 
