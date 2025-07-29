@@ -236,7 +236,7 @@
             <div id="section-lang" class="form-section">
                  <h2 data-translate-key="lang_title">Choisissez votre langue</h2>
                  <div class="flex flex-wrap justify-center gap-4 mt-6">
-                    <!-- Language buttons injected here -->
+                    <!-- Les boutons de langue seront injectés ici -->
                  </div>
             </div>
 
@@ -461,7 +461,7 @@
                 api_key_error: "Erro: A chave da API não está configurada. Por favor, entre em contato com o proprietário do site."
             },
             it: {
-                lang_name_native: "�🇹 Italiano",
+                lang_name_native: "🇮🇹 Italiano",
                 lang_title: "Scegli la tua lingua",
                 server_title: "Chi ti ha servito?",
                 service_subtitle: "Cosa hai apprezzato in particolare? (massimo 3)",
@@ -601,9 +601,11 @@
         }
 
         function renderAllSections() {
+            // CORRECTIF : Le sélecteur cible maintenant la div avec la classe .flex
             const langContainer = document.querySelector('#section-lang .flex');
             langContainer.innerHTML = (restaurantData.languages || ['fr', 'en']).map(lang => {
                 const langName = translations[lang]?.lang_name_native || lang.toUpperCase();
+                // CORRECTIF : Utilisation de la classe .lang-button pour le style correct
                 return `<button class="lang-button" data-lang-select="${lang}">${langName}</button>`;
             }).join('');
             
@@ -866,4 +868,3 @@
     </script>
 </body>
 </html>
-�
