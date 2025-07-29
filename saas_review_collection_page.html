@@ -155,8 +155,52 @@
           40% { transform: scale(1.0); }
         }
 
-        #result-area .button { margin-top: 1rem; }
-        #result-area #google-btn.hidden, #result-area #tripadvisor-btn.hidden { display: none; }
+        /* Nouveaux styles pour l'écran de résultat */
+        .contribution-box {
+            border: 1px solid #FBC2C2;
+            background-color: #FFF8F8;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem auto;
+            color: #444;
+        }
+        .contribution-box p, .contribution-box li {
+             font-size: 0.95rem;
+        }
+
+        .review-text-display {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            text-align: left;
+            white-space: pre-wrap;
+            background-color: #fdfdfd;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        #result-buttons .button {
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 8px;
+        }
+        #result-buttons .button.secondary {
+            background: #fff;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+        #result-buttons .button.secondary:hover {
+            background: #f5f5f5;
+        }
+        #result-buttons .button#google-btn {
+            background-color: var(--brand-color);
+        }
+        #result-buttons .button#google-btn:hover {
+            background-color: var(--brand-color-dark);
+        }
 
         @media (max-width: 600px) {
             body { padding: 10px; }
@@ -226,12 +270,28 @@
                     </div>
                 </div>
                 <div id="result-display" class="hidden">
-                    <h2 data-translate-key="result_title">Votre avis est prêt !</h2>
-                    <textarea id="review-text" readonly class="mt-4"></textarea>
-                    <div id="result-buttons" class="mt-2 space-y-3">
-                        <button id="copy-btn" class="button secondary"></button>
-                        <a id="google-btn" href="#" target="_blank" class="button"></a>
-                        <a id="tripadvisor-btn" href="#" target="_blank" class="button"></a>
+                    <h1 data-translate-key="result_title">Une soirée mémorable ?</h1>
+                    <p class="subtitle" data-translate-key="result_subtitle">Votre avis est la touche finale de votre expérience.</p>
+                    
+                    <div class="contribution-box">
+                        <p class="font-bold text-center text-lg" data-translate-key="result_thank_you">Merci pour votre contribution !</p>
+                        <div class="text-left mt-4">
+                            <p class="font-semibold" data-translate-key="result_follow_steps">Suivez ces 2 étapes :</p>
+                            <ol class="list-decimal list-inside ml-2 mt-1 space-y-1">
+                                <li data-translate-key="result_step1">Cliquez sur 'Copier le texte'.</li>
+                                <li data-translate-key="result_step2">Cliquez sur 'Publier sur Google' et collez votre avis.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div id="review-text-display" class="review-text-display">
+                        <!-- Le texte de l'avis généré sera injecté ici -->
+                    </div>
+
+                    <div id="result-buttons" class="mt-6 space-y-3">
+                        <button id="copy-btn" class="button secondary" data-translate-key="copy_button">Copier le texte</button>
+                        <a id="google-btn" href="#" target="_blank" class="button" data-translate-key="publish_on_google">Publier mon avis sur Google</a>
+                        <a id="tripadvisor-btn" href="#" target="_blank" class="button hidden" data-translate-key="publish_on_tripadvisor">Publier sur TripAdvisor</a>
                     </div>
                 </div>
             </div>
@@ -253,6 +313,7 @@
         const sections = document.querySelectorAll('.form-section');
         const nextBtn = document.getElementById('next-btn');
         const backBtn = document.getElementById('back-btn');
+        const navButtons = document.getElementById('navigation-buttons');
 
         let restaurantData = {};
         let reviewData = {
@@ -278,19 +339,24 @@
                 feedback_subtitle: "Ce message sera envoyé uniquement à l'équipe (optionnel).",
                 generating_title: "Création de votre avis...",
                 generating_subtitle: "Notre IA personnalise votre expérience.",
-                result_title: "Votre avis est prêt !",
+                result_title: "Une soirée mémorable ?",
+                result_subtitle: "Votre avis est la touche finale de votre expérience.",
+                result_thank_you: "Merci pour votre contribution !",
+                result_follow_steps: "Suivez ces 2 étapes :",
+                result_step1: "1. Cliquez sur 'Copier le texte'.",
+                result_step2: "2. Cliquez sur 'Publier sur Google' et collez votre avis.",
                 copy_button: "Copier le texte",
-                publish_on_google: "Publier sur Google",
+                publish_on_google: "Publier mon avis sur Google",
                 publish_on_tripadvisor: "Publier sur TripAdvisor",
                 loading_restaurant: "Chargement...",
                 nav_next: "Suivant",
                 nav_back: "Précédent",
                 nav_generate: "Générer mon avis",
                 limit_reached: (limit) => `Limite de ${limit} choix atteinte.`,
-                api_key_error: "Erreur : La clé API OpenAI n'est pas configurée. Veuillez contacter le propriétaire du site."
+                api_key_error: "Erreur : La clé API n'est pas configurée. Veuillez contacter le propriétaire du site."
             },
             en: {
-                lang_name_native: "🇬🇧 English",
+                lang_name_native: "�🇧 English",
                 lang_title: "Choose your language",
                 server_title: "Who provided your service?",
                 service_subtitle: "What did you particularly appreciate? (3 max)",
@@ -303,7 +369,12 @@
                 feedback_subtitle: "This message will be sent only to the team (optional).",
                 generating_title: "Creating your review...",
                 generating_subtitle: "Our AI is personalizing your experience.",
-                result_title: "Your review is ready!",
+                result_title: "A memorable evening?",
+                result_subtitle: "Your review is the final touch to your experience.",
+                result_thank_you: "Thank you for your contribution!",
+                result_follow_steps: "Follow these 2 steps:",
+                result_step1: "1. Click on 'Copy text'.",
+                result_step2: "2. Click on 'Publish on Google' and paste your review.",
                 copy_button: "Copy text",
                 publish_on_google: "Publish on Google",
                 publish_on_tripadvisor: "Publish on TripAdvisor",
@@ -312,7 +383,7 @@
                 nav_back: "Back",
                 nav_generate: "Generate my review",
                 limit_reached: (limit) => `Limit of ${limit} choices reached.`,
-                api_key_error: "Error: OpenAI API Key is not configured. Please contact the site owner."
+                api_key_error: "Error: API Key is not configured. Please contact the site owner."
             },
             es: { lang_name_native: "🇪🇸 Español" },
             pt: { lang_name_native: "🇵🇹 Português" },
@@ -333,9 +404,6 @@
             });
             nextBtn.innerText = getTranslation('nav_next');
             backBtn.innerText = getTranslation('nav_back');
-            document.getElementById('copy-btn').innerText = getTranslation('copy_button');
-            document.getElementById('google-btn').innerText = getTranslation('publish_on_google');
-            document.getElementById('tripadvisor-btn').innerText = getTranslation('publish_on_tripadvisor');
         }
 
         async function fetchRestaurantData() {
@@ -387,8 +455,8 @@
             }).join('');
             
             document.getElementById('server-grid').innerHTML = restaurantData.servers.map(server => {
-                const avatarSrc = server.avatar 
-                    ? `${API_BASE_URL}${server.avatar}` 
+                const avatarSrc = server.avatar_url 
+                    ? `${API_BASE_URL}${server.avatar_url}` 
                     : `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=555555`;
                 return `
                     <div class="selection-item" data-server-name="${server.name}">
@@ -436,7 +504,6 @@
             } else {
                 nextBtn.innerText = getTranslation('nav_next');
             }
-            nextBtn.style.visibility = currentSectionIndex === sectionOrder.length - 1 ? 'hidden' : 'visible';
         }
 
         function goToSection(index) {
@@ -456,6 +523,7 @@
         
         async function generateReview() {
             goToSection(sectionOrder.indexOf('result'));
+            navButtons.style.display = 'none';
             document.getElementById('generation-loader').classList.remove('hidden');
             document.getElementById('result-display').classList.add('hidden');
 
@@ -472,46 +540,33 @@
             const prompt = promptParts.join('\n');
 
             try {
-                // --- MODIFICATION IMPORTANTE : APPEL AU BACKEND ---
-                // 1. L'URL pointe maintenant vers notre propre serveur
                 const apiUrl = `${API_BASE_URL}/api/generate-review`;
+                const payload = { prompt: prompt };
                 
-                // 2. Le payload contient uniquement le prompt
-                const payload = { 
-                    prompt: prompt
-                };
-                
-                // 3. L'appel fetch n'a plus besoin de clé API ici
                 const response = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
 
                 if (!response.ok) {
-                    // Si le serveur renvoie une erreur, l'afficher
                     throw new Error(result.error || `Erreur serveur: ${response.status}`);
                 }
                 
-                // 4. Récupération de la réponse de notre backend
                 if (result.review) {
-                    const text = result.review;
-                    const reviewTextArea = document.getElementById('review-text');
-                    reviewTextArea.value = text;
-                    reviewTextArea.style.height = 'auto';
-                    reviewTextArea.style.height = (reviewTextArea.scrollHeight) + 'px';
+                    const reviewDisplay = document.getElementById('review-text-display');
+                    reviewDisplay.innerText = result.review.trim();
                 } else {
                     throw new Error("La réponse du serveur est valide mais le contenu est manquant.");
                 }
 
             } catch (error) {
                 console.error("Error in generateReview function:", error);
-                document.getElementById('review-text').value = error.message;
+                document.getElementById('review-text-display').innerText = error.message;
             } finally {
+                translatePage(); // Re-translate the result page specifically
                 document.getElementById('generation-loader').classList.add('hidden');
                 document.getElementById('result-display').classList.remove('hidden');
             }
@@ -569,64 +624,4 @@
                             if(notificationEl) notificationEl.classList.add('hidden');
                         }
                     }
-                });
-            }
-            setupCheckboxLimit('service-qualities-tags', 'serviceQualities', 3);
-            setupCheckboxLimit('flavors-tags', 'flavors', 6);
-            setupCheckboxLimit('atmosphere-tags', 'atmosphere', 3);
-
-            document.getElementById('occasion-tags').addEventListener('change', e => {
-                if(e.target.name === 'occasion') {
-                    reviewData.occasion = e.target.value;
-                }
-            });
-
-            document.getElementById('copy-btn').addEventListener('click', () => {
-                const reviewText = document.getElementById('review-text');
-                reviewText.select();
-                document.execCommand('copy');
-                alert('Texte copié !');
-            });
-        }
-
-        async function init() {
-            reviewContainer.classList.add('loaded');
-            const success = await fetchRestaurantData();
-            if (success) {
-                loader.classList.add('hidden');
-                appContent.classList.remove('hidden');
-                
-                applyBranding();
-                renderAllSections();
-                setupEventListeners();
-
-                const googleBtn = document.getElementById('google-btn');
-                const tripadvisorBtn = document.getElementById('tripadvisor-btn');
-                if (restaurantData.links && restaurantData.links.google) {
-                    googleBtn.href = restaurantData.links.google;
-                    googleBtn.classList.remove('hidden');
-                } else {
-                    googleBtn.classList.add('hidden');
-                }
-                if (restaurantData.links && restaurantData.links.tripadvisor) {
-                    tripadvisorBtn.href = restaurantData.links.tripadvisor;
-                    tripadvisorBtn.classList.remove('hidden');
-                } else {
-                    tripadvisorBtn.classList.add('hidden');
-                }
-
-                if (!restaurantData.languages || restaurantData.languages.length <= 1) {
-                    reviewData.lang = restaurantData.languages[0] || 'fr';
-                    renderAllSections();
-                    goToSection(1);
-                } else {
-                    goToSection(0);
-                }
-            }
-        }
-
-        init();
-    });
-    </script>
-</body>
-</html>
+      
