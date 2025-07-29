@@ -1,338 +1,433 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avis Pro Resto - Attirez plus de clients grâce à vos avis</title>
+    <title>Avis Pro Resto | Transformez vos clients en ambassadeurs 5 étoiles</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Alpine.js for interactivity (Menu, Pricing Toggle) -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <style>
+        /* Palette de couleurs "Luxe - Bleu Ardoise & Or" */
+        :root {
+            --color-bg: #F8F9FA; /* Gris très clair, presque blanc */
+            --color-text: #2D3748; /* Bleu-gris très foncé (Charbon) */
+            --color-primary: #D69E2E; /* Or vieilli / Moutarde foncée */
+            --color-primary-dark: #B7791F; /* Or plus foncé pour le hover */
+            --color-surface: #FFFFFF; /* Blanc pur pour les cartes */
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Montserrat', sans-serif;
+        }
+
         body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #F8F9FA;
-            color: #212529;
+            font-family: var(--font-sans);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .font-serif {
-            font-family: 'Cormorant Garamond', serif;
+
+        .font-serif { font-family: var(--font-serif); }
+        .font-sans { font-family: var(--font-sans); }
+
+        .bg-cream { background-color: var(--color-bg); }
+        .bg-surface { background-color: var(--color-surface); }
+        .text-brown-dark { color: var(--color-text); } /* Renommer la classe serait idéal, mais on garde pour la simplicité */
+        .brand-accent { color: var(--color-primary); }
+        .bg-brand-accent { background-color: var(--color-primary); }
+        .hover\:bg-brand-accent-dark:hover { background-color: var(--color-primary-dark); }
+        .border-brand-accent { border-color: var(--color-primary); }
+        .ring-brand-accent { --tw-ring-color: var(--color-primary); }
+
+        /* Animation subtile pour l'apparition des éléments au scroll */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
-        .brand-color { color: #BF5B3F; }
-        .bg-brand-color { background-color: #BF5B3F; }
-        .bg-brand-color-light { background-color: rgba(191, 91, 63, 0.1); }
-        .border-brand-color { border-color: #BF5B3F; }
-        .hover\:bg-brand-color-dark:hover { background-color: #A64B35; }
-        .ring-brand-color { --tw-ring-color: #BF5B3F; }
-        .section-padding { padding: 6rem 1.5rem; }
-        @media (max-width: 768px) {
-            .section-padding { padding: 4rem 1.5rem; }
-        }
-        .swoop-bg {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='1' d='M0,128L80,149.3C160,171,320,213,480,213.3C640,213,800,171,960,144C1120,117,1280,107,1360,101.3L1440,96L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: bottom;
-            background-size: cover;
+        .fade-in-up.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
-<body class="antialiased">
+<body x-data="{ isMenuOpen: false, pricing: 'monthly' }">
 
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center">
-                <svg class="h-8 w-8 mr-2 brand-color" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <a href="index.html" class="text-2xl font-bold font-serif text-gray-800">Avis Pro Resto</a>
-            </div>
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="#features" class="text-gray-600 hover:brand-color">Fonctionnalités</a>
-                <a href="#pricing" class="text-gray-600 hover:brand-color">Tarifs</a>
-                <a href="#testimonials" class="text-gray-600 hover:brand-color">Témoignages</a>
-                <a href="#contact" class="text-gray-600 hover:brand-color">Contact</a>
-            </div>
-            <div class="hidden md:flex items-center space-x-4">
-                <a href="saas_admin_panel.html" class="text-gray-600 hover:brand-color">Connexion</a>
-                <a href="saas_admin_panel.html" class="bg-brand-color text-white px-5 py-2 rounded-full font-semibold hover:bg-brand-color-dark transition-colors">Inscription</a>
-            </div>
-            <div class="md:hidden">
-                <button id="mobile-menu-button">
-                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                    </svg>
-                </button>
+    <!-- ===== Barre d'urgence/offre (Pre-Header) ===== -->
+    <div class="text-center py-2.5 px-4 text-sm font-semibold" style="background-color: #2D3748; color: #F8F9FA;">
+        ✨ Offre de lancement : Profitez de 15 jours d'essai gratuit sur notre plan Premium ! ✨
+    </div>
+
+    <!-- ===== Header (Navigation) ===== -->
+    <header x-data="{ isScrolled: false }" @scroll.window="isScrolled = (window.scrollY > 50)" 
+            class="sticky top-0 z-50 transition-all duration-300"
+            :class="{ 'bg-surface/80 backdrop-blur-lg shadow-md': isScrolled, 'bg-transparent': !isScrolled }">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <a href="#" class="flex items-center space-x-2">
+                    <svg class="h-8 w-8 brand-accent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    <span class="text-2xl font-serif font-bold text-brown-dark">Avis Pro Resto</span>
+                </a>
+                
+                <!-- Menu Desktop -->
+                <div class="hidden lg:flex items-center space-x-8 font-medium">
+                    <a href="#solution" class="text-brown-dark hover:brand-accent transition-colors">La Solution</a>
+                    <a href="#tarifs" class="text-brown-dark hover:brand-accent transition-colors">Tarifs</a>
+                    <a href="#temoignages" class="text-brown-dark hover:brand-accent transition-colors">Témoignages</a>
+                </div>
+
+                <!-- CTA Desktop -->
+                <div class="hidden lg:block">
+                    <a href="#tarifs" class="bg-brand-accent text-white px-6 py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-all duration-300 transform hover:scale-105">
+                        Démarrer mon essai gratuit
+                    </a>
+                </div>
+
+                <!-- Bouton Menu Mobile -->
+                <div class="lg:hidden">
+                    <button @click="isMenuOpen = !isMenuOpen" aria-label="Ouvrir le menu">
+                        <svg class="w-7 h-7 text-brown-dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </nav>
-        <div id="mobile-menu" class="hidden md:hidden">
-            <a href="#features" class="block py-2 px-6 text-sm text-gray-700">Fonctionnalités</a>
-            <a href="#pricing" class="block py-2 px-6 text-sm text-gray-700">Tarifs</a>
-            <a href="#testimonials" class="block py-2 px-6 text-sm text-gray-700">Témoignages</a>
-            <a href="#contact" class="block py-2 px-6 text-sm text-gray-700">Contact</a>
-            <div class="px-6 py-4 border-t border-gray-200">
-                <a href="saas_admin_panel.html" class="block text-sm text-gray-700 mb-2">Connexion</a>
-                <a href="saas_admin_panel.html" class="w-full text-center bg-brand-color text-white px-5 py-2 rounded-full font-semibold hover:bg-brand-color-dark transition-colors">Inscription</a>
+        <!-- Menu Mobile -->
+        <div x-show="isMenuOpen" @click.away="isMenuOpen = false" x-transition class="lg:hidden bg-surface shadow-xl absolute top-full left-0 w-full">
+            <div class="flex flex-col space-y-4 p-6">
+                <a href="#solution" @click="isMenuOpen = false" class="text-brown-dark hover:brand-accent transition-colors">La Solution</a>
+                <a href="#tarifs" @click="isMenuOpen = false" class="text-brown-dark hover:brand-accent transition-colors">Tarifs</a>
+                <a href="#temoignages" @click="isMenuOpen = false" class="text-brown-dark hover:brand-accent transition-colors">Témoignages</a>
+                <a href="#tarifs" @click="isMenuOpen = false" class="mt-4 w-full text-center bg-brand-accent text-white px-6 py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors">
+                    Démarrer l'essai gratuit
+                </a>
             </div>
         </div>
     </header>
 
     <main>
-        <section class="bg-white pt-24 pb-32 swoop-bg">
-            <div class="container mx-auto px-6 text-center">
-                <h1 class="text-4xl md:text-6xl font-bold font-serif text-gray-800 leading-tight">Transformez vos clients satisfaits en vos meilleurs ambassadeurs.</h1>
-                <p class="mt-6 text-lg text-gray-600 max-w-3xl mx-auto">Obtenez plus d'avis positifs sur Google et TripAdvisor, sans effort. Notre solution guide vos clients heureux vers vos plateformes d'avis et gère les retours négatifs en privé.</p>
-                <div class="mt-8">
-                    <a href="#pricing" class="bg-brand-color text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-brand-color-dark transition-colors">Voir nos offres</a>
+        <!-- ===== Section Héros ===== -->
+        <section class="relative pt-20 pb-24 md:pt-32 md:pb-36 text-center overflow-hidden">
+            <div class="container mx-auto px-6 z-10 relative">
+                <h1 class="font-serif text-4xl md:text-6xl lg:text-7xl font-bold text-brown-dark leading-tight">
+                    De simples clients à vos<br>meilleurs <span class="brand-accent">ambassadeurs</span>.
+                </h1>
+                <p class="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-brown-dark/80">
+                    Arrêtez de subir les avis négatifs. Notre technologie guide intelligemment vos clients satisfaits vers Google et TripAdvisor, et vous permet de gérer les retours difficiles en privé.
+                </p>
+                <div class="mt-10">
+                    <a href="#tarifs" class="bg-brand-accent text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-brand-accent-dark transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        Augmenter mes avis 5 étoiles
+                    </a>
+                    <p class="mt-4 text-sm text-brown-dark/60">Sans engagement. Annulation facile.</p>
                 </div>
-            </div>
-        </section>
-
-        <section id="how-it-works" class="section-padding">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold font-serif">Comment ça marche ?</h2>
-                    <p class="mt-4 text-gray-600">En 4 étapes simples, boostez votre réputation en ligne.</p>
-                </div>
-                <div class="grid md:grid-cols-4 gap-10 text-center">
-                    <div class="flex flex-col items-center">
-                        <div class="bg-brand-color-light p-6 rounded-full flex items-center justify-center mb-4">
-                            <svg class="h-10 w-10 brand-color" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">1. Inscrivez-vous</h3>
-                        <p class="text-gray-600">Créez votre compte en moins de 2 minutes et choisissez votre plan.</p>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <div class="bg-brand-color-light p-6 rounded-full flex items-center justify-center mb-4">
-                            <svg class="h-10 w-10 brand-color" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">2. Personnalisez</h3>
-                        <p class="text-gray-600">Ajoutez votre logo, vos serveurs et vos plats en quelques clics.</p>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <div class="bg-brand-color-light p-6 rounded-full flex items-center justify-center mb-4">
-                            <svg class="h-10 w-10 brand-color" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">3. Partagez</h3>
-                        <p class="text-gray-600">Recevez un QR code unique et un lien à partager avec vos clients.</p>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <div class="bg-brand-color-light p-6 rounded-full flex items-center justify-center mb-4">
-                            <svg class="h-10 w-10 brand-color" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">4. Recevez</h3>
-                        <p class="text-gray-600">Voyez les avis positifs affluer et analysez vos performances.</p>
+                
+                <!-- Preuve Sociale Immédiate -->
+                <div class="mt-16">
+                    <p class="text-sm font-semibold text-brown-dark/70 uppercase tracking-wider">Déjà approuvé par plus de 200 restaurants en France</p>
+                    <div class="flex justify-center items-center space-x-8 mt-4 opacity-70">
+                        <!-- Logo Google -->
+                        <svg class="h-8 w-auto" role="img" aria-label="Google" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 533.5 544.3"><path d="M533.5 278.4c0-18.5-1.5-37.1-4.7-55.3H272.1v104.8h147c-6.1 33.8-25.7 63.7-54.4 82.7v68h87.7c51.5-47.4 81.1-117.4 81.1-200.2z" fill="#4285f4"/><path d="M272.1 544.3c73.4 0 135.3-24.1 180.4-65.7l-87.7-68c-24.4 16.6-55.9 26-92.6 26-71 0-131.2-47.9-152.8-112.3H28.9v70.1c46.2 91.9 140.3 149.9 243.2 149.9z" fill="#34a853"/><path d="M119.3 324.3c-11.4-33.8-11.4-70.4 0-104.2V150H28.9c-38.6 76.9-38.6 167.5 0 244.4l90.4-70.1z" fill="#fbbc04"/><path d="M272.1 107.7c38.8-.6 76.3 14 104.4 40.8l77.7-77.7C405 24.6 340.1 0 272.1 0 169.2 0 75.1 58 28.9 150l90.4 70.1c21.5-64.5 81.8-112.4 152.8-112.4z" fill="#ea4335"/></svg>
+                        <!-- Logo TripAdvisor -->
+                        <svg class="h-8 w-auto" role="img" aria-label="TripAdvisor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#34E0A1" d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/><path fill="currentColor" d="M15.44 8.31a.5.5 0 00-.63.31l-2.4 4.82-2.4-4.82a.5.5 0 00-.63-.31.5.5 0 00-.37.81l2.71 5.42a.5.5 0 00.94 0l2.71-5.42a.5.5 0 00-.32-.81zm-7.03 0a.5.5 0 00-.63.31l-2.4 4.82-2.4-4.82a.5.5 0 00-.63-.31.5.5 0 00-.37.81l2.71 5.42a.5.5 0 00.94 0l2.71-5.42a.5.5 0 00-.32-.81z" transform="translate(4.05 6.25)"/></svg>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="features" class="section-padding bg-white">
+        <!-- ===== Section "Comment ça marche ?" (Processus Simplifié) ===== -->
+        <section class="py-20 md:py-28 bg-surface">
             <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold font-serif">Des fonctionnalités pensées pour vous</h2>
-                    <p class="mt-4 text-gray-600">Tout ce dont vous avez besoin pour gérer et améliorer votre e-réputation.</p>
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="font-serif text-4xl md:text-5xl font-bold text-brown-dark">Un processus d'une simplicité désarmante</h2>
+                    <p class="mt-4 text-lg text-brown-dark/80">En 3 étapes, transformez l'expérience de vos clients en un atout marketing puissant.</p>
                 </div>
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="bg-gray-50 p-8 rounded-lg">
-                        <h3 class="text-xl font-bold mb-3">Personnalisation Facile</h3>
-                        <p class="text-gray-600">Adaptez la page de collecte d'avis à l'image de votre restaurant avec votre logo et vos couleurs.</p>
+                <div class="mt-16 grid md:grid-cols-3 gap-12 md:gap-8 text-center">
+                    <!-- Étape 1 -->
+                    <div class="flex flex-col items-center">
+                        <div class="flex items-center justify-center h-24 w-24 rounded-full bg-cream mb-6">
+                            <span class="font-serif text-4xl brand-accent">1</span>
+                        </div>
+                        <h3 class="text-2xl font-bold font-serif text-brown-dark">Collectez</h3>
+                        <p class="mt-2 text-brown-dark/80">Un simple QR Code sur la table ou le ticket invite vos clients à partager leur expérience en quelques secondes.</p>
                     </div>
-                    <div class="bg-gray-50 p-8 rounded-lg">
-                        <h3 class="text-xl font-bold mb-3">Gestion des Équipes et du Menu</h3>
-                        <p class="text-gray-600">Ajoutez vos serveurs et vos plats pour obtenir des retours précis et valoriser votre personnel.</p>
+                    <!-- Étape 2 -->
+                    <div class="flex flex-col items-center">
+                        <div class="flex items-center justify-center h-24 w-24 rounded-full bg-cream mb-6">
+                            <span class="font-serif text-4xl brand-accent">2</span>
+                        </div>
+                        <h3 class="text-2xl font-bold font-serif text-brown-dark">Filtrez</h3>
+                        <p class="mt-2 text-brown-dark/80">Notre système intelligent dirige les clients heureux vers Google/TripAdvisor. Les insatisfaits vous contactent en privé.</p>
                     </div>
-                    <div class="bg-gray-50 p-8 rounded-lg">
-                        <h3 class="text-xl font-bold mb-3">QR Code & Lien Unique</h3>
-                        <p class="text-gray-600">Facilitez l'accès à vos clients avec un QR code à imprimer et un lien simple à partager.</p>
+                    <!-- Étape 3 -->
+                    <div class="flex flex-col items-center">
+                        <div class="flex items-center justify-center h-24 w-24 rounded-full bg-cream mb-6">
+                            <span class="font-serif text-4xl brand-accent">3</span>
+                        </div>
+                        <h3 class="text-2xl font-bold font-serif text-brown-dark">Progressez</h3>
+                        <p class="mt-2 text-brown-dark/80">Analysez les retours, identifiez vos points forts et récompensez vos meilleurs serveurs grâce à un tableau de bord clair.</p>
                     </div>
-                    <div class="bg-gray-50 p-8 rounded-lg">
-                        <h3 class="text-xl font-bold mb-3">Redirection Intelligente</h3>
-                        <p class="text-gray-600">Les clients satisfaits sont dirigés vers Google/TripAdvisor, les autres vers un formulaire privé.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ===== Section "Solution" (Bénéfices) ===== -->
+        <section id="solution" class="py-20 md:py-28 overflow-hidden">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto mb-20">
+                    <h2 class="font-serif text-4xl md:text-5xl font-bold text-brown-dark">La solution tout-en-un pour votre réputation</h2>
+                    <p class="mt-4 text-lg text-brown-dark/80">Allez au-delà de la simple collecte d'avis. Prenez le contrôle de votre image de marque.</p>
+                </div>
+
+                <!-- Bénéfice 1 -->
+                <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center mb-24">
+                    <div class="order-2 md:order-1">
+                        <h3 class="font-serif text-3xl font-bold text-brown-dark">Boostez votre note moyenne, sans effort.</h3>
+                        <p class="mt-4 text-lg text-brown-dark/80">Notre redirection intelligente est la clé. En guidant naturellement vos clients les plus heureux vers les plateformes publiques, vous créez un flux constant d'avis 5 étoiles qui noie les quelques critiques négatives et attire de nouveaux clients.</p>
                     </div>
-                    <div class="bg-gray-50 p-8 rounded-lg">
-                        <h3 class="text-xl font-bold mb-3">Tableau de Bord Analytique</h3>
-                        <p class="text-gray-600">Suivez vos performances, identifiez vos points forts et les serveurs les plus appréciés.</p>
+                    <div class="order-1 md:order-2">
+                        <img src="https://placehold.co/600x450/F8F9FA/2D3748?text=Avis+Positifs" alt="Illustration d'avis positifs sur un téléphone" class="rounded-lg shadow-xl w-full h-auto">
                     </div>
-                    <div class="bg-gray-50 p-8 rounded-lg">
-                        <h3 class="text-xl font-bold mb-3">Support Multilingue</h3>
-                        <p class="text-gray-600">Adressez-vous à votre clientèle internationale en proposant votre page en plusieurs langues.</p>
+                </div>
+
+                <!-- Bénéfice 2 -->
+                <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center mb-24">
+                    <div>
+                        <img src="https://placehold.co/600x450/2D3748/F8F9FA?text=Gestion+de+Crise" alt="Illustration d'une conversation privée pour résoudre un problème" class="rounded-lg shadow-xl w-full h-auto">
+                    </div>
+                    <div>
+                        <h3 class="font-serif text-3xl font-bold text-brown-dark">Désamorcez les crises avant qu'elles n'explosent.</h3>
+                        <p class="mt-4 text-lg text-brown-dark/80">Un client mécontent est une opportunité. Offrez-lui une voie privée pour s'exprimer. Vous montrez que son avis compte, résolvez le problème en interne et transformez une potentielle mauvaise publicité en une chance de le fidéliser.</p>
+                    </div>
+                </div>
+                
+                <!-- Bénéfice 3 -->
+                <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+                    <div class="order-2 md:order-1">
+                        <h3 class="font-serif text-3xl font-bold text-brown-dark">Motivez vos équipes, identifiez vos stars.</h3>
+                        <p class="mt-4 text-lg text-brown-dark/80">Ne vous contentez plus de "Bien" ou "Pas bien". Obtenez des retours précis sur le service, les plats, l'ambiance. Notre tableau de bord vous révèle qui sont les serveurs préférés de vos clients et quels plats font l'unanimité. Prenez des décisions basées sur la data, pas sur l'instinct.</p>
+                    </div>
+                    <div class="order-1 md:order-2">
+                        <img src="https://placehold.co/600x450/D69E2E/FFFFFF?text=Dashboard+Analytique" alt="Tableau de bord analytique montrant les performances" class="rounded-lg shadow-xl w-full h-auto">
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="pricing" class="section-padding">
+        <!-- ===== Section Tarifs ===== -->
+        <section id="tarifs" class="py-20 md:py-28 bg-surface">
             <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold font-serif">Des tarifs clairs et adaptés</h2>
-                    <p class="mt-4 text-gray-600">Choisissez l'offre qui correspond à la taille et aux ambitions de votre restaurant.</p>
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="font-serif text-4xl md:text-5xl font-bold text-brown-dark">Un tarif simple, un retour sur investissement massif.</h2>
+                    <p class="mt-4 text-lg text-brown-dark/80">Choisissez le plan qui propulsera votre restaurant. Pas de frais cachés, pas de mauvaises surprises.</p>
                 </div>
-                <div class="flex flex-col lg:flex-row justify-center items-center lg:items-stretch gap-8">
-                    <div class="bg-white p-8 rounded-lg shadow-lg border border-gray-200 w-full max-w-sm flex flex-col">
-                        <h3 class="text-2xl font-bold font-serif text-center">Essentiel</h3>
-                        <p class="text-center text-gray-500 mt-2">Pour bien démarrer</p>
-                        <p class="text-5xl font-bold text-center mt-6">49€<span class="text-lg font-medium text-gray-500">/mois</span></p>
-                        <ul class="mt-8 space-y-4 text-gray-600 flex-grow">
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Jusqu'à 100 avis / mois</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Gestion de 10 serveurs</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>QR Code et lien unique</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Tableau de bord standard</li>
+
+                <!-- Toggle Annuel/Mensuel -->
+                <div class="mt-12 flex justify-center items-center space-x-4">
+                    <span class="font-semibold" :class="{'brand-accent': pricing === 'monthly'}">Mensuel</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" @change="pricing = pricing === 'monthly' ? 'yearly' : 'monthly'">
+                        <div class="w-14 h-8 bg-cream rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-1 after:left-1 after:bg-brand-accent after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-cream"></div>
+                    </label>
+                    <span class="font-semibold" :class="{'brand-accent': pricing === 'yearly'}">
+                        Annuel <span class="bg-brand-accent/20 text-brand-accent text-xs font-bold px-2 py-1 rounded-full ml-1">-20%</span>
+                    </span>
+                </div>
+
+                <!-- Cartes de prix -->
+                <div class="mt-12 grid lg:grid-cols-3 gap-8 items-stretch">
+                    <!-- Plan Essentiel -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg flex flex-col border border-gray-200">
+                        <h3 class="text-2xl font-bold font-serif text-brown-dark">Essentiel</h3>
+                        <p class="text-brown-dark/70 mt-1">Pour bien démarrer</p>
+                        <div class="my-6">
+                            <span class="text-5xl font-bold text-brown-dark" x-text="pricing === 'monthly' ? '49€' : '39€'">49€</span>
+                            <span class="text-brown-dark/70">/mois</span>
+                        </div>
+                        <ul class="space-y-4 text-brown-dark/90 flex-grow">
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Jusqu'à 100 avis / mois</li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Redirection intelligente</li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>QR Code & lien unique</li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Tableau de bord standard</li>
                         </ul>
-                        <a href="saas_admin_panel.html" class="mt-8 block w-full text-center bg-gray-100 text-gray-800 px-6 py-3 rounded-full font-semibold hover:bg-gray-200 transition-colors">Choisir ce plan</a>
+                        <a href="#" class="mt-8 block w-full text-center bg-cream text-brown-dark px-6 py-3 rounded-full font-bold hover:bg-gray-200 transition-colors">Choisir ce plan</a>
                     </div>
-                    <div class="bg-white p-8 rounded-lg shadow-2xl border-2 border-brand-color w-full max-w-sm flex flex-col relative">
+
+                    <!-- Plan Premium (Mis en avant) -->
+                    <div class="bg-white p-8 rounded-2xl shadow-2xl flex flex-col border-2 border-brand-accent relative">
                         <div class="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                            <span class="bg-brand-color text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Le plus populaire</span>
+                            <span class="bg-brand-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Le plus populaire</span>
                         </div>
-                        <h3 class="text-2xl font-bold font-serif text-center">Premium</h3>
-                        <p class="text-center text-gray-500 mt-2">Pour accélérer votre croissance</p>
-                        <p class="text-5xl font-bold text-center mt-6">79€<span class="text-lg font-medium text-gray-500">/mois</span></p>
-                        <ul class="mt-8 space-y-4 text-gray-600 flex-grow">
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Avis illimités</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Serveurs illimités</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Gestion avancée du menu</li>
-                             <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Support multilingue</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Analyses détaillées</li>
+                        <h3 class="text-2xl font-bold font-serif brand-accent">Premium</h3>
+                        <p class="text-brown-dark/70 mt-1">Pour une croissance sans limites</p>
+                        <div class="my-6">
+                            <span class="text-5xl font-bold text-brown-dark" x-text="pricing === 'monthly' ? '79€' : '63€'">79€</span>
+                            <span class="text-brown-dark/70">/mois</span>
+                        </div>
+                        <ul class="space-y-4 text-brown-dark/90 flex-grow">
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><strong>Avis illimités</strong></li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Analyse des serveurs & plats</li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Personnalisation avancée</li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Support multilingue</li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Support prioritaire</li>
                         </ul>
-                        <a href="saas_admin_panel.html" class="mt-8 block w-full text-center bg-brand-color text-white px-6 py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors">Démarrer l'essai gratuit</a>
+                        <a href="#" class="mt-8 block w-full text-center bg-brand-accent text-white px-6 py-4 rounded-full font-bold hover:bg-brand-accent-dark transition-all duration-300 transform hover:scale-105">Démarrer l'essai gratuit</a>
                     </div>
-                    <div class="bg-white p-8 rounded-lg shadow-lg border border-gray-200 w-full max-w-sm flex flex-col">
-                        <h3 class="text-2xl font-bold font-serif text-center">Entreprise</h3>
-                        <p class="text-center text-gray-500 mt-2">Pour les groupes et chaînes</p>
-                        <p class="text-5xl font-bold text-center mt-6">Sur Devis</p>
-                        <ul class="mt-8 space-y-4 text-gray-600 flex-grow">
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Toutes les fonctions Premium</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Gestion multi-établissements</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>API et intégrations personnalisées</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 brand-color mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Chef de projet dédié</li>
+
+                    <!-- Plan Entreprise -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg flex flex-col border border-gray-200">
+                        <h3 class="text-2xl font-bold font-serif text-brown-dark">Entreprise</h3>
+                        <p class="text-brown-dark/70 mt-1">Pour les groupes et chaînes</p>
+                        <div class="my-6">
+                            <span class="text-5xl font-bold text-brown-dark">Sur Devis</span>
+                        </div>
+                        <ul class="space-y-4 text-brown-dark/90 flex-grow">
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Toutes les fonctions Premium</li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Gestion multi-établissements</li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>API & intégrations sur-mesure</li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-accent mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Chef de projet dédié</li>
                         </ul>
-                        <a href="#contact" class="mt-8 block w-full text-center bg-gray-100 text-gray-800 px-6 py-3 rounded-full font-semibold hover:bg-gray-200 transition-colors">Nous contacter</a>
+                        <a href="#contact" class="mt-8 block w-full text-center bg-cream text-brown-dark px-6 py-3 rounded-full font-bold hover:bg-gray-200 transition-colors">Nous contacter</a>
+                    </div>
+                </div>
+                
+                <!-- Garantie -->
+                <div class="mt-16 text-center">
+                    <div class="inline-flex items-center bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                        <svg class="w-8 h-8 text-green-500 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                        <p class="text-brown-dark font-semibold">Garantie satisfait ou remboursé 30 jours. Sans conditions.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="testimonials" class="section-padding bg-white">
+        <!-- ===== Section Témoignages ===== -->
+        <section id="temoignages" class="py-20 md:py-28">
             <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold font-serif">Ils nous font confiance</h2>
-                    <p class="mt-4 text-gray-600">Découvrez comment nous avons aidé des restaurants comme le vôtre.</p>
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="font-serif text-4xl md:text-5xl font-bold text-brown-dark">Les résultats parlent d'eux-mêmes</h2>
+                    <p class="mt-4 text-lg text-brown-dark/80">Découvrez comment nous avons aidé des restaurateurs passionnés à reprendre le contrôle de leur réputation.</p>
                 </div>
-                <div class="grid lg:grid-cols-3 gap-8">
-                    <div class="bg-gray-50 p-8 rounded-lg">
-                        <p class="text-gray-600 italic">"Depuis que nous utilisons Avis Pro Resto, notre note sur Google a grimpé de 4.2 à 4.8 en seulement trois mois. C'est incroyable !"</p>
-                        <div class="flex items-center mt-6">
-                            <img class="w-12 h-12 rounded-full object-cover mr-4" src="https://placehold.co/100x100/BF5B3F/FFFFFF?text=L.D" alt="Avatar de client">
+
+                <div class="mt-16 grid lg:grid-cols-3 gap-8">
+                    <!-- Témoignage 1 -->
+                    <div class="bg-surface p-8 rounded-xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <img class="w-14 h-14 rounded-full object-cover mr-4" src="https://placehold.co/100x100/D69E2E/FFFFFF?text=LD" alt="Avatar de Léa Dubois">
                             <div>
-                                <p class="font-bold">Léa Dubois</p>
-                                <p class="text-sm text-gray-500">Gérante, Le Bistrot Gourmand</p>
+                                <p class="font-bold text-lg text-brown-dark">Léa Dubois</p>
+                                <p class="text-sm text-brown-dark/70">Gérante, Le Bistrot Gourmand</p>
                             </div>
+                        </div>
+                        <p class="text-brown-dark/90 italic">"Notre note sur Google a grimpé de 4.2 à 4.8 en seulement trois mois. Le téléphone n'arrête plus de sonner. C'est tout simplement incroyable."</p>
+                        <div class="mt-6 pt-4 border-t border-cream">
+                            <p class="text-3xl font-bold brand-accent">+0.6 points</p>
+                            <p class="text-sm font-semibold text-brown-dark/70">sur Google</p>
                         </div>
                     </div>
-                    <div class="bg-gray-50 p-8 rounded-lg">
-                        <p class="text-gray-600 italic">"La gestion des retours négatifs en privé a changé la donne. Nous pouvons résoudre les problèmes avant qu'ils ne deviennent publics. Un outil indispensable."</p>
-                        <div class="flex items-center mt-6">
-                            <img class="w-12 h-12 rounded-full object-cover mr-4" src="https://placehold.co/100x100/A64B35/FFFFFF?text=M.R" alt="Avatar de client">
+                    <!-- Témoignage 2 -->
+                    <div class="bg-surface p-8 rounded-xl shadow-lg">
+                         <div class="flex items-center mb-4">
+                            <img class="w-14 h-14 rounded-full object-cover mr-4" src="https://placehold.co/100x100/2D3748/FFFFFF?text=MR" alt="Avatar de Marco Rossi">
                             <div>
-                                <p class="font-bold">Marco Rossi</p>
-                                <p class="text-sm text-gray-500">Chef, La Trattoria Familiale</p>
+                                <p class="font-bold text-lg text-brown-dark">Marco Rossi</p>
+                                <p class="text-sm text-brown-dark/70">Chef, La Trattoria Familiale</p>
                             </div>
+                        </div>
+                        <p class="text-brown-dark/90 italic">"La gestion des retours négatifs en privé a changé la donne. Nous pouvons résoudre les problèmes avant qu'ils ne deviennent publics. Un outil indispensable."</p>
+                        <div class="mt-6 pt-4 border-t border-cream">
+                            <p class="text-3xl font-bold brand-accent">-75%</p>
+                            <p class="text-sm font-semibold text-brown-dark/70">d'avis négatifs publics</p>
                         </div>
                     </div>
-                    <div class="bg-gray-50 p-8 rounded-lg">
-                        <p class="text-gray-600 italic">"Simple à mettre en place et terriblement efficace. Le tableau de bord me donne une vision claire des performances de mon équipe."</p>
-                        <div class="flex items-center mt-6">
-                            <img class="w-12 h-12 rounded-full object-cover mr-4" src="https://placehold.co/100x100/E7A977/FFFFFF?text=S.C" alt="Avatar de client">
-                            <div>
-                                <p class="font-bold">Sophie Chen</p>
-                                <p class="text-sm text-gray-500">Propriétaire, Le Dragon d'Or</p>
+                    <!-- Témoignage Vidéo Placeholder -->
+                    <div class="p-8 rounded-xl shadow-lg text-white flex flex-col justify-center items-center text-center" style="background-color: #2D3748;">
+                        <a href="#" class="block hover:scale-110 transition-transform">
+                            <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mb-4">
+                                <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                             </div>
-                        </div>
+                        </a>
+                        <h3 class="font-serif text-2xl font-bold">"Le meilleur investissement de l'année"</h3>
+                        <p class="mt-2 opacity-80">Découvrez l'histoire de Sophie, propriétaire du Dragon d'Or.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="contact" class="section-padding">
+        <!-- ===== Section CTA Final ===== -->
+        <section id="contact" class="py-20 md:py-28 bg-surface">
             <div class="container mx-auto px-6">
-                <div class="bg-white rounded-lg shadow-xl p-8 md:p-12 lg:flex lg:items-center lg:justify-between">
-                    <div class="lg:w-1/2">
-                        <h2 class="text-3xl md:text-4xl font-bold font-serif">Une question ? Un projet ?</h2>
-                        <p class="mt-4 text-gray-600">Remplissez le formulaire ou contactez-nous directement. Nous sommes là pour vous aider à réussir.</p>
+                <div class="bg-cream rounded-2xl p-10 md:p-16 text-center">
+                    <h2 class="font-serif text-4xl md:text-5xl font-bold text-brown-dark">Prêt à devenir la référence de votre ville ?</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-brown-dark/80">Ne laissez plus votre réputation au hasard. Prenez les devants et transformez chaque client en une opportunité de croissance.</p>
+                    <div class="mt-10">
+                        <a href="#tarifs" class="bg-brand-accent text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-brand-accent-dark transition-all duration-300 transform hover:scale-105 shadow-lg">
+                            Démarrer mon essai de 15 jours
+                        </a>
+                        <p class="mt-4 text-sm text-brown-dark/60">Gratuit. Sans engagement. Que des bénéfices.</p>
                     </div>
-                    <div class="mt-8 lg:mt-0 lg:w-1/2">
-                        <form action="#" method="POST">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="name" class="block text-sm font-medium text-gray-700">Nom</label>
-                                    <input type="text" name="name" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-color focus:ring-brand-color">
-                                </div>
-                                <div>
-                                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                                    <input type="email" name="email" id="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-color focus:ring-brand-color">
-                                </div>
-                            </div>
-                            <div class="mt-6">
-                                <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
-                                <textarea name="message" id="message" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-color focus:ring-brand-color"></textarea>
-                            </div>
-                            <div class="mt-6 text-right">
-                                <button type="submit" class="bg-brand-color text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors">Envoyer le message</button>
-                            </div>
-                        </form>
+                    <div class="mt-12">
+                        <p class="text-brown-dark/80">Vous gérez plusieurs établissements ou avez des questions ?</p>
+                        <a href="#" class="font-bold brand-accent hover:underline">Planifiez une démo personnalisée de 15 min</a>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="bg-gray-800 text-white">
-        <div class="container mx-auto px-6 py-8">
-            <div class="md:flex md:justify-between">
+    <!-- ===== Footer ===== -->
+    <footer class="text-cream" style="background-color: #2D3748;">
+        <div class="container mx-auto px-6 py-12">
+            <div class="md:flex md:justify-between items-center">
                 <div class="mb-6 md:mb-0">
-                    <a href="#" class="text-2xl font-bold font-serif">Avis Pro Resto</a>
-                    <p class="mt-2 text-gray-400">Votre partenaire e-réputation.</p>
+                    <a href="#" class="text-2xl font-serif font-bold">Avis Pro Resto</a>
+                    <p class="mt-2 opacity-70">Votre partenaire e-réputation.</p>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    <div>
-                        <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider">Navigation</h2>
-                        <ul class="text-gray-400 space-y-2">
-                            <li><a href="#features" class="hover:text-white">Fonctionnalités</a></li>
-                            <li><a href="#pricing" class="hover:text-white">Tarifs</a></li>
-                            <li><a href="#testimonials" class="hover:text-white">Témoignages</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider">Légal</h2>
-                        <ul class="text-gray-400 space-y-2">
-                            <li><a href="#" class="hover:text-white">Mentions Légales</a></li>
-                            <li><a href="#" class="hover:text-white">Politique de confidentialité</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider">Contact</h2>
-                        <ul class="text-gray-400 space-y-2">
-                            <li><a href="#contact" class="hover:text-white">Nous contacter</a></li>
-                            <li><a href="#" class="hover:text-white">Support</a></li>
-                        </ul>
-                    </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="opacity-70 hover:opacity-100 transition-opacity">Mentions Légales</a>
+                    <a href="#" class="opacity-70 hover:opacity-100 transition-opacity">Confidentialité</a>
+                    <a href="#contact" class="opacity-70 hover:opacity-100 transition-opacity">Contact</a>
                 </div>
             </div>
-            <div class="mt-8 border-t border-gray-700 pt-6 text-center text-gray-500">
+            <div class="mt-8 border-t border-cream/20 pt-6 text-center opacity-50">
                 <p>&copy; <span id="copyright-year"></span> Avis Pro Resto. Tous droits réservés.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Mobile menu toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
         // Set current year in footer
         document.getElementById('copyright-year').textContent = new Date().getFullYear();
+        
+        // --- Code pour les animations au scroll ---
+        const animatedElements = document.querySelectorAll('.fade-in-up');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        animatedElements.forEach(el => {
+            observer.observe(el);
+        });
     </script>
 
 </body>
 </html>
-}
