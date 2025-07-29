@@ -9,811 +9,507 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-primary': '#1A202C',
+                        'brand-secondary': '#2D3748',
+                        'brand-accent': '#34D399',
+                        'brand-accent-dark': '#2AA77E',
+                        'brand-surface': '#F7FAFC',
+                        'brand-text-light': '#E2E8F0',
+                        'brand-text-dark': '#A0AEC0',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Manrope', 'sans-serif'],
+                    },
+                    animation: { 'fade-in': 'fadeIn 0.5s ease-out forwards' },
+                    keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
+                }
+            }
+        }
+    </script>
     <style>
         :root {
-            --brand-color: #BF5B3F;
-            --background-color: #F8F9FA;
-            --surface-color: #FFFFFF;
-            --text-primary: #212529;
-            --text-secondary: #6C757D;
-            --border-color: #DEE2E6;
+            --bg-primary: #1A202C;
+            --bg-secondary: #2D3748;
+            --bg-glass: rgba(45, 55, 72, 0.7);
+            --accent: #34D399;
+            --text-light: #E2E8F0;
+            --text-dark: #A0AEC0;
+            --border-color: rgba(255, 255, 255, 0.1);
         }
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--background-color); }
-        .font-serif { font-family: 'Cormorant Garamond', serif; }
-        .brand-color { color: var(--brand-color); }
-        .bg-brand-color { background-color: var(--brand-color); }
-        .bg-brand-color-light { background-color: rgba(191, 91, 63, 0.1); }
-        .border-brand-color { border-color: var(--brand-color); }
-        .hover\:bg-brand-color-dark:hover { background-color: #A64B35; }
-        .ring-brand-color { --tw-ring-color: var(--brand-color); }
-        .nav-item.active { background-color: var(--brand-color-light); color: var(--brand-color); font-weight: 600; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-primary); color: var(--text-light); -webkit-font-smoothing: antialiased; }
+        .font-display { font-family: 'Manrope', sans-serif; }
+        .glassmorphism { background: var(--bg-glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #4A5568; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #718096; }
+
+        /* Navigation */
+        .nav-item { border-left: 3px solid transparent; }
+        .nav-item.active { color: white; font-weight: 600; background-color: var(--accent_transp); border-left-color: var(--accent); }
+        .nav-item.active svg { color: var(--accent); }
+        
         .content-section { display: none; }
-        .content-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-        button:disabled { opacity: 0.7; cursor: not-allowed; }
-        .form-input, .form-select {
-            margin-top: 0.25rem; display: block; width: 100%;
-            border-radius: 0.5rem; border: 1px solid var(--border-color);
-            padding: 0.75rem 1rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        .content-section.active { display: block; animation: fadeIn 0.5s ease-out; }
+        
+        /* Bento Grid */
+        .bento-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(4, 1fr); }
+        .bento-item { background-color: var(--bg-secondary); border-radius: 1.5rem; padding: 1.5rem; border: 1px solid var(--border-color); transition: transform 0.2s ease-out; }
+        .bento-item:hover { transform: translateY(-4px); }
+        .col-span-2 { grid-column: span 2 / span 2; }
+        .row-span-2 { grid-row: span 2 / span 2; }
+        @media (max-width: 1024px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 767px) { .bento-grid { grid-template-columns: 1fr; } }
+        
+        /* Form elements */
+        .form-input {
+            background-color: #2D3748; border: 1px solid #4A5568; color: var(--text-light);
+            border-radius: 0.5rem; padding: 0.75rem 1rem; width: 100%;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .form-input:focus, .form-select:focus {
-            outline: none; border-color: var(--brand-color);
-            box-shadow: 0 0 0 3px rgba(191, 91, 63, 0.2);
-        }
-        .card {
-            background-color: var(--surface-color); padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05), 0 2px 4px -1px rgba(0,0,0,.03);
-            border: 1px solid var(--border-color);
-        }
-        @media (min-width: 768px) {
-            .card { padding: 2rem; }
-        }
-        .item-list-entry {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0.75rem; background-color: #f9fafb; border-radius: 0.5rem;
-            border: 1px solid var(--border-color);
-        }
-        /* Modal Styles */
-        .modal-backdrop {
-            background-color: rgba(0,0,0,0.5);
-            transition: opacity 0.3s ease-in-out;
-        }
-        .modal-content {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        }
-        /* Accordion Styles */
-        .accordion-header {
-            cursor: pointer;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-            padding: 0 1rem;
-        }
-        .accordion-content.open {
-            padding: 1rem;
-            max-height: 1000px; /* Adjust as needed */
-        }
-        .accordion-icon {
-            transition: transform 0.3s ease-out;
-        }
-        .accordion-header.open .accordion-icon {
-            transform: rotate(90deg);
-        }
+        .form-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.3); }
+
+        /* Modal */
+        .modal-content { animation: fadeIn 0.3s ease-out; }
     </style>
 </head>
 <body class="antialiased">
 
-    <div id="auth-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
-        <div class="w-full max-w-md">
-            <div class="bg-white p-8 rounded-lg shadow-lg text-center">
-                <h1 class="text-3xl font-bold font-serif brand-color mb-6">ReviewGenius</h1>
+    <!-- Auth Overlay -->
+    <div id="auth-overlay" class="fixed inset-0 bg-brand-primary z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-sm text-white">
+            <h1 class="font-display text-4xl font-bold text-center mb-8">Review<span class="text-brand-accent">Genius</span></h1>
+            <div class="bg-brand-secondary p-8 rounded-2xl border border-gray-700">
+                <!-- Login / Register Forms will be toggled by JS -->
                 <form id="login-form">
-                    <h2 class="text-xl font-semibold mb-4">Connexion</h2>
+                    <h2 class="text-xl font-bold mb-4 text-center">Connexion</h2>
                     <input type="email" id="login-email" placeholder="Email" class="form-input mb-3" required>
                     <input type="password" id="login-password" placeholder="Mot de passe" class="form-input mb-4" required>
-                    <button type="submit" id="login-button" class="w-full bg-brand-color text-white py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors">Se connecter</button>
-                    <p id="login-error" class="text-red-500 text-sm mt-2 h-4"></p>
+                    <button type="submit" id="login-button" class="w-full bg-brand-accent text-brand-primary py-3 rounded-lg font-bold hover:bg-brand-accent-dark transition-colors">Se connecter</button>
+                    <p id="login-error" class="text-red-400 text-sm mt-2 h-4 text-center"></p>
+                    <p class="text-center text-sm text-brand-text-dark mt-4">Pas de compte ? <button type="button" id="show-register" class="font-semibold text-brand-accent hover:underline">S'inscrire</button></p>
                 </form>
-                <p class="text-gray-500 my-4">ou</p>
-                <form id="register-form">
-                    <h2 class="text-xl font-semibold mb-4">Créer un compte</h2>
-                    <input type="text" id="register-resto-name" placeholder="Nom de votre restaurant" class="form-input mb-3" required>
+                <form id="register-form" class="hidden">
+                    <h2 class="text-xl font-bold mb-4 text-center">Créer un compte</h2>
+                    <input type="text" id="register-resto-name" placeholder="Nom du restaurant" class="form-input mb-3" required>
                     <input type="email" id="register-email" placeholder="Email" class="form-input mb-3" required>
                     <input type="password" id="register-password" placeholder="Mot de passe" class="form-input mb-4" required>
-                    <button type="submit" id="register-button" class="w-full bg-gray-700 text-white py-3 rounded-full font-semibold hover:bg-gray-800 transition-colors">S'inscrire</button>
-                    <p id="register-error" class="text-red-500 text-sm mt-2 h-4"></p>
+                    <button type="submit" id="register-button" class="w-full bg-gray-600 text-white py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors">S'inscrire</button>
+                    <p id="register-error" class="text-red-400 text-sm mt-2 h-4 text-center"></p>
+                    <p class="text-center text-sm text-brand-text-dark mt-4">Déjà un compte ? <button type="button" id="show-login" class="font-semibold text-brand-accent hover:underline">Se connecter</button></p>
                 </form>
             </div>
         </div>
     </div>
 
+    <!-- Main App -->
     <div id="main-app" class="hidden">
         <div class="relative min-h-screen md:flex">
-            <div id="sidebar-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 md:hidden"></div>
-            <aside id="sidebar" class="fixed inset-y-0 left-0 bg-white border-r border-gray-200 w-64 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40 flex flex-col">
-                <div class="h-20 flex items-center justify-between px-4 border-b shrink-0">
-                    <a href="#dashboard" id="sidebar-logo-link" class="flex items-center justify-center h-full">
-                        <!-- Le logo sera injecté ici par JS -->
+            <!-- Sidebar -->
+            <aside id="sidebar" class="fixed inset-y-0 left-0 bg-brand-secondary border-r border-gray-700 w-64 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40 flex flex-col">
+                <div class="h-20 flex items-center justify-center px-4 border-b border-gray-700 shrink-0">
+                    <a href="#dashboard" id="sidebar-logo-link" class="flex items-center justify-center h-full font-display text-2xl font-bold">
+                        Review<span class="text-brand-accent">Genius</span>
                     </a>
-                    <button id="sidebar-close-btn" class="md:hidden">
-                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
                 </div>
-                <nav id="sidebar-nav" class="mt-6 flex-1 overflow-y-auto">
-                    <a href="#dashboard" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Tableau de bord</span></a>
-                    <a href="#page-settings" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Page</span></a>
-                    <a href="#options-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg><span>Options</span></a>
-                    <a href="#team-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg><span>Équipes</span></a>
-                    <a href="#menu-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg><span>Menu</span></a>
+                <nav id="sidebar-nav" class="mt-6 flex-1 overflow-y-auto px-4 space-y-2">
+                    <!-- Nav items will be injected by JS -->
                 </nav>
-                <div class="p-4 border-t shrink-0">
-                    <button id="logout-btn" class="w-full text-left flex items-center px-2 py-2 text-gray-600 hover:bg-red-50 hover:text-red-700 rounded-md"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg><span>Déconnexion</span></button>
+                <div class="p-4 border-t border-gray-700 shrink-0">
+                    <button id="logout-btn" class="w-full text-left flex items-center px-4 py-2 text-brand-text-dark hover:bg-red-500/20 hover:text-white rounded-lg transition-colors">
+                        <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                        <span>Déconnexion</span>
+                    </button>
                 </div>
             </aside>
 
+            <!-- Main Content -->
             <div class="md:ml-64 flex flex-col flex-1">
-                <header class="md:hidden sticky top-0 bg-white shadow-md z-20">
+                <header class="md:hidden sticky top-0 glassmorphism z-20 border-b border-gray-700">
                     <div class="flex justify-between items-center p-4">
                         <button id="sidebar-open-btn">
                             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
                         </button>
-                        <a href="#dashboard" id="mobile-logo-link" class="flex items-center justify-center h-full">
-                           <!-- Le logo mobile sera injecté ici -->
-                        </a>
+                        <a href="#dashboard" id="mobile-logo-link" class="font-display text-xl font-bold">Review<span class="text-brand-accent">Genius</span></a>
                         <div class="w-6"></div>
                     </div>
                 </header>
 
-                <main class="flex-1">
-                    <div id="content-area" class="p-4 md:p-8">
-                        <section id="dashboard" class="content-section fade-in"></section>
-                        <section id="page-settings" class="content-section"></section>
-                        <section id="options-management" class="content-section"></section>
-                        <section id="team-management" class="content-section"></section>
-                        <section id="menu-management" class="content-section"></section>
+                <main class="flex-1 p-4 md:p-8">
+                    <div id="content-area">
+                        <!-- Content sections will be injected here -->
                     </div>
                 </main>
             </div>
         </div>
     </div>
     
-    <!-- Modals pour l'édition -->
-    <div id="edit-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40 modal-backdrop"></div>
-    <div id="edit-modal-container" class="fixed inset-0 hidden z-50 flex items-center justify-center p-4">
-        <!-- Le contenu du modal sera injecté ici par JS -->
+    <!-- Modal Container -->
+    <div id="modal-container" class="fixed inset-0 hidden z-50 flex items-center justify-center p-4 bg-black/60">
+        <!-- Modal content injected here -->
     </div>
 
-
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    <script type="module">
+        // --- CONFIGURATION ---
         const API_BASE_URL = 'https://repup-test.onrender.com';
+        const NAV_ITEMS = [
+            { id: 'dashboard', label: 'Tableau de bord', icon: `<svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>` },
+            { id: 'page-settings', label: 'Partage & QR Code', icon: `<svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v2h-2V3h2zm4 0v2h-2V3h2zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm14-2h-2v2h2v-2zm-4-4h-2v2h2v-2zm-4 0h-2v2h2v-2zm-4 0H7v2h2v-2zm10 8h2v-2h-2v2zm-6-4h2v-2h-2v2zm-4 4h2v-2H7v2z"/></svg>` },
+            { id: 'management', label: 'Gestion', icon: `<svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>` },
+        ];
 
-        const authOverlay = document.getElementById('auth-overlay');
-        const mainApp = document.getElementById('main-app');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const logoutBtn = document.getElementById('logout-btn');
-        const contentArea = document.getElementById('content-area');
+        // --- DOM ELEMENTS ---
+        const $ = (selector) => document.querySelector(selector);
+        const $$ = (selector) => document.querySelectorAll(selector);
+        const authOverlay = $('#auth-overlay'), mainApp = $('#main-app');
+        const contentArea = $('#content-area'), sidebarNav = $('#sidebar-nav');
+        const modalContainer = $('#modal-container');
 
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOpenBtn = document.getElementById('sidebar-open-btn');
-        const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
-        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
-        const sidebarNav = document.getElementById('sidebar-nav');
-        const sidebarLogoLink = document.getElementById('sidebar-logo-link');
-        const mobileLogoLink = document.getElementById('mobile-logo-link');
-        
-        const modalBackdrop = document.getElementById('edit-modal-backdrop');
-        const modalContainer = document.getElementById('edit-modal-container');
+        // --- STATE MANAGEMENT ---
+        const state = {
+            token: null,
+            restaurant: null,
+            servers: [],
+            menu: {},
+            tags: {},
+            currentTab: 'dashboard',
+        };
 
-        function openSidebar() {
-            if (sidebar) sidebar.classList.remove('-translate-x-full');
-            if (sidebarBackdrop) sidebarBackdrop.classList.remove('hidden');
-        }
+        // --- API HELPERS ---
+        const Api = {
+            async fetch(url, options = {}) {
+                const headers = { 'Content-Type': 'application/json', ...options.headers };
+                if (state.token) headers['Authorization'] = `Bearer ${state.token}`;
+                
+                const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+                
+                if (response.status === 401 || response.status === 422) {
+                    Auth.logout();
+                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                }
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: `Erreur serveur (${response.status})` }));
+                    throw new Error(errorData.error || errorData.message);
+                }
+                return response.status === 204 ? null : response.json();
+            },
+            async fetchWithFormData(url, method, formData) {
+                 const headers = { 'Authorization': `Bearer ${state.token}` };
+                 const response = await fetch(`${API_BASE_URL}${url}`, { method, body: formData, headers });
+                 if (!response.ok) throw new Error('Erreur lors de l\'envoi des données.');
+                 return response.json();
+            },
+            get: (url) => Api.fetch(url),
+            post: (url, data) => Api.fetch(url, { method: 'POST', body: JSON.stringify(data) }),
+            put: (url, data) => Api.fetch(url, { method: 'PUT', body: JSON.stringify(data) }),
+            del: (url) => Api.fetch(url, { method: 'DELETE' }),
+        };
 
-        function closeSidebar() {
-            if (sidebar) sidebar.classList.add('-translate-x-full');
-            if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
-        }
-        
-        function openModal(content) {
-            modalContainer.innerHTML = content;
-            modalContainer.classList.remove('hidden');
-            modalBackdrop.classList.remove('hidden');
-        }
+        // --- UI RENDERING ---
+        const UI = {
+            renderNav() {
+                sidebarNav.innerHTML = NAV_ITEMS.map(item => `
+                    <a href="#${item.id}" class="nav-item flex items-center px-4 py-3 text-brand-text-dark hover:bg-white/5 rounded-lg transition-colors">
+                        ${item.icon}<span>${item.label}</span>
+                    </a>`).join('');
+            },
+            renderContentSections() {
+                contentArea.innerHTML = NAV_ITEMS.map(item => `<section id="${item.id}" class="content-section"></section>`).join('');
+            },
+            switchTab(tabId) {
+                state.currentTab = tabId;
+                window.location.hash = tabId;
+                $$('.nav-item').forEach(item => item.classList.toggle('active', item.getAttribute('href') === `#${tabId}`));
+                $$('.content-section').forEach(section => section.classList.toggle('active', section.id === tabId));
+                if(window.innerWidth < 768) $('#sidebar').classList.add('-translate-x-full');
+            },
+            openModal(content) {
+                modalContainer.innerHTML = `<div class="modal-content bg-brand-secondary p-8 rounded-2xl w-full max-w-md border border-gray-700">${content}</div>`;
+                modalContainer.classList.remove('hidden');
+            },
+            closeModal() {
+                modalContainer.classList.add('hidden');
+                modalContainer.innerHTML = '';
+            },
+        };
 
-        function closeModal() {
-            modalContainer.classList.add('hidden');
-            modalBackdrop.classList.add('hidden');
-            modalContainer.innerHTML = '';
-        }
-
-        sidebarOpenBtn.addEventListener('click', openSidebar);
-        sidebarCloseBtn.addEventListener('click', closeSidebar);
-        sidebarBackdrop.addEventListener('click', closeSidebar);
-        modalBackdrop.addEventListener('click', closeModal);
-        
-        async function loadAppData() {
-            try {
-                authOverlay.classList.add('hidden');
-                mainApp.classList.remove('hidden');
-                await Promise.all([
-                    renderDashboard(),
-                    renderPageSettings(),
-                    renderOptionsManagement(),
-                    renderTeamManagement(),
-                    renderMenuManagement()
-                ]);
-                switchTab(window.location.hash || '#dashboard');
-            } catch (error) {
-                console.error("Erreur lors du chargement des données de l'application:", error);
-                logout();
-            }
-        }
-
-        if (localStorage.getItem('jwt_token')) {
-            loadAppData();
-        }
-
-        async function fetchPublic(url, options = {}) {
-            const headers = { 'Content-Type': 'application/json', ...options.headers };
-            const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
-            if (!response.ok) {
-                let errorMsg = `Erreur du serveur (code: ${response.status})`;
-                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) { console.error("Could not parse error response as JSON.", e); }
-                throw new Error(errorMsg);
-            }
-            return response.json();
-        }
-
-        async function fetchWithAuth(url, options = {}) {
-            const token = localStorage.getItem('jwt_token');
-            if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
-            const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...options.headers };
-            const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
-            if (response.status === 401 || response.status === 422) {
-                logout();
-                const errorText = response.status === 401 ? 'Token invalide ou expiré.' : 'Requête invalide.';
-                throw new Error(`Session expirée. ${errorText} Veuillez vous reconnecter.`);
-            }
-            if (!response.ok) {
-                let errorMsg = `Erreur du serveur (code: ${response.status})`;
-                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) {}
-                throw new Error(errorMsg);
-            }
-            if (response.status === 204) { return null; }
-            return response.json();
-        }
-        
-        async function putWithAuthFormData(url, formData) {
-            const token = localStorage.getItem('jwt_token');
-            if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
-            const headers = { 'Authorization': `Bearer ${token}` };
-            const response = await fetch(`${API_BASE_URL}${url}`, { method: 'PUT', body: formData, headers });
-            if (response.status === 401 || response.status === 422) {
-                logout();
-                const errorText = response.status === 401 ? 'Token invalide ou expiré.' : 'Requête invalide.';
-                throw new Error(`Session expirée. ${errorText} Veuillez vous reconnecter.`);
-            }
-            if (!response.ok) {
-                let errorMsg = `Erreur du serveur (code: ${response.status})`;
-                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) {}
-                throw new Error(errorMsg);
-            }
-            return response.json();
-        }
-        
-        async function postWithAuthFormData(url, formData) {
-            const token = localStorage.getItem('jwt_token');
-            if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
-            const headers = { 'Authorization': `Bearer ${token}` };
-            const response = await fetch(`${API_BASE_URL}${url}`, { method: 'POST', body: formData, headers });
-            if (response.status === 401 || response.status === 422) {
-                logout();
-                const errorText = response.status === 401 ? 'Token invalide ou expiré.' : 'Requête invalide.';
-                throw new Error(`Session expirée. ${errorText} Veuillez vous reconnecter.`);
-            }
-            if (!response.ok) {
-                let errorMsg = `Erreur du serveur (code: ${response.status})`;
-                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) {}
-                throw new Error(errorMsg);
-            }
-            return response.json();
-        }
-
-        function logout() {
-            localStorage.removeItem('jwt_token');
-            mainApp.classList.add('hidden');
-            authOverlay.classList.remove('hidden');
-            contentArea.innerHTML = `<section id="dashboard" class="content-section fade-in"></section><section id="page-settings" class="content-section"></section><section id="team-management" class="content-section"></section><section id="menu-management" class="content-section"></section><section id="options-management" class="content-section"></section>`;
-        }
-
-        logoutBtn.addEventListener('click', logout);
-
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const button = document.getElementById('login-button');
-            const errorP = document.getElementById('login-error');
-            errorP.textContent = '';
-            button.disabled = true; button.textContent = 'Connexion...';
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            try {
-                const data = await fetchPublic('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
-                if (data && data.access_token) {
-                    localStorage.setItem('jwt_token', data.access_token);
-                    await loadAppData();
-                } else { throw new Error('Réponse de connexion invalide.'); }
-            } catch (error) {
-                errorP.textContent = error.message;
-            } finally {
-                button.disabled = false; button.textContent = 'Se connecter';
-            }
-        });
-
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const button = document.getElementById('register-button');
-            const errorP = document.getElementById('register-error');
-            errorP.textContent = '';
-            button.disabled = true; button.textContent = 'Inscription...';
-            const restaurant_name = document.getElementById('register-resto-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            try {
-                const data = await fetchPublic('/api/register', { method: 'POST', body: JSON.stringify({ restaurant_name, email, password }) });
+        // --- AUTHENTICATION ---
+        const Auth = {
+            init() {
+                state.token = localStorage.getItem('jwt_token');
+                if (state.token) {
+                    authOverlay.classList.add('hidden');
+                    mainApp.classList.remove('hidden');
+                    App.loadData();
+                } else {
+                    authOverlay.classList.remove('hidden');
+                    mainApp.classList.add('hidden');
+                }
+            },
+            async login(email, password) {
+                const data = await Api.post('/api/login', { email, password });
+                localStorage.setItem('jwt_token', data.access_token);
+                this.init();
+            },
+            async register(restaurant_name, email, password) {
+                const data = await Api.post('/api/register', { restaurant_name, email, password });
                 alert(data.message + " Vous pouvez maintenant vous connecter.");
-                loginForm.reset(); registerForm.reset();
-            } catch (error) {
-                errorP.textContent = error.message;
-            } finally {
-                button.disabled = false; button.textContent = "S'inscrire";
+                $('#login-form').reset(); $('#register-form').reset();
+                $('#register-form').classList.add('hidden');
+                $('#login-form').classList.remove('hidden');
+            },
+            logout() {
+                localStorage.removeItem('jwt_token');
+                state.token = null;
+                this.init();
             }
-        });
+        };
 
-        function switchTab(hash) {
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.toggle('active', item.getAttribute('href') === hash));
-            document.querySelectorAll('.content-section').forEach(section => section.classList.toggle('active', `#${section.id}` === hash));
-        }
-
-        sidebarNav.addEventListener('click', (e) => {
-            const navLink = e.target.closest('a');
-            if (navLink) { 
-                e.preventDefault(); 
-                const targetId = navLink.getAttribute('href'); 
-                window.location.hash = targetId; 
-                switchTab(targetId);
-                if(window.innerWidth < 768) {
-                    closeSidebar();
-                }
-            }
-        });
-        
-        function updateLogo(logoUrl) {
-            let logoContent;
-            if (logoUrl) {
-                logoContent = `<img src="${API_BASE_URL}${logoUrl}" alt="Logo" class="h-10 object-contain">`;
-            } else {
-                logoContent = `<h1 class="text-2xl font-bold font-serif brand-color">ReviewGenius</h1>`;
-            }
-            sidebarLogoLink.innerHTML = logoContent;
-            mobileLogoLink.innerHTML = logoContent;
-        }
-
-        async function renderDashboard() {
-            const section = document.getElementById('dashboard');
-            if (!section) return;
-            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Tableau de bord</h1><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8"><div class="card"><h3 class="text-sm font-semibold text-gray-500">Avis (30j)</h3><p class="text-3xl font-bold mt-1">128</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Note moyenne</h3><p class="text-3xl font-bold mt-1">4.8 <span class="text-yellow-400">★</span></p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Serveur du mois</h3><p class="text-3xl font-bold mt-1">Clara</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Feedbacks privés</h3><p class="text-3xl font-bold mt-1">3</p></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Tendance des avis</h2><div class="h-80"><canvas id="reviewsTrendChart"></canvas></div></div>`;
-            const ctx = document.getElementById('reviewsTrendChart').getContext('2d');
-            new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--brand-color)', backgroundColor: 'var(--brand-color-light)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
-        }
-
-        async function renderPageSettings() {
-            const section = document.getElementById('page-settings');
-            if (!section) return;
-            section.innerHTML = `<div class="text-center p-10">Chargement...</div>`;
-            try {
-                const settings = await fetchWithAuth('/api/restaurant');
-                updateLogo(settings.logoUrl);
-                const availableLangs = { 
-                    'fr': 'Français', 'en': 'English', 'es': 'Español', 
-                    'it': 'Italiano', 'pt': 'Português', 'zh': '简体中文' 
-                };
-                const enabledLanguages = Array.isArray(settings.enabledLanguages) ? settings.enabledLanguages : [];
-                const logoSrc = settings.logoUrl ? `${API_BASE_URL}${settings.logoUrl}` : 'https://placehold.co/100x100/DEE2E6/6C757D?text=Logo';
-                
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Page</h1><form id="page-settings-form"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-8"><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Informations Générales</h2><div class="space-y-6"><div><label for="restaurant-name" class="block text-sm font-medium text-gray-700">Nom du Restaurant</label><input type="text" id="restaurant-name" value="${settings.name || ''}" class="form-input"></div><div class="flex items-center gap-6"><img id="logo-preview" src="${logoSrc}" alt="Aperçu du logo" class="w-24 h-24 rounded-lg object-contain bg-gray-100 p-1"><div class="flex-1"><label for="logo-file" class="block text-sm font-medium text-gray-700">Changer le logo</label><input type="file" id="logo-file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-color-light file:text-brand-color hover:file:bg-brand-color/20" accept="image/png, image/jpeg, image/gif"><p class="text-xs text-gray-500 mt-1">L'aperçu se met à jour automatiquement.</p></div></div><div><label for="primary-color" class="block text-sm font-medium text-gray-700">Couleur principale</label><input type="color" id="primary-color" value="${settings.primaryColor || '#BF5B3F'}" class="mt-1 h-10 w-20 rounded-md border-gray-300 p-1"></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Liens de Notation</h2><div class="space-y-4"><div><label for="google-link" class="block text-sm font-medium text-gray-700">Lien Google</label><textarea id="google-link" rows="3" class="form-input" placeholder="https://search.google.com/local/writereview?placeid=...">${settings.googleLink || ''}</textarea></div><div><label for="tripadvisor-link" class="block text-sm font-medium text-gray-700">Lien TripAdvisor</label><textarea id="tripadvisor-link" rows="3" class="form-input" placeholder="https://www.tripadvisor.com/UserReview-g...-d...">${settings.tripadvisorLink || ''}</textarea></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Langues</h2><p class="text-sm text-gray-600 mb-4">Sélectionnez les langues à proposer.</p><div id="languages-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">${Object.entries(availableLangs).map(([code, name]) => `<label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" name="languages" value="${code}" class="h-5 w-5 rounded border-gray-300 text-brand-color focus:ring-brand-color" ${enabledLanguages.includes(code) ? 'checked' : ''}><span class="text-gray-700">${name}</span></label>`).join('')}</div></div></div><div class="lg:col-span-1"><div class="card sticky top-8" id="qr-code-card"></div></div></div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-color text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors text-lg w-full md:w-auto">Enregistrer</button></div></form>`;
-                
-                const qrCard = document.getElementById('qr-code-card');
-                const slug = settings.slug;
-                if (!slug) { qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">Votre QR Code</h2><div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg text-center"><p class="font-bold">Erreur</p><p class="text-sm mt-1">Le "slug" du restaurant est manquant.</p></div>`; } 
-                else {
-                    qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">Votre QR Code</h2><p class="text-sm text-gray-600 mb-4">Vos clients scannent ce code pour laisser un avis.</p><div class="flex justify-center items-center bg-gray-50 p-4 rounded-lg"><div id="qrcode-container" class="p-2 bg-white rounded-md shadow-inner"></div></div><a id="download-qr-btn" href="#" class="mt-4 block w-full text-center bg-gray-800 text-white px-4 py-2 rounded-full font-semibold hover:bg-gray-900">Télécharger</a><div class="mt-4"><label class="text-sm font-medium text-gray-700">Votre lien direct :</label><input type="text" id="review-page-link" readonly class="form-input bg-gray-100 mt-1 cursor-pointer" title="Cliquez pour copier"></div>`;
-                    const reviewPageUrl = new URL('saas_review_collection_page.html', window.location.origin + window.location.pathname.replace('saas_admin_panel.html', ''));
-                    reviewPageUrl.searchParams.set('slug', slug);
-                    document.getElementById('review-page-link').value = reviewPageUrl.href;
-                    new QRCode(document.getElementById('qrcode-container'), { text: reviewPageUrl.href, width: 200, height: 200 });
-                    document.getElementById('download-qr-btn').addEventListener('click', (e) => { e.preventDefault(); const canvas = document.getElementById('qrcode-container').querySelector('canvas'); if (canvas) { const link = document.createElement('a'); link.download = `qrcode-${slug}.png`; link.href = canvas.toDataURL('image/png'); link.click(); } });
-                    document.getElementById('review-page-link').addEventListener('click', () => { const input = document.getElementById('review-page-link'); input.select(); document.execCommand('copy'); alert('Lien copié !'); });
-                }
-            } catch(error) {
-                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des paramètres.</div>`;
-            }
-        }
-
-        async function renderOptionsManagement() {
-            const section = document.getElementById('options-management');
-            if(!section) return;
-            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Options</h1><div class="text-center p-10">Chargement...</div>`;
-
-            try {
-                const tagsData = await fetchWithAuth('/api/tags');
-                const categories = { service: "Qualités du Service", occasion: "Occasions", atmosphere: "Atmosphère" };
-
-                let contentHtml = '<div class="space-y-8">';
-                for (const [key, title] of Object.entries(categories)) {
-                    const tags = tagsData[key] || [];
-                    contentHtml += `
-                        <div class="card">
-                            <h2 class="text-2xl font-bold font-serif mb-4">${title}</h2>
-                            <div id="tags-list-${key}" class="space-y-2 mb-4">
-                                ${tags.map(tag => `
-                                    <div class="item-list-entry" id="tag-item-${tag.id}">
-                                        <span>${tag.text}</span>
-                                        <div class="flex items-center gap-2">
-                                            <button class="edit-tag-btn text-gray-500 hover:text-blue-700" data-tag-id="${tag.id}" data-tag-text="${tag.text}">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
-                                            </button>
-                                            <button class="delete-tag-btn text-gray-500 hover:text-red-700" data-tag-id="${tag.id}">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                `).join('')}
+        // --- PAGE RENDERERS ---
+        const Pages = {
+            async dashboard() {
+                const section = $('#dashboard');
+                section.innerHTML = `
+                    <h1 class="font-display text-4xl font-bold mb-8">Tableau de bord</h1>
+                    <div class="bento-grid">
+                        <div class="bento-item col-span-2 row-span-2">
+                            <h3 class="font-bold text-xl mb-4">Tendance des avis</h3>
+                            <div class="h-80"><canvas id="reviewsTrendChart"></canvas></div>
+                        </div>
+                        <div class="bento-item">
+                             <h3 class="text-brand-text-dark font-semibold">Note moyenne</h3>
+                             <p class="text-4xl font-bold mt-2">4.8 <span class="text-yellow-400">★</span></p>
+                        </div>
+                        <div class="bento-item">
+                            <h3 class="text-brand-text-dark font-semibold">Avis (30j)</h3>
+                            <p class="text-4xl font-bold mt-2">128</p>
+                        </div>
+                        <div class="bento-item col-span-2">
+                            <h3 class="font-bold text-xl mb-4">Serveur du mois</h3>
+                            <div class="flex items-center gap-4">
+                                <img src="https://ui-avatars.com/api/?name=Clara&background=34D399&color=1A202C&bold=true" class="w-16 h-16 rounded-full"/>
+                                <div>
+                                    <p class="text-2xl font-bold">Clara</p>
+                                    <p class="text-brand-text-dark">"Service impeccable et souriant !"</p>
+                                </div>
                             </div>
-                            <form class="add-tag-form flex gap-2" data-category="${key}">
-                                <input type="text" placeholder="Ajouter une option..." class="form-input flex-grow" required>
-                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors">Ajouter</button>
+                        </div>
+                    </div>
+                `;
+                const ctx = $('#reviewsTrendChart').getContext('2d');
+                new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--accent)', backgroundColor: 'rgba(52, 211, 153, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } }, x: { grid: { color: 'rgba(255,255,255,0.1)' } } }, plugins: { legend: { labels: { color: 'white' } } } } });
+            },
+            async pageSettings() {
+                const section = $('#page-settings');
+                const slug = state.restaurant.slug;
+                const reviewPageUrl = new URL('saas_review_collection_page.html', window.location.origin + window.location.pathname.replace('saas_admin_panel.html', ''));
+                reviewPageUrl.searchParams.set('slug', slug);
+
+                section.innerHTML = `
+                    <h1 class="font-display text-4xl font-bold mb-8">Partage & QR Code</h1>
+                    <div class="bg-brand-secondary p-8 rounded-2xl border border-gray-700 grid md:grid-cols-2 gap-8 items-center">
+                        <div class="text-center">
+                            <h2 class="font-bold text-2xl mb-4">Votre QR Code Unique</h2>
+                            <div class="flex justify-center items-center bg-white p-4 rounded-lg mx-auto max-w-xs">
+                                <div id="qrcode-container"></div>
+                            </div>
+                            <button id="download-qr-btn" class="mt-4 w-full bg-brand-accent text-brand-primary py-2 rounded-lg font-bold">Télécharger (PNG)</button>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl mb-2">Lien direct</h3>
+                            <input type="text" id="review-page-link" readonly value="${reviewPageUrl.href}" class="form-input bg-brand-primary cursor-pointer" title="Cliquez pour copier">
+                            <h3 class="font-bold text-xl mb-2 mt-6">Kit Média</h3>
+                            <p class="text-brand-text-dark mb-4">Téléchargez des supports prêts à l'emploi (chevalets, autocollants) avec votre QR Code.</p>
+                            <button class="w-full bg-gray-600 text-white py-2 rounded-lg font-bold">Télécharger le Kit Média (PDF)</button>
+                        </div>
+                    </div>
+                `;
+                new QRCode($('#qrcode-container'), { text: reviewPageUrl.href, width: 256, height: 256, colorDark: "#1A202C", colorLight: "#ffffff" });
+            },
+            async management() {
+                const section = $('#management');
+                section.innerHTML = `
+                    <h1 class="font-display text-4xl font-bold mb-8">Gestion</h1>
+                    <div class="space-y-8">
+                        <!-- Servers -->
+                        <div class="bento-item !p-0">
+                            <h2 class="font-bold text-xl p-6">Membres de l'équipe</h2>
+                            <div id="servers-list" class="p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+                            <form id="add-server-form" class="p-6 border-t border-gray-700 flex gap-4 items-end">
+                                <input type="text" name="name" placeholder="Nom du membre" class="form-input flex-grow" required>
+                                <button type="submit" class="bg-brand-accent text-brand-primary h-12 px-6 rounded-lg font-bold">Ajouter</button>
                             </form>
                         </div>
-                    `;
-                }
-                contentHtml += '</div>';
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Options</h1>${contentHtml}`;
-            } catch (error) {
-                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des options.</div>`;
-            }
-        }
-
-        async function renderTeamManagement() {
-            const section = document.getElementById('team-management');
-            if(!section) return;
-            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Équipes</h1><div class="text-center p-10">Chargement...</div>`;
-
-            try {
-                const servers = await fetchWithAuth('/api/servers');
-                let contentHtml = `
-                    <div class="card mb-8">
-                        <h2 class="text-2xl font-bold font-serif mb-4">Ajouter un Membre</h2>
-                        <form id="add-server-form" class="space-y-4">
-                            <div>
-                                <label for="server-name" class="block text-sm font-medium text-gray-700">Nom du membre</label>
-                                <input type="text" id="server-name" class="form-input" required>
+                        <!-- Tags & Dishes -->
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="bento-item !p-0">
+                                <h2 class="font-bold text-xl p-6">Options (Tags)</h2>
+                                <div id="tags-list" class="p-6 space-y-2"></div>
+                                <form id="add-tag-form" class="p-6 border-t border-gray-700 flex gap-4">
+                                    <input type="text" name="text" placeholder="Nouveau tag" class="form-input flex-grow" required>
+                                    <select name="category" class="form-input">
+                                        <option value="service">Service</option>
+                                        <option value="occasion">Occasion</option>
+                                        <option value="atmosphere">Atmosphère</option>
+                                    </select>
+                                    <button type="submit" class="bg-brand-accent text-brand-primary h-12 px-6 rounded-lg font-bold">OK</button>
+                                </form>
                             </div>
-                            <div>
-                                <label for="server-avatar" class="block text-sm font-medium text-gray-700">Photo (optionnel)</label>
-                                <input type="file" id="server-avatar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" accept="image/png, image/jpeg">
+                            <div class="bento-item !p-0">
+                                <h2 class="font-bold text-xl p-6">Menu</h2>
+                                <div id="dishes-list" class="p-6 space-y-2"></div>
+                                <form id="add-dish-form" class="p-6 border-t border-gray-700 flex gap-4">
+                                     <input type="text" name="name" placeholder="Nom du plat" class="form-input flex-grow" required>
+                                     <input type="text" name="category" placeholder="Catégorie" class="form-input flex-grow" required>
+                                     <button type="submit" class="bg-brand-accent text-brand-primary h-12 px-6 rounded-lg font-bold">OK</button>
+                                </form>
                             </div>
-                            <div class="text-right">
-                                <button type="submit" class="bg-brand-color text-white px-6 py-2 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors">Ajouter</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="card">
-                        <h2 class="text-2xl font-bold font-serif mb-4">Membres Actuels</h2>
-                        <div id="servers-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            ${servers.map(server => `
-                                <div class="border rounded-lg p-4 text-center" id="server-item-${server.id}">
-                                    <img src="${server.avatar_url ? API_BASE_URL + server.avatar_url : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(server.name) + '&background=eeeeee&color=555555'}" alt="${server.name}" class="w-24 h-24 rounded-full mx-auto mb-2 object-cover bg-gray-200">
-                                    <p class="font-semibold">${server.name}</p>
-                                    <div class="flex justify-center gap-4 mt-2">
-                                        <button class="edit-server-btn text-sm text-blue-500 hover:underline" data-server-id="${server.id}" data-server-name="${server.name}">Modifier</button>
-                                        <button class="delete-server-btn text-sm text-red-500 hover:underline" data-server-id="${server.id}">Supprimer</button>
-                                    </div>
-                                </div>
-                            `).join('')}
-                            ${servers.length === 0 ? '<p class="text-gray-500 col-span-full">Aucun membre dans l\'équipe.</p>' : ''}
                         </div>
                     </div>
                 `;
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Équipes</h1>${contentHtml}`;
-            } catch (error) {
-                 section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement de l'équipe.</div>`;
+                this.renderManagementLists();
+            },
+            renderManagementLists() {
+                // Servers
+                $('#servers-list').innerHTML = state.servers.map(s => `
+                    <div class="text-center" id="server-${s.id}">
+                        <img src="${s.avatar_url ? API_BASE_URL+s.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=34D399&color=1A202C&bold=true`}" class="w-24 h-24 rounded-full mx-auto mb-2 object-cover">
+                        <p class="font-semibold">${s.name}</p>
+                        <button class="delete-btn text-xs text-red-400" data-type="server" data-id="${s.id}">Supprimer</button>
+                    </div>`).join('');
+                // Tags
+                $('#tags-list').innerHTML = Object.entries(state.tags).map(([cat, tags]) => `
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-brand-text-dark capitalize mb-2">${cat}</h4>
+                        ${tags.map(t => `<div class="flex justify-between items-center bg-brand-primary p-2 rounded-md" id="tag-${t.id}"><span>${t.text}</span><button class="delete-btn text-red-400" data-type="tag" data-id="${t.id}">✕</button></div>`).join('')}
+                    </div>`).join('');
+                // Dishes
+                $('#dishes-list').innerHTML = Object.entries(state.menu).map(([cat, dishes]) => `
+                     <div class="mb-4">
+                        <h4 class="font-semibold text-brand-text-dark capitalize mb-2">${cat}</h4>
+                        ${dishes.map(d => `<div class="flex justify-between items-center bg-brand-primary p-2 rounded-md" id="dish-${d.id}"><span>${d.name}</span><button class="delete-btn text-red-400" data-type="dish" data-id="${d.id}">✕</button></div>`).join('')}
+                    </div>`).join('');
             }
-        }
+        };
 
-        async function renderMenuManagement() {
-            const section = document.getElementById('menu-management');
-            if(!section) return;
-            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Menu</h1><div class="text-center p-10">Chargement...</div>`;
-
-            try {
-                const menu = await fetchWithAuth('/api/menu');
-                const categories = Object.keys(menu).sort();
-                
-                let contentHtml = `
-                    <div class="card mb-8">
-                        <h2 class="text-2xl font-bold font-serif mb-4">Ajouter un Plat</h2>
-                        <form id="add-dish-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                            <div class="md:col-span-1">
-                                <label for="dish-name" class="block text-sm font-medium text-gray-700">Nom du plat</label>
-                                <input type="text" id="dish-name" class="form-input" required>
-                            </div>
-                            <div class="md:col-span-1">
-                                <label for="dish-category" class="block text-sm font-medium text-gray-700">Catégorie</label>
-                                <input type="text" id="dish-category" list="category-suggestions" class="form-input" placeholder="Ex: Entrées, Plats..." required>
-                                <datalist id="category-suggestions">
-                                    ${categories.map(cat => `<option value="${cat}"></option>`).join('')}
-                                </datalist>
-                            </div>
-                            <div class="md:col-span-1">
-                                <button type="submit" class="bg-brand-color text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors w-full h-full">Ajouter le plat</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div id="menu-accordion-container" class="card p-0">
-                `;
-
-                if (categories.length > 0) {
-                    categories.forEach(category => {
-                        contentHtml += `
-                            <div class="accordion-item border-b last:border-b-0">
-                                <div class="accordion-header">
-                                    <h3 class="text-xl font-semibold">${category}</h3>
-                                    <svg class="w-6 h-6 accordion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                </div>
-                                <div class="accordion-content">
-                                    <div class="space-y-2">
-                                        ${menu[category].map(dish => `
-                                            <div class="item-list-entry" id="dish-item-${dish.id}">
-                                                <span>${dish.name}</span>
-                                                <div class="flex items-center gap-2">
-                                                    <button class="edit-dish-btn text-gray-500 hover:text-blue-700" data-dish-id="${dish.id}" data-dish-name="${dish.name}" data-dish-category="${category}">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
-                                                    </button>
-                                                    <button class="delete-dish-btn text-gray-500 hover:text-red-700" data-dish-id="${dish.id}">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    contentHtml += '<div class="p-6 text-center text-gray-500"><p>Votre menu est vide. Ajoutez des plats pour commencer.</p></div>';
-                }
-
-                contentHtml += '</div>';
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Menu</h1>${contentHtml}`;
-            } catch (error) {
-                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement du menu.</div>`;
-            }
-        }
-
-        // --- GESTION DES ÉVÉNEMENTS ---
-        contentArea.addEventListener('submit', async (e) => {
-            if (e.target.matches('#page-settings-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const formData = new FormData();
-                formData.append('name', form.querySelector('#restaurant-name').value);
-                formData.append('primaryColor', form.querySelector('#primary-color').value);
-                formData.append('googleLink', form.querySelector('#google-link').value);
-                formData.append('tripadvisorLink', form.querySelector('#tripadvisor-link').value);
-                
-                const selectedLangs = Array.from(form.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value);
-                formData.append('enabledLanguages', JSON.stringify(selectedLangs));
-
-                const logoFile = form.querySelector('#logo-file').files[0];
-                if (logoFile) {
-                    formData.append('logo', logoFile);
-                }
-
+        // --- MAIN APP LOGIC ---
+        const App = {
+            async loadData() {
                 try {
-                    const result = await putWithAuthFormData('/api/restaurant', formData);
-                    alert('Paramètres enregistrés avec succès !');
-                    updateLogo(result.logoUrl);
-                    if(result.logoUrl) {
-                        document.getElementById('logo-preview').src = API_BASE_URL + result.logoUrl;
-                    }
+                    [state.restaurant, state.servers, state.menu, state.tags] = await Promise.all([
+                        Api.get('/api/restaurant'),
+                        Api.get('/api/servers'),
+                        Api.get('/api/menu'),
+                        Api.get('/api/tags'),
+                    ]);
+                    await this.renderAllPages();
+                    UI.switchTab(window.location.hash.substring(1) || 'dashboard');
                 } catch (error) {
-                    alert('Erreur lors de la sauvegarde: ' + error.message);
+                    alert(error.message);
+                    Auth.logout();
                 }
+            },
+            async renderAllPages() {
+                await Promise.all([
+                    Pages.dashboard(),
+                    Pages.pageSettings(),
+                    Pages.management(),
+                ]);
+            },
+            async addServer(formData) {
+                const name = formData.get('name');
+                const newServer = await Api.post('/api/servers', { name }); // Simplified for now
+                state.servers.push(newServer);
+                Pages.renderManagementLists();
+            },
+            async addTag(formData) {
+                const text = formData.get('text');
+                const category = formData.get('category');
+                const newTag = await Api.post('/api/tags', { text, category });
+                if (!state.tags[category]) state.tags[category] = [];
+                state.tags[category].push(newTag);
+                Pages.renderManagementLists();
+            },
+            async addDish(formData) {
+                const name = formData.get('name');
+                const category = formData.get('category');
+                const newDish = await Api.post('/api/menu', { name, category });
+                if (!state.menu[category]) state.menu[category] = [];
+                state.menu[category].push(newDish);
+                Pages.renderManagementLists();
+            },
+            async deleteItem(type, id) {
+                if (!confirm('Voulez-vous vraiment supprimer cet élément ?')) return;
+                await Api.del(`/api/${type}s/${id}`);
+                $(`#${type}-${id}`).remove();
             }
-            if (e.target.matches('.add-tag-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const category = form.dataset.category;
-                const input = form.querySelector('input');
-                const text = input.value.trim();
-                if (!text) return;
-                
-                try {
-                    await fetchWithAuth('/api/tags', { method: 'POST', body: JSON.stringify({ category, text }) });
-                    renderOptionsManagement();
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
-            if (e.target.matches('#add-server-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const formData = new FormData();
-                formData.append('name', form.querySelector('#server-name').value);
-                const avatarFile = form.querySelector('#server-avatar').files[0];
-                if (avatarFile) {
-                    formData.append('avatar', avatarFile);
-                }
-                try {
-                    await postWithAuthFormData('/api/servers', formData);
-                    renderTeamManagement();
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
-            if (e.target.matches('#add-dish-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const name = form.querySelector('#dish-name').value;
-                const category = form.querySelector('#dish-category').value;
-                try {
-                    await fetchWithAuth('/api/menu', { method: 'POST', body: JSON.stringify({ name, category }) });
-                    renderMenuManagement();
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
-            // MODAL SUBMISSIONS
-            if (e.target.matches('#edit-tag-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const tagId = form.dataset.tagId;
-                const text = form.querySelector('input').value;
-                try {
-                    await fetchWithAuth(`/api/tags/${tagId}`, { method: 'PUT', body: JSON.stringify({ text }) });
-                    closeModal();
-                    renderOptionsManagement();
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
-            if (e.target.matches('#edit-server-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const serverId = form.dataset.serverId;
-                const formData = new FormData();
-                formData.append('name', form.querySelector('input[type="text"]').value);
-                const avatarFile = form.querySelector('input[type="file"]').files[0];
-                if (avatarFile) {
-                    formData.append('avatar', avatarFile);
-                }
-                try {
-                    await putWithAuthFormData(`/api/servers/${serverId}`, formData);
-                    closeModal();
-                    renderTeamManagement();
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
-            if (e.target.matches('#edit-dish-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const dishId = form.dataset.dishId;
-                const name = form.querySelector('#edit-dish-name').value;
-                const category = form.querySelector('#edit-dish-category').value;
-                 try {
-                    await fetchWithAuth(`/api/menu/${dishId}`, { method: 'PUT', body: JSON.stringify({ name, category }) });
-                    closeModal();
-                    renderMenuManagement();
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
-        });
+        };
 
-        contentArea.addEventListener('click', async (e) => {
-            const deleteBtn = e.target.closest('.delete-tag-btn, .delete-server-btn, .delete-dish-btn');
-            const editBtn = e.target.closest('.edit-tag-btn, .edit-server-btn, .edit-dish-btn');
-            const accordionHeader = e.target.closest('.accordion-header');
+        // --- EVENT LISTENERS ---
+        function setupEventListeners() {
+            // Auth
+            $('#login-form').addEventListener('submit', async e => { e.preventDefault(); await Auth.login($('#login-email').value, $('#login-password').value).catch(err => $('#login-error').textContent = err.message); });
+            $('#register-form').addEventListener('submit', async e => { e.preventDefault(); await Auth.register($('#register-resto-name').value, $('#register-email').value, $('#register-password').value).catch(err => $('#register-error').textContent = err.message); });
+            $('#show-register').addEventListener('click', () => { $('#login-form').classList.add('hidden'); $('#register-form').classList.remove('hidden'); });
+            $('#show-login').addEventListener('click', () => { $('#register-form').classList.add('hidden'); $('#login-form').classList.remove('hidden'); });
+            $('#logout-btn').addEventListener('click', Auth.logout);
 
-            if (accordionHeader) {
-                const content = accordionHeader.nextElementSibling;
-                accordionHeader.classList.toggle('open');
-                content.classList.toggle('open');
-            }
+            // Navigation
+            sidebarNav.addEventListener('click', e => { const link = e.target.closest('a'); if (link) UI.switchTab(link.hash.substring(1)); });
+            $('#sidebar-open-btn').addEventListener('click', () => $('#sidebar').classList.remove('-translate-x-full'));
+            document.body.addEventListener('click', e => { if (e.target.id !== 'sidebar' && !e.target.closest('#sidebar') && !e.target.closest('#sidebar-open-btn') && window.innerWidth < 768) $('#sidebar').classList.add('-translate-x-full'); });
+            
+            // Forms & Actions
+            contentArea.addEventListener('submit', e => {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+                if (form.id === 'add-server-form') App.addServer(formData);
+                if (form.id === 'add-tag-form') App.addTag(formData);
+                if (form.id === 'add-dish-form') App.addDish(formData);
+                form.reset();
+            });
+            contentArea.addEventListener('click', e => {
+                const deleteBtn = e.target.closest('.delete-btn');
+                if (deleteBtn) App.deleteItem(deleteBtn.dataset.type, deleteBtn.dataset.id);
 
-            if (deleteBtn) {
-                const dataType = deleteBtn.className.includes('tag') ? 'tag' : (deleteBtn.className.includes('server') ? 'server' : 'dish');
-                const dataId = deleteBtn.dataset[`${dataType}Id`];
-                if (confirm(`Voulez-vous vraiment supprimer cet élément ?`)) {
-                    try {
-                        await fetchWithAuth(`/api/${dataType}s/${dataId}`, { method: 'DELETE' });
-                        if (dataType === 'dish') {
-                            renderMenuManagement();
-                        } else {
-                            document.getElementById(`${dataType}-item-${dataId}`).remove();
-                        }
-                    } catch (error) {
-                        alert('Erreur: ' + error.message);
+                if(e.target.closest('#review-page-link')) {
+                    navigator.clipboard.writeText(e.target.value);
+                    alert('Lien copié !');
+                }
+                if(e.target.closest('#download-qr-btn')) {
+                    const canvas = $('#qrcode-container').querySelector('canvas');
+                    if(canvas) {
+                        const link = document.createElement('a');
+                        link.download = `qrcode-${state.restaurant.slug}.png`;
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
                     }
                 }
-            }
+            });
 
-            if (editBtn) {
-                if (editBtn.matches('.edit-tag-btn')) {
-                    const tagId = editBtn.dataset.tagId;
-                    const tagText = editBtn.dataset.tagText;
-                    openModal(`
-                        <form id="edit-tag-form" data-tag-id="${tagId}" class="card w-full max-w-md modal-content">
-                            <h2 class="text-2xl font-bold font-serif mb-4">Modifier l'Option</h2>
-                            <input type="text" value="${tagText}" class="form-input" required>
-                            <div class="flex justify-end gap-2 mt-4">
-                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
-                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold">Enregistrer</button>
-                            </div>
-                        </form>
-                    `);
-                }
-                if (editBtn.matches('.edit-server-btn')) {
-                    const serverId = editBtn.dataset.serverId;
-                    const serverName = editBtn.dataset.serverName;
-                    openModal(`
-                        <form id="edit-server-form" data-server-id="${serverId}" class="card w-full max-w-md modal-content">
-                             <h2 class="text-2xl font-bold font-serif mb-4">Modifier le Membre</h2>
-                             <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Nom</label>
-                                    <input type="text" value="${serverName}" class="form-input" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Changer la photo</label>
-                                    <input type="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0" accept="image/png, image/jpeg">
-                                </div>
-                             </div>
-                             <div class="flex justify-end gap-2 mt-4">
-                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
-                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold">Enregistrer</button>
-                            </div>
-                        </form>
-                    `);
-                }
-                 if (editBtn.matches('.edit-dish-btn')) {
-                    const dishId = editBtn.dataset.dishId;
-                    const dishName = editBtn.dataset.dishName;
-                    const dishCategory = editBtn.dataset.dishCategory;
-                    const allCategories = Object.keys(await fetchWithAuth('/api/menu'));
-                    
-                    openModal(`
-                        <form id="edit-dish-form" data-dish-id="${dishId}" class="card w-full max-w-md modal-content">
-                             <h2 class="text-2xl font-bold font-serif mb-4">Modifier le Plat</h2>
-                             <div class="space-y-4">
-                                <div>
-                                    <label for="edit-dish-name" class="block text-sm font-medium text-gray-700">Nom du plat</label>
-                                    <input type="text" id="edit-dish-name" value="${dishName}" class="form-input" required>
-                                </div>
-                                <div>
-                                    <label for="edit-dish-category" class="block text-sm font-medium text-gray-700">Catégorie</label>
-                                    <input type="text" id="edit-dish-category" value="${dishCategory}" list="edit-category-suggestions" class="form-input" required>
-                                    <datalist id="edit-category-suggestions">
-                                        ${allCategories.map(cat => `<option value="${cat}"></option>`).join('')}
-                                    </datalist>
-                                </div>
-                             </div>
-                             <div class="flex justify-end gap-2 mt-4">
-                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
-                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold">Enregistrer</button>
-                            </div>
-                        </form>
-                    `);
-                }
-            }
-        });
+            // Modal
+            modalContainer.addEventListener('click', e => { if (e.target === modalContainer) UI.closeModal(); });
+        }
 
-    });
+        // --- INITIALIZATION ---
+        function init() {
+            UI.renderNav();
+            UI.renderContentSections();
+            setupEventListeners();
+            Auth.init();
+        }
+
+        init();
     </script>
 </body>
 </html>

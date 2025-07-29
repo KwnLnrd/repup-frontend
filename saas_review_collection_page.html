@@ -7,621 +7,443 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --brand-color: #BF5B3F; /* Sera surchargé par JS */
-            --brand-color-light: rgba(191, 91, 63, 0.1);
-            --brand-color-dark: #A64B35;
-            --background-color: #F8F9FA;
+            --brand-color: #34D399;
+            --brand-color-dark: #2AA77E;
+            --brand-text-on-accent: #1A202C;
+            --background-color: #F7FAFC;
             --surface-color: #FFFFFF;
-            --text-primary: #212529;
-            --text-secondary: #6C757D;
-            --border-color: #DEE2E6;
-            --font-serif: 'Cormorant Garamond', serif;
-            --font-sans: 'Montserrat', sans-serif;
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+            --text-primary: #1A202C;
+            --text-secondary: #718096;
+            --border-color: #E2E8F0;
+            --font-display: 'Manrope', sans-serif;
+            --font-sans: 'Inter', sans-serif;
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
+        @keyframes pulse { 50% { opacity: .5; } }
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100%) rotateZ(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotateZ(720deg); opacity: 0; }
+        }
+
         body {
             font-family: var(--font-sans);
             background-color: var(--background-color);
             color: var(--text-primary);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-
         .review-container {
-            background-color: var(--surface-color);
-            border-radius: 12px;
-            padding: 28px 32px;
-            box-shadow: var(--shadow-md);
             width: 100%;
-            max-width: 520px;
-            text-align: center;
+            max-width: 560px;
+            margin: 2rem auto;
+        }
+        .review-card {
+            background-color: var(--surface-color);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.04);
             border: 1px solid var(--border-color);
-            animation: fadeIn .8s ease-out;
-            margin: 20px 0;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
+            animation: fadeIn .8s ease-out forwards;
+            margin-bottom: 1.5rem;
         }
-        .review-container.loaded { opacity: 1; }
-
-        .logo-container { margin-bottom: 24px; }
-        .logo-container img { max-height: 60px; height: auto; margin: 0 auto; object-fit: contain; }
+        h1, h2 { font-family: var(--font-display); font-weight: 800; }
+        .skeleton { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; background-color: #e2e8f0; border-radius: 0.5rem; }
         
-        h1 { font-family: var(--font-serif); font-size: 2rem; margin-bottom: 8px; }
-        p.subtitle { font-size: 1rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 28px; }
+        /* Star Rating */
+        .star-rating { display: flex; justify-content: center; gap: 0.5rem; }
+        .star-rating svg { width: 40px; height: 40px; color: #CBD5E0; cursor: pointer; transition: all 0.2s; }
+        .star-rating:hover svg { color: #FBBF24; }
+        .star-rating svg:hover ~ svg { color: #CBD5E0; }
+        .star-rating.selected svg { color: #FBBF24; }
         
-        .form-section { display: none; animation: fadeIn 0.6s ease-out; text-align: left; }
-        .form-section.active { display: block; }
-        .form-section.is-empty { display: none !important; }
-        .form-section h2 { font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 12px; color: var(--text-primary); text-align: center; }
-        .form-section .subtitle { text-align: center;}
-
-        .selection-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 1rem;
-        }
-        .selection-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            border: 1px solid var(--border-color);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .selection-item.selected {
-            border-color: var(--brand-color);
-            background-color: var(--brand-color-light);
-            box-shadow: 0 0 0 2px var(--brand-color);
-        }
-        .selection-item img {
-            width: 64px; height: 64px; border-radius: 50%;
-            object-fit: cover; margin-bottom: 0.75rem; background-color: #f0f0f0;
-        }
-        .selection-item span { font-weight: 500; font-size: 0.9rem; }
-        
-        .tag-group { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
-        .tag-group input { position: absolute; opacity: 0; width: 0; height: 0; }
-        .tag-group label {
-            background-color: var(--surface-color); color: var(--text-secondary);
-            padding: 10px 18px; border-radius: 8px; cursor: pointer;
-            font-size: .9rem; font-weight: 500; transition: all .3s ease;
+        /* Tag Selection */
+        .tag {
+            background-color: #F7FAFC; color: var(--text-secondary);
+            padding: 0.5rem 1rem; border-radius: 9999px; cursor: pointer;
+            font-size: .9rem; font-weight: 500; transition: all .2s ease;
             border: 1px solid var(--border-color); user-select: none;
         }
-        .tag-group input:checked+label {
-            background-color: var(--brand-color); color: #fff; border-color: var(--brand-color);
-            box-shadow: 0 4px 15px rgba(191,91,63,.25);
-        }
-        .tag-group input:disabled+label {
-            cursor: not-allowed; background-color: var(--background-color);
-            color: #BDBDBD; opacity: 0.7; box-shadow: none;
-        }
-        .limit-notification { color: var(--brand-color); font-size: 0.9rem; margin-top: 15px; text-align: center; font-weight: 500; transition: opacity 0.3s ease-in-out; }
-
-        textarea {
-            width: 100%; padding: 12px; border-radius: 8px;
-            border: 1px solid var(--border-color); background-color: var(--surface-color);
-            font-family: var(--font-sans); font-size: 1rem; color: var(--text-primary);
-            box-sizing: border-box; min-height: 120px; resize: vertical;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        textarea:focus {
-            outline: none; border-color: var(--brand-color);
-            box-shadow: 0 0 0 3px rgba(191, 91, 63, 0.2);
-        }
-        
-        .button-group { display: flex; justify-content: space-between; margin-top: 2rem; }
-        .button {
-            display: inline-block; background-color: var(--brand-color); color: #fff; border: none;
-            padding: 14px 28px; border-radius: 50px; font-size: 1rem; font-weight: 600;
-            cursor: pointer; width: 100%; transition: all .3s ease; text-decoration: none;
-            box-sizing: border-box;
-        }
-        .button:hover {
-            background-color: var(--brand-color-dark); transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-        }
-        .button.secondary {
-            background: var(--surface-color); color: var(--brand-color);
-            border: 1px solid var(--brand-color);
-        }
-        .button.secondary:hover { background-color: var(--brand-color-light); }
-        .button.nav-btn { width: auto; min-width: 120px; }
-
-        #loader { text-align: center; padding: 3rem; }
-        .loader-dots div {
-            width: 12px; height: 12px; background-color: var(--brand-color);
-            border-radius: 100%; display: inline-block;
-            animation: sk-bouncedelay 1.4s infinite ease-in-out both;
-        }
-        .loader-dots .bounce1 { animation-delay: -0.32s; }
-        .loader-dots .bounce2 { animation-delay: -0.16s; }
-        @keyframes sk-bouncedelay {
-          0%, 80%, 100% { transform: scale(0); }
-          40% { transform: scale(1.0); }
+        .tag.selected {
+            background-color: var(--brand-color); color: var(--brand-text-on-accent); border-color: var(--brand-color);
+            font-weight: 600;
         }
 
-        #result-area .button { margin-top: 1rem; }
-        #result-area #google-btn.hidden, #result-area #tripadvisor-btn.hidden { display: none; }
-
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            .review-container { padding: 20px 15px; margin: 10px 0; }
-            h1, .form-section h2 { font-size: 1.8rem; }
+        /* Typing animation */
+        #review-text-output { white-space: pre-wrap; }
+        .typing-cursor {
+            display: inline-block;
+            width: 8px; height: 1.2em;
+            background-color: var(--text-primary);
+            animation: pulse 1s infinite;
+            margin-left: 2px;
         }
     </style>
 </head>
-<body class="antialiased">
+<body class="p-4">
 
     <div id="review-container" class="review-container">
-        <div id="loader">
-            <p data-translate-key="loading_restaurant">Chargement des informations...</p>
+
+        <!-- Skeleton Loader -->
+        <div id="loader" class="review-card">
+            <div class="skeleton h-16 w-32 mx-auto mb-6"></div>
+            <div class="skeleton h-8 w-3/4 mx-auto mb-4"></div>
+            <div class="skeleton h-12 w-full mx-auto mb-8"></div>
+            <div class="skeleton h-6 w-1/2 mx-auto"></div>
         </div>
-        
+
+        <!-- Main App Content -->
         <div id="app-content" class="hidden">
-            <div class="logo-container" id="logo-container"></div>
-
-            <div id="section-lang" class="form-section">
-                 <h2 data-translate-key="lang_title">Choisissez votre langue</h2>
-                 <div class="tag-group mt-6">
-                    <!-- Language buttons injected here -->
-                 </div>
-            </div>
-
-            <div id="section-server" class="form-section">
-                <h2 data-translate-key="server_title">Qui a enchanté votre service ?</h2>
-                <div id="server-grid" class="selection-grid mt-6"></div>
-                <div id="service-qualities-container" class="hidden mt-4">
-                    <h3 class="text-lg font-semibold text-center mb-4" data-translate-key="service_subtitle">Qu'avez-vous particulièrement apprécié ?</h3>
-                    <p class="limit-notification hidden"></p>
-                    <div id="service-qualities-tags" class="tag-group"></div>
-                </div>
-            </div>
-
-            <div id="section-occasion" class="form-section">
-                <h2 data-translate-key="occasion_title">Une occasion spéciale ?</h2>
-                <div id="occasion-tags" class="tag-group mt-6"></div>
-            </div>
-
-            <div id="section-flavors" class="form-section">
-                <h2 data-translate-key="flavors_title">Les saveurs qui vous ont marqué</h2>
-                <p class="subtitle" data-translate-key="flavors_subtitle">Choisissez jusqu'à 6 de vos coups de cœur.</p>
-                <p class="limit-notification hidden"></p>
-                <div id="flavors-tags" class="tag-group mt-4"></div>
-            </div>
-
-            <div id="section-atmosphere" class="form-section">
-                <h2 data-translate-key="atmosphere_title">L'atmosphère du lieu</h2>
-                <p class="subtitle" data-translate-key="atmosphere_subtitle">Sélectionnez jusqu'à 3 options.</p>
-                <p class="limit-notification hidden"></p>
-                <div id="atmosphere-tags" class="tag-group mt-4"></div>
-            </div>
-
-            <div id="section-feedback" class="form-section">
-                <h2 data-translate-key="feedback_title">Une suggestion privée ?</h2>
-                <p class="subtitle" data-translate-key="feedback_subtitle">Ce message sera envoyé uniquement à l'équipe (optionnel).</p>
-                <textarea id="feedback-textarea" rows="5" class="mt-2"></textarea>
-            </div>
             
-            <div id="section-result" class="form-section text-center">
-                <div id="generation-loader">
-                    <h2 data-translate-key="generating_title">Création de votre avis...</h2>
-                    <p class="subtitle" data-translate-key="generating_subtitle">Notre IA personnalise votre expérience.</p>
-                    <div class="loader-dots mt-6">
-                        <div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div>
-                    </div>
-                </div>
-                <div id="result-display" class="hidden">
-                    <h2 data-translate-key="result_title">Votre avis est prêt !</h2>
-                    <textarea id="review-text" readonly class="mt-4"></textarea>
-                    <div id="result-buttons" class="mt-2 space-y-3">
-                        <button id="copy-btn" class="button secondary"></button>
-                        <a id="google-btn" href="#" target="_blank" class="button"></a>
-                        <a id="tripadvisor-btn" href="#" target="_blank" class="button"></a>
-                    </div>
+            <!-- Card 1: Initial Rating -->
+            <div id="rating-card" class="review-card text-center">
+                <div id="logo-container" class="mb-6 flex justify-center items-center h-16"></div>
+                <h1 id="restaurant-name-title" class="text-3xl"></h1>
+                <p class="text-lg text-gray-500 mt-2 mb-6">Comment s'est passée votre expérience ?</p>
+                <div id="star-rating" class="star-rating">
+                    <!-- Stars will be injected by JS -->
                 </div>
             </div>
 
-            <div id="navigation-buttons" class="button-group">
-                <button id="back-btn" class="button secondary nav-btn">Précédent</button>
-                <button id="next-btn" class="button nav-btn">Suivant</button>
+            <!-- Content revealed after rating -->
+            <div id="follow-up-content" class="hidden space-y-6">
+
+                <!-- Card 2: Positive Flow -->
+                <div id="positive-flow-card" class="review-card hidden">
+                    <h2 class="text-2xl text-center mb-6">Génial ! Aidez-nous à partager votre enthousiasme.</h2>
+                    
+                    <!-- Server Selection -->
+                    <div id="server-section" class="mb-8">
+                        <label class="font-semibold text-center block mb-4">Qui s'est occupé de vous ? (optionnel)</label>
+                        <div id="server-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-4"></div>
+                    </div>
+
+                    <!-- Tags Selection -->
+                    <div id="tags-section" class="mb-8">
+                        <label class="font-semibold text-center block mb-4">Qu'avez-vous particulièrement apprécié ?</label>
+                        <div id="tags-grid" class="flex flex-wrap justify-center gap-3"></div>
+                    </div>
+
+                    <!-- Review Generation -->
+                    <div class="text-center">
+                         <button id="generate-review-btn" class="w-full md:w-auto bg-brand-color text-brand-text-on-accent font-bold px-8 py-4 rounded-lg hover:bg-brand-color-dark transition-transform hover:scale-105">
+                            Générer mon avis personnalisé
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 3: AI Review Display -->
+                <div id="review-output-card" class="review-card hidden">
+                    <h2 class="text-2xl text-center mb-4">Votre avis est prêt !</h2>
+                    <div class="bg-gray-50 p-4 rounded-lg border min-h-[150px]">
+                        <p id="review-text-output" class="text-gray-700"></p>
+                    </div>
+                    <div class="flex items-center justify-between mt-4">
+                        <button id="regenerate-btn" class="text-sm text-gray-500 hover:text-black">Générer une autre version</button>
+                        <button id="copy-btn" class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-300">Copier</button>
+                    </div>
+                    <div id="publish-buttons" class="mt-6 space-y-3">
+                        <!-- Publish buttons injected here -->
+                    </div>
+                </div>
+
+                <!-- Card 4: Negative Flow -->
+                <div id="negative-flow-card" class="review-card hidden">
+                    <h2 class="text-2xl text-center">Nous sommes sincèrement désolés.</h2>
+                    <p class="text-center text-gray-600 mt-2 mb-6">Vos retours sont essentiels pour nous améliorer. Veuillez nous laisser un message privé.</p>
+                    <textarea id="private-feedback-textarea" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-color focus:outline-none" placeholder="Décrivez votre expérience..."></textarea>
+                    <button id="send-feedback-btn" class="mt-4 w-full bg-brand-color text-brand-text-on-accent font-bold px-8 py-3 rounded-lg hover:bg-brand-color-dark">
+                        Envoyer à l'équipe
+                    </button>
+                </div>
+
+                 <!-- Card 5: Thank You Message -->
+                <div id="thank-you-card" class="review-card hidden text-center">
+                    <h2 class="text-2xl">Merci !</h2>
+                    <p class="text-gray-600 mt-2">Votre message a bien été transmis à l'équipe du restaurant. Nous apprécions votre aide.</p>
+                </div>
+
             </div>
         </div>
     </div>
+    <div id="confetti-container" class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-50"></div>
+
 
     <script>
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- CONFIG & STATE ---
         const API_BASE_URL = 'https://repup-test.onrender.com';
-        
-        const reviewContainer = document.getElementById('review-container');
+        const state = {
+            restaurant: null,
+            rating: 0,
+            selectedServer: null,
+            selectedTags: [],
+            isGenerating: false,
+        };
+
+        // --- DOM ELEMENTS ---
         const loader = document.getElementById('loader');
         const appContent = document.getElementById('app-content');
-        const sections = document.querySelectorAll('.form-section');
-        const nextBtn = document.getElementById('next-btn');
-        const backBtn = document.getElementById('back-btn');
-
-        let restaurantData = {};
-        let reviewData = {
-            lang: 'fr', server: null, serviceQualities: [], occasion: null,
-            flavors: [], atmosphere: [], privateFeedback: ''
-        };
+        const logoContainer = document.getElementById('logo-container');
+        const restaurantNameTitle = document.getElementById('restaurant-name-title');
+        const starRatingContainer = document.getElementById('star-rating');
+        const followUpContent = document.getElementById('follow-up-content');
         
-        const sectionOrder = ['lang', 'server', 'occasion', 'flavors', 'atmosphere', 'feedback', 'result'];
-        let currentSectionIndex = 0;
+        const positiveFlowCard = document.getElementById('positive-flow-card');
+        const serverSection = document.getElementById('server-section');
+        const serverGrid = document.getElementById('server-grid');
+        const tagsSection = document.getElementById('tags-section');
+        const tagsGrid = document.getElementById('tags-grid');
+        const generateBtn = document.getElementById('generate-review-btn');
+        
+        const reviewOutputCard = document.getElementById('review-output-card');
+        const reviewTextOutput = document.getElementById('review-text-output');
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const publishButtons = document.getElementById('publish-buttons');
 
-        const translations = {
-            fr: {
-                lang_name_native: "🇫🇷 Français",
-                lang_title: "Choisissez votre langue",
-                server_title: "Qui a enchanté votre service ?",
-                service_subtitle: "Qu'avez-vous particulièrement apprécié ? (3 max)",
-                occasion_title: "Une occasion spéciale ?",
-                flavors_title: "Les saveurs qui vous ont marqué",
-                flavors_subtitle: "Choisissez jusqu'à 6 de vos coups de cœur.",
-                atmosphere_title: "L'atmosphère du lieu",
-                atmosphere_subtitle: "Sélectionnez jusqu'à 3 options.",
-                feedback_title: "Une suggestion privée ?",
-                feedback_subtitle: "Ce message sera envoyé uniquement à l'équipe (optionnel).",
-                generating_title: "Création de votre avis...",
-                generating_subtitle: "Notre IA personnalise votre expérience.",
-                result_title: "Votre avis est prêt !",
-                copy_button: "Copier le texte",
-                publish_on_google: "Publier sur Google",
-                publish_on_tripadvisor: "Publier sur TripAdvisor",
-                loading_restaurant: "Chargement...",
-                nav_next: "Suivant",
-                nav_back: "Précédent",
-                nav_generate: "Générer mon avis",
-                limit_reached: (limit) => `Limite de ${limit} choix atteinte.`,
-                api_key_error: "Erreur : La clé API OpenAI n'est pas configurée. Veuillez contacter le propriétaire du site."
-            },
-            en: {
-                lang_name_native: "🇬🇧 English",
-                lang_title: "Choose your language",
-                server_title: "Who provided your service?",
-                service_subtitle: "What did you particularly appreciate? (3 max)",
-                occasion_title: "A special occasion?",
-                flavors_title: "The flavors that stood out",
-                flavors_subtitle: "Choose up to 6 of your favorites.",
-                atmosphere_title: "The atmosphere",
-                atmosphere_subtitle: "Select up to 3 options.",
-                feedback_title: "A private suggestion?",
-                feedback_subtitle: "This message will be sent only to the team (optional).",
-                generating_title: "Creating your review...",
-                generating_subtitle: "Our AI is personalizing your experience.",
-                result_title: "Your review is ready!",
-                copy_button: "Copy text",
-                publish_on_google: "Publish on Google",
-                publish_on_tripadvisor: "Publish on TripAdvisor",
-                loading_restaurant: "Loading...",
-                nav_next: "Next",
-                nav_back: "Back",
-                nav_generate: "Generate my review",
-                limit_reached: (limit) => `Limit of ${limit} choices reached.`,
-                api_key_error: "Error: OpenAI API Key is not configured. Please contact the site owner."
-            },
-            es: { lang_name_native: "🇪🇸 Español" },
-            pt: { lang_name_native: "🇵🇹 Português" },
-            it: { lang_name_native: "🇮🇹 Italiano" },
-            zh: { lang_name_native: "🇨🇳 简体中文" }
-        };
+        const negativeFlowCard = document.getElementById('negative-flow-card');
+        const sendFeedbackBtn = document.getElementById('send-feedback-btn');
 
-        function getTranslation(key, ...args) {
-            const langPack = translations[reviewData.lang] || translations.fr;
-            const translation = langPack[key] || key;
-            return typeof translation === 'function' ? translation(...args) : translation;
-        }
+        const thankYouCard = document.getElementById('thank-you-card');
 
-        function translatePage() {
-            document.querySelectorAll('[data-translate-key]').forEach(el => {
-                const key = el.dataset.translateKey;
-                el.innerHTML = getTranslation(key);
-            });
-            nextBtn.innerText = getTranslation('nav_next');
-            backBtn.innerText = getTranslation('nav_back');
-            document.getElementById('copy-btn').innerText = getTranslation('copy_button');
-            document.getElementById('google-btn').innerText = getTranslation('publish_on_google');
-            document.getElementById('tripadvisor-btn').innerText = getTranslation('publish_on_tripadvisor');
-        }
-
+        // --- API & DATA HANDLING ---
         async function fetchRestaurantData() {
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const slug = urlParams.get('slug');
-                if (!slug) throw new Error("Slug manquant.");
+                const slug = new URLSearchParams(window.location.search).get('slug');
+                if (!slug) throw new Error("Restaurant non identifié.");
                 
                 const response = await fetch(`${API_BASE_URL}/api/public/restaurant/${slug}`);
-                if (!response.ok) throw new Error(`Erreur serveur (code: ${response.status})`);
+                if (!response.ok) throw new Error(`Erreur de chargement (code: ${response.status})`);
                 
-                const data = await response.json();
-                restaurantData = { ...data, servers: data.servers || [], languages: data.languages || ['fr', 'en'], tags: data.tags || {} };
-                
-                const menuResponse = await fetch(`${API_BASE_URL}/api/public/menu/${slug}`);
-                if (menuResponse.ok) {
-                    restaurantData.menu = await menuResponse.json();
-                } else {
-                    console.warn(`Could not fetch menu (status: ${menuResponse.status}). The flavor section will be empty.`);
-                    restaurantData.menu = {};
-                }
-
-                reviewData.lang = restaurantData.languages.includes('fr') ? 'fr' : restaurantData.languages[0];
+                state.restaurant = await response.json();
                 return true;
             } catch (error) {
-                loader.innerHTML = `<p class="text-red-500 font-semibold">Erreur de chargement</p><p class="text-gray-600 mt-2">${error.message}</p>`;
+                loader.innerHTML = `<p class="text-red-500 font-semibold text-center">${error.message}</p>`;
                 return false;
             }
         }
 
+        // --- UI RENDERING & ANIMATIONS ---
         function applyBranding() {
             const root = document.documentElement;
-            const color = restaurantData.primaryColor || '#BF5B3F';
+            const color = state.restaurant.primaryColor || '#34D399';
             root.style.setProperty('--brand-color', color);
             const [r, g, b] = color.match(/\w\w/g).map((c) => parseInt(c, 16));
-            root.style.setProperty('--brand-color-light', `rgba(${r}, ${g}, ${b}, 0.1)`);
             root.style.setProperty('--brand-color-dark', `rgb(${Math.max(0, r-20)}, ${Math.max(0, g-20)}, ${Math.max(0, b-20)})`);
             
-            document.title = `Avis - ${restaurantData.name}`;
-            const logoUrl = restaurantData.logoUrl ? `${API_BASE_URL}${restaurantData.logoUrl}` : `https://placehold.co/200x60/${color.substring(1)}/FFFFFF?text=${encodeURIComponent(restaurantData.name)}`;
-            document.getElementById('logo-container').innerHTML = `<img src="${logoUrl}" alt="Logo de ${restaurantData.name}">`;
-        }
-
-        function renderAllSections() {
-            const langContainer = document.querySelector('#section-lang .tag-group');
-            langContainer.innerHTML = (restaurantData.languages || ['fr', 'en']).map(lang => {
-                const langName = translations[lang]?.lang_name_native || lang.toUpperCase();
-                return `<button class="button" data-lang-select="${lang}">${langName}</button>`;
-            }).join('');
-            
-            document.getElementById('server-grid').innerHTML = restaurantData.servers.map(server => {
-                const avatarSrc = server.avatar 
-                    ? `${API_BASE_URL}${server.avatar}` 
-                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=555555`;
-                return `
-                    <div class="selection-item" data-server-name="${server.name}">
-                        <img src="${avatarSrc}" alt="${server.name}">
-                        <span>${server.name}</span>
-                    </div>`;
-            }).join('');
-
-            const serviceTags = restaurantData.tags?.service || [];
-            document.getElementById('service-qualities-tags').innerHTML = serviceTags.map(tag => `
-                <input type="checkbox" id="service_${tag.id}" name="service_quality" value="${tag.text}"><label for="service_${tag.id}">${tag.text}</label>
-            `).join('');
-
-            const occasionTags = restaurantData.tags?.occasion || [];
-            document.getElementById('occasion-tags').innerHTML = occasionTags.map(tag => `
-                <input type="radio" id="occasion_${tag.id}" name="occasion" value="${tag.text}"><label for="occasion_${tag.id}">${tag.text}</label>
-            `).join('');
-            
-            const atmosphereTags = restaurantData.tags?.atmosphere || [];
-            document.getElementById('atmosphere-tags').innerHTML = atmosphereTags.map(tag => `
-                <input type="checkbox" id="atmosphere_${tag.id}" name="atmosphere" value="${tag.text}"><label for="atmosphere_${tag.id}">${tag.text}</label>
-            `).join('');
-
-            const flavorsContainer = document.getElementById('flavors-tags');
-            const flavorsSection = document.getElementById('section-flavors');
-            flavorsContainer.innerHTML = '';
-            if(restaurantData.menu && Object.keys(restaurantData.menu).length > 0) {
-                flavorsSection.classList.remove('is-empty');
-                Object.entries(restaurantData.menu).forEach(([category, dishes]) => {
-                    dishes.forEach(dish => {
-                        flavorsContainer.innerHTML += `<input type="checkbox" id="dish_${dish.id}" name="flavor" value="${dish.name}"><label for="dish_${dish.id}">${dish.name}</label>`;
-                    });
-                });
-            } else {
-                flavorsSection.classList.add('is-empty');
-            }
-
-            translatePage();
-        }
-
-        function updateNavButtons() {
-            backBtn.style.visibility = currentSectionIndex > 0 ? 'visible' : 'hidden';
-            if (currentSectionIndex === sectionOrder.indexOf('feedback')) {
-                nextBtn.innerText = getTranslation('nav_generate');
-            } else {
-                nextBtn.innerText = getTranslation('nav_next');
-            }
-            nextBtn.style.visibility = currentSectionIndex === sectionOrder.length - 1 ? 'hidden' : 'visible';
-        }
-
-        function goToSection(index) {
-            const sectionId = `section-${sectionOrder[index]}`;
-            const sectionElement = document.getElementById(sectionId);
-            if (sectionElement && sectionElement.classList.contains('is-empty')) {
-                const direction = index > currentSectionIndex ? 1 : -1;
-                goToSection(index + direction);
-                return;
-            }
-            
-            currentSectionIndex = index;
-            sections.forEach((s) => s.classList.remove('active'));
-            if(sectionElement) sectionElement.classList.add('active');
-            updateNavButtons();
+            const logoUrl = state.restaurant.logoUrl 
+                ? `${API_BASE_URL}${state.restaurant.logoUrl}` 
+                : `https://placehold.co/200x60/${color.substring(1)}/FFFFFF?text=${encodeURIComponent(state.restaurant.name)}`;
+            logoContainer.innerHTML = `<img src="${logoUrl}" alt="Logo de ${state.restaurant.name}" class="max-h-16 object-contain">`;
+            restaurantNameTitle.textContent = `chez ${state.restaurant.name}`;
         }
         
-        async function generateReview() {
-            goToSection(sectionOrder.indexOf('result'));
-            document.getElementById('generation-loader').classList.remove('hidden');
-            document.getElementById('result-display').classList.add('hidden');
+        function createStars() {
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('div');
+                star.dataset.value = i;
+                star.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
+                starRatingContainer.appendChild(star);
+            }
+        }
 
-            const promptParts = [];
-            promptParts.push(`Rédige un avis de restaurant en langue "${reviewData.lang}" pour "${restaurantData.name}". Le ton doit être positif et engageant. Voici les détails de l'expérience :`);
-            if (reviewData.server) promptParts.push(`- Le service a été assuré par ${reviewData.server}.`);
-            if (reviewData.serviceQualities.length > 0) promptParts.push(`- Qualités du service remarquées : ${reviewData.serviceQualities.join(', ')}.`);
-            if (reviewData.occasion) promptParts.push(`- L'occasion de la visite était : ${reviewData.occasion}.`);
-            if (reviewData.flavors.length > 0) promptParts.push(`- Plats et saveurs particulièrement appréciés : ${reviewData.flavors.join(', ')}.`);
-            if (reviewData.atmosphere.length > 0) promptParts.push(`- Points forts de l'atmosphère : ${reviewData.atmosphere.join(', ')}.`);
-            if (reviewData.privateFeedback) promptParts.push(`Ne mentionne pas la suggestion privée suivante dans l'avis public : "${reviewData.privateFeedback}"`);
-            promptParts.push("Termine par une recommandation chaleureuse.");
-            
-            const prompt = promptParts.join('\n');
+        function updateStarDisplay(rating) {
+            const stars = starRatingContainer.querySelectorAll('div > svg');
+            stars.forEach((star, index) => {
+                star.style.color = index < rating ? '#FBBF24' : '#CBD5E0';
+            });
+        }
 
-            try {
-                // --- MODIFICATION IMPORTANTE : APPEL AU BACKEND ---
-                // 1. L'URL pointe maintenant vers notre propre serveur
-                const apiUrl = `${API_BASE_URL}/api/generate-review`;
-                
-                // 2. Le payload contient uniquement le prompt
-                const payload = { 
-                    prompt: prompt
-                };
-                
-                // 3. L'appel fetch n'a plus besoin de clé API ici
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
+        function triggerConfetti() {
+            const container = document.getElementById('confetti-container');
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'absolute';
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = confetti.style.width;
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 90%, 70%)`;
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear ${Math.random() * 2}s forwards`;
+                container.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+        
+        function typeAnimation(element, text, onComplete) {
+            element.innerHTML = '';
+            let i = 0;
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            element.appendChild(cursor);
 
-                const result = await response.json();
-
-                if (!response.ok) {
-                    // Si le serveur renvoie une erreur, l'afficher
-                    throw new Error(result.error || `Erreur serveur: ${response.status}`);
-                }
-                
-                // 4. Récupération de la réponse de notre backend
-                if (result.review) {
-                    const text = result.review;
-                    const reviewTextArea = document.getElementById('review-text');
-                    reviewTextArea.value = text;
-                    reviewTextArea.style.height = 'auto';
-                    reviewTextArea.style.height = (reviewTextArea.scrollHeight) + 'px';
+            const typingInterval = setInterval(() => {
+                if (i < text.length) {
+                    element.insertBefore(document.createTextNode(text.charAt(i)), cursor);
+                    i++;
                 } else {
-                    throw new Error("La réponse du serveur est valide mais le contenu est manquant.");
+                    clearInterval(typingInterval);
+                    cursor.remove();
+                    if(onComplete) onComplete();
                 }
+            }, 30);
+        }
+        
+        function populateFollowUpContent() {
+            // Servers
+            if (state.restaurant.servers && state.restaurant.servers.length > 0) {
+                serverGrid.innerHTML = state.restaurant.servers.map(server => {
+                    const avatarSrc = server.avatar 
+                        ? `${API_BASE_URL}${server.avatar}` 
+                        : `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=e2e8f0&color=2d3748`;
+                    return `
+                        <div data-server-name="${server.name}" class="tag flex flex-col items-center gap-2 p-3 h-auto rounded-xl">
+                            <img src="${avatarSrc}" alt="${server.name}" class="w-16 h-16 rounded-full object-cover">
+                            <span class="font-semibold">${server.name}</span>
+                        </div>`;
+                }).join('');
+                serverSection.classList.remove('hidden');
+            } else {
+                serverSection.classList.add('hidden');
+            }
+
+            // Tags
+            const allTags = [
+                ...(state.restaurant.tags?.service || []),
+                ...(state.restaurant.tags?.atmosphere || []),
+                ...(state.restaurant.tags?.occasion || [])
+            ];
+            if(allTags.length > 0) {
+                tagsGrid.innerHTML = allTags.map(tag => `<div class="tag" data-tag-text="${tag.text}">${tag.text}</div>`).join('');
+                tagsSection.classList.remove('hidden');
+            } else {
+                tagsSection.classList.add('hidden');
+            }
+
+            // Publish buttons
+            publishButtons.innerHTML = '';
+            if (state.restaurant.links?.google) {
+                publishButtons.innerHTML += `<a href="${state.restaurant.links.google}" target="_blank" class="block w-full text-center bg-blue-500 text-white font-bold px-6 py-3 rounded-lg hover:bg-blue-600">Publier sur Google</a>`;
+            }
+            if (state.restaurant.links?.tripadvisor) {
+                publishButtons.innerHTML += `<a href="${state.restaurant.links.tripadvisor}" target="_blank" class="block w-full text-center bg-green-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-green-700">Publier sur TripAdvisor</a>`;
+            }
+        }
+
+        // --- LOGIC & FLOW ---
+        function handleRatingSelection(rating) {
+            if (state.rating !== 0) return; // Prevent re-triggering
+            state.rating = rating;
+            starRatingContainer.classList.add('selected', 'pointer-events-none');
+            updateStarDisplay(rating);
+            
+            followUpContent.classList.remove('hidden');
+
+            if (rating > 3) {
+                triggerConfetti();
+                positiveFlowCard.classList.remove('hidden');
+            } else {
+                negativeFlowCard.classList.remove('hidden');
+            }
+        }
+        
+        async function handleGenerateReview() {
+            if (state.isGenerating) return;
+            state.isGenerating = true;
+            
+            positiveFlowCard.classList.add('hidden');
+            reviewOutputCard.classList.remove('hidden');
+            reviewTextOutput.innerHTML = '<span class="typing-cursor"></span>';
+            regenerateBtn.disabled = true;
+            copyBtn.disabled = true;
+
+            const prompt = `Rédige un avis de restaurant 5 étoiles court et enthousiaste pour "${state.restaurant.name}".
+                Note donnée : ${state.rating} sur 5.
+                ${state.selectedServer ? `Le service a été fait par ${state.selectedServer}.` : ''}
+                ${state.selectedTags.length > 0 ? `Points particulièrement appréciés : ${state.selectedTags.join(', ')}.` : ''}
+                Le ton doit être authentique et personnel. Termine par une recommandation forte. Langue: Français.`;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/generate-review`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || "Erreur de l'API");
+                
+                typeAnimation(reviewTextOutput, result.review, () => {
+                    state.isGenerating = false;
+                    regenerateBtn.disabled = false;
+                    copyBtn.disabled = false;
+                });
 
             } catch (error) {
-                console.error("Error in generateReview function:", error);
-                document.getElementById('review-text').value = error.message;
-            } finally {
-                document.getElementById('generation-loader').classList.add('hidden');
-                document.getElementById('result-display').classList.remove('hidden');
+                reviewTextOutput.textContent = `Erreur: ${error.message}`;
+                state.isGenerating = false;
             }
         }
 
+        // --- EVENT LISTENERS ---
         function setupEventListeners() {
-            nextBtn.addEventListener('click', () => {
-                if (currentSectionIndex < sectionOrder.length - 1) {
-                    if (sectionOrder[currentSectionIndex] === 'feedback') {
-                        reviewData.privateFeedback = document.getElementById('feedback-textarea').value;
-                        generateReview();
-                    } else {
-                        goToSection(currentSectionIndex + 1);
-                    }
-                }
+            starRatingContainer.addEventListener('mouseover', e => {
+                const starDiv = e.target.closest('div[data-value]');
+                if (starDiv) updateStarDisplay(starDiv.dataset.value);
             });
-            backBtn.addEventListener('click', () => {
-                if (currentSectionIndex > 0) goToSection(currentSectionIndex - 1);
+            starRatingContainer.addEventListener('mouseout', () => updateStarDisplay(0));
+            starRatingContainer.addEventListener('click', e => {
+                const starDiv = e.target.closest('div[data-value]');
+                if (starDiv) handleRatingSelection(parseInt(starDiv.dataset.value));
             });
 
-            document.querySelector('#section-lang').addEventListener('click', e => {
-                if(e.target.dataset.langSelect) {
-                    reviewData.lang = e.target.dataset.langSelect;
-                    renderAllSections();
-                    goToSection(currentSectionIndex + 1);
-                }
-            });
-
-            document.getElementById('server-grid').addEventListener('click', e => {
-                const serverItem = e.target.closest('.selection-item');
-                if (serverItem) {
-                    document.querySelectorAll('#server-grid .selection-item').forEach(i => i.classList.remove('selected'));
-                    serverItem.classList.add('selected');
-                    reviewData.server = serverItem.dataset.serverName;
-                    document.getElementById('service-qualities-container').classList.remove('hidden');
+            serverGrid.addEventListener('click', e => {
+                const serverTag = e.target.closest('.tag');
+                if (serverTag) {
+                    const selected = serverGrid.querySelector('.selected');
+                    if (selected) selected.classList.remove('selected');
+                    serverTag.classList.add('selected');
+                    state.selectedServer = serverTag.dataset.serverName;
                 }
             });
 
-            function setupCheckboxLimit(containerId, category, limit) {
-                const container = document.getElementById(containerId);
-                const notificationEl = container.parentElement.querySelector('.limit-notification');
-                container.addEventListener('change', e => {
-                    if (e.target.type === 'checkbox') {
-                        const checked = container.querySelectorAll('input:checked');
-                        reviewData[category] = Array.from(checked).map(cb => cb.value);
-                        
-                        if (checked.length >= limit) {
-                            container.querySelectorAll('input:not(:checked)').forEach(cb => cb.disabled = true);
-                            if(notificationEl) {
-                                notificationEl.innerText = getTranslation('limit_reached', limit);
-                                notificationEl.classList.remove('hidden');
-                            }
-                        } else {
-                            container.querySelectorAll('input').forEach(cb => cb.disabled = false);
-                            if(notificationEl) notificationEl.classList.add('hidden');
-                        }
-                    }
-                });
-            }
-            setupCheckboxLimit('service-qualities-tags', 'serviceQualities', 3);
-            setupCheckboxLimit('flavors-tags', 'flavors', 6);
-            setupCheckboxLimit('atmosphere-tags', 'atmosphere', 3);
-
-            document.getElementById('occasion-tags').addEventListener('change', e => {
-                if(e.target.name === 'occasion') {
-                    reviewData.occasion = e.target.value;
+            tagsGrid.addEventListener('click', e => {
+                const tag = e.target.closest('.tag');
+                if (tag) {
+                    tag.classList.toggle('selected');
+                    state.selectedTags = Array.from(tagsGrid.querySelectorAll('.selected')).map(t => t.dataset.tagText);
                 }
             });
 
-            document.getElementById('copy-btn').addEventListener('click', () => {
-                const reviewText = document.getElementById('review-text');
-                reviewText.select();
-                document.execCommand('copy');
-                alert('Texte copié !');
+            generateBtn.addEventListener('click', handleGenerateReview);
+            regenerateBtn.addEventListener('click', handleGenerateReview);
+            
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(reviewTextOutput.textContent);
+                copyBtn.textContent = 'Copié !';
+                setTimeout(() => { copyBtn.textContent = 'Copier'; }, 2000);
+            });
+
+            sendFeedbackBtn.addEventListener('click', () => {
+                negativeFlowCard.classList.add('hidden');
+                thankYouCard.classList.remove('hidden');
+                // Here you would typically send the feedback to your backend
+                console.log('Feedback à envoyer:', document.getElementById('private-feedback-textarea').value);
             });
         }
 
+        // --- INITIALIZATION ---
         async function init() {
-            reviewContainer.classList.add('loaded');
             const success = await fetchRestaurantData();
             if (success) {
                 loader.classList.add('hidden');
                 appContent.classList.remove('hidden');
-                
                 applyBranding();
-                renderAllSections();
+                createStars();
+                populateFollowUpContent();
                 setupEventListeners();
-
-                const googleBtn = document.getElementById('google-btn');
-                const tripadvisorBtn = document.getElementById('tripadvisor-btn');
-                if (restaurantData.links && restaurantData.links.google) {
-                    googleBtn.href = restaurantData.links.google;
-                    googleBtn.classList.remove('hidden');
-                } else {
-                    googleBtn.classList.add('hidden');
-                }
-                if (restaurantData.links && restaurantData.links.tripadvisor) {
-                    tripadvisorBtn.href = restaurantData.links.tripadvisor;
-                    tripadvisorBtn.classList.remove('hidden');
-                } else {
-                    tripadvisorBtn.classList.add('hidden');
-                }
-
-                if (!restaurantData.languages || restaurantData.languages.length <= 1) {
-                    reviewData.lang = restaurantData.languages[0] || 'fr';
-                    renderAllSections();
-                    goToSection(1);
-                } else {
-                    goToSection(0);
-                }
             }
         }
 
