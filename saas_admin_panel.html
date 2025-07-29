@@ -33,25 +33,30 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.5s ease-out forwards; }
         button:disabled { opacity: 0.7; cursor: not-allowed; }
-        .form-input {
+        .form-input, .form-select {
             margin-top: 0.25rem; display: block; width: 100%;
             border-radius: 0.5rem; border: 1px solid var(--border-color);
             padding: 0.75rem 1rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .form-input:focus {
+        .form-input:focus, .form-select:focus {
             outline: none; border-color: var(--brand-color);
             box-shadow: 0 0 0 3px rgba(191, 91, 63, 0.2);
         }
         .card {
-            background-color: var(--surface-color); padding: 2rem;
+            background-color: var(--surface-color); padding: 1.5rem; /* Padding ajusté pour mobile */
             border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,.05), 0 2px 4px -1px rgba(0,0,0,.03);
             border: 1px solid var(--border-color);
         }
+        @media (min-width: 768px) {
+            .card {
+                padding: 2rem;
+            }
+        }
         .tag-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0.75rem; background-color: #f9fafb; border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem; background-color: #f9fafb; border-radius: 0.5rem;
             border: 1px solid var(--border-color);
         }
     </style>
@@ -83,22 +88,47 @@
     </div>
 
     <div id="main-app" class="hidden">
-        <div class="flex h-screen bg-gray-100">
-            <aside class="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex-col hidden md:flex">
-                <div class="h-20 flex items-center justify-center px-4 border-b">
-                    <h1 class="text-2xl font-bold font-serif brand-color">ReviewGenius</h1>
+        <!-- Barre latérale pour mobile et bureau -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 bg-white border-r border-gray-200 w-64 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-40 flex flex-col">
+            <div class="h-20 flex items-center justify-between px-4 border-b shrink-0">
+                <h1 class="text-2xl font-bold font-serif brand-color">ReviewGenius</h1>
+                <!-- Bouton pour fermer sur mobile -->
+                <button id="sidebar-close-btn" class="md:hidden">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <nav id="sidebar-nav" class="mt-6 flex-1 overflow-y-auto">
+                <a href="#dashboard" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Tableau de bord</span></a>
+                <a href="#page-settings" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Gestion Page</span></a>
+                <a href="#options-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg><span>Gestion Options</span></a>
+                <a href="#team-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg><span>Gestion Équipes</span></a>
+                <a href="#menu-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg><span>Gestion Menu</span></a>
+            </nav>
+            <div class="p-4 border-t shrink-0">
+                <button id="logout-btn" class="w-full text-left flex items-center px-2 py-2 text-gray-600 hover:bg-red-50 hover:text-red-700 rounded-md"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg><span>Déconnexion</span></button>
+            </div>
+        </aside>
+
+        <!-- Fond sombre pour mobile -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30"></div>
+
+        <div class="flex-1 flex flex-col md:ml-64">
+            <!-- Header pour mobile -->
+            <header class="md:hidden sticky top-0 bg-white shadow-md z-20">
+                <div class="flex justify-between items-center p-4">
+                    <button id="sidebar-open-btn">
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-bold font-serif brand-color">ReviewGenius</h1>
+                    <div class="w-6"></div> <!-- Espace pour centrer le titre -->
                 </div>
-                <nav id="sidebar-nav" class="mt-6 flex-1">
-                    <a href="#dashboard" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Tableau de bord</span></a>
-                    <a href="#page-settings" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Gestion Page</span></a>
-                    <a href="#options-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg><span>Gestion Options</span></a>
-                    <a href="#team-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg><span>Gestion Équipes</span></a>
-                    <a href="#menu-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg><span>Gestion Menu</span></a>
-                </nav>
-                <div class="p-4 border-t">
-                    <button id="logout-btn" class="w-full text-left flex items-center px-2 py-2 text-gray-600 hover:bg-red-50 hover:text-red-700 rounded-md"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg><span>Déconnexion</span></button>
-                </div>
-            </aside>
+            </header>
+
+            <!-- Contenu principal -->
             <main class="flex-1 overflow-y-auto">
                 <div id="content-area" class="p-4 md:p-8">
                     <section id="dashboard" class="content-section fade-in"></section>
@@ -122,16 +152,30 @@
         const logoutBtn = document.getElementById('logout-btn');
         const contentArea = document.getElementById('content-area');
 
-        // --- NOUVELLE FONCTION ---
-        // Gère l'affichage du tableau de bord et le chargement des données.
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOpenBtn = document.getElementById('sidebar-open-btn');
+        const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        const sidebarNav = document.getElementById('sidebar-nav');
+
+        function openSidebar() {
+            if (sidebar) sidebar.classList.remove('-translate-x-full');
+            if (sidebarBackdrop) sidebarBackdrop.classList.remove('hidden');
+        }
+
+        function closeSidebar() {
+            if (sidebar) sidebar.classList.add('-translate-x-full');
+            if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+        }
+
+        sidebarOpenBtn.addEventListener('click', openSidebar);
+        sidebarCloseBtn.addEventListener('click', closeSidebar);
+        sidebarBackdrop.addEventListener('click', closeSidebar);
+        
         async function loadAppData() {
             try {
-                // Affiche l'interface principale et cache l'écran de connexion
                 authOverlay.classList.add('hidden');
                 mainApp.classList.remove('hidden');
-
-                // Charge le contenu de toutes les sections
-                // Promise.all permet de lancer les chargements en parallèle pour plus de rapidité
                 await Promise.all([
                     renderDashboard(),
                     renderPageSettings(),
@@ -139,20 +183,14 @@
                     renderTeamManagement(),
                     renderMenuManagement()
                 ]);
-
-                // Active l'onglet correct en fonction de l'URL ou le tableau de bord par défaut
                 switchTab(window.location.hash || '#dashboard');
             } catch (error) {
                 console.error("Erreur lors du chargement des données de l'application:", error);
-                // Si le chargement échoue (ex: token expiré), on déconnecte l'utilisateur
                 logout();
             }
         }
 
-        // --- NOUVEAU BLOC ---
-        // Au chargement de la page, on vérifie si un token existe déjà
         if (localStorage.getItem('jwt_token')) {
-            // Si oui, on essaie de charger directement le tableau de bord
             loadAppData();
         }
 
@@ -182,14 +220,32 @@
                 try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) {}
                 throw new Error(errorMsg);
             }
-            if (response.headers.get('Content-Length') === '0' || response.status === 204) { return null; }
+            if (response.status === 204) { return null; }
             return response.json();
         }
         
-        async function fetchWithAuthFormData(url, formData, options = {}) {
+        async function fetchWithAuthFormData(url, formData) {
             const token = localStorage.getItem('jwt_token');
             if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
-            const headers = { 'Authorization': `Bearer ${token}`, ...options.headers };
+            const headers = { 'Authorization': `Bearer ${token}` };
+            const response = await fetch(`${API_BASE_URL}${url}`, { method: 'PUT', body: formData, headers });
+            if (response.status === 401 || response.status === 422) {
+                logout();
+                const errorText = response.status === 401 ? 'Token invalide ou expiré.' : 'Requête invalide.';
+                throw new Error(`Session expirée. ${errorText} Veuillez vous reconnecter.`);
+            }
+            if (!response.ok) {
+                let errorMsg = `Erreur du serveur (code: ${response.status})`;
+                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) {}
+                throw new Error(errorMsg);
+            }
+            return response.json();
+        }
+        
+        async function postWithAuthFormData(url, formData) {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
+            const headers = { 'Authorization': `Bearer ${token}` };
             const response = await fetch(`${API_BASE_URL}${url}`, { method: 'POST', body: formData, headers });
             if (response.status === 401 || response.status === 422) {
                 logout();
@@ -208,7 +264,6 @@
             localStorage.removeItem('jwt_token');
             mainApp.classList.add('hidden');
             authOverlay.classList.remove('hidden');
-            // Vide le contenu pour éviter d'afficher des données périmées lors de la prochaine connexion
             contentArea.innerHTML = `<section id="dashboard" class="content-section fade-in"></section><section id="page-settings" class="content-section"></section><section id="team-management" class="content-section"></section><section id="menu-management" class="content-section"></section><section id="options-management" class="content-section"></section>`;
         }
 
@@ -226,8 +281,6 @@
                 const data = await fetchPublic('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
                 if (data && data.access_token) {
                     localStorage.setItem('jwt_token', data.access_token);
-                    // --- MODIFICATION CLÉ ---
-                    // On appelle la nouvelle fonction pour afficher le tableau de bord
                     await loadAppData();
                 } else { throw new Error('Réponse de connexion invalide.'); }
             } catch (error) {
@@ -262,15 +315,23 @@
             document.querySelectorAll('.content-section').forEach(section => section.classList.toggle('active', `#${section.id}` === hash));
         }
 
-        document.getElementById('sidebar-nav').addEventListener('click', (e) => {
+        sidebarNav.addEventListener('click', (e) => {
             const navLink = e.target.closest('a');
-            if (navLink) { e.preventDefault(); const targetId = navLink.getAttribute('href'); window.location.hash = targetId; switchTab(targetId); }
+            if (navLink) { 
+                e.preventDefault(); 
+                const targetId = navLink.getAttribute('href'); 
+                window.location.hash = targetId; 
+                switchTab(targetId);
+                if(window.innerWidth < 768) {
+                    closeSidebar();
+                }
+            }
         });
 
         async function renderDashboard() {
             const section = document.getElementById('dashboard');
             if (!section) return;
-            section.innerHTML = `<h1 class="text-4xl font-bold font-serif mb-6">Tableau de bord</h1><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"><div class="card"><h3 class="text-sm font-semibold text-gray-500">Avis (30j)</h3><p class="text-3xl font-bold mt-1">128</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Note moyenne</h3><p class="text-3xl font-bold mt-1">4.8 <span class="text-yellow-400">★</span></p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Serveur du mois</h3><p class="text-3xl font-bold mt-1">Clara</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Feedbacks privés</h3><p class="text-3xl font-bold mt-1">3</p></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Tendance des avis</h2><div class="h-80"><canvas id="reviewsTrendChart"></canvas></div></div>`;
+            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Tableau de bord</h1><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8"><div class="card"><h3 class="text-sm font-semibold text-gray-500">Avis (30j)</h3><p class="text-3xl font-bold mt-1">128</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Note moyenne</h3><p class="text-3xl font-bold mt-1">4.8 <span class="text-yellow-400">★</span></p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Serveur du mois</h3><p class="text-3xl font-bold mt-1">Clara</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Feedbacks privés</h3><p class="text-3xl font-bold mt-1">3</p></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Tendance des avis</h2><div class="h-80"><canvas id="reviewsTrendChart"></canvas></div></div>`;
             const ctx = document.getElementById('reviewsTrendChart').getContext('2d');
             new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--brand-color)', backgroundColor: 'var(--brand-color-light)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
         }
@@ -288,7 +349,7 @@
                 const enabledLanguages = Array.isArray(settings.enabledLanguages) ? settings.enabledLanguages : [];
                 const logoSrc = settings.logoUrl ? `${API_BASE_URL}${settings.logoUrl}` : 'https://placehold.co/100x100/DEE2E6/6C757D?text=Logo';
                 
-                section.innerHTML = `<h1 class="text-4xl font-bold font-serif mb-8">Gestion de la Page de Collecte d'Avis</h1><form id="page-settings-form"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-8"><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Informations Générales</h2><div class="space-y-6"><div><label for="restaurant-name" class="block text-sm font-medium text-gray-700">Nom du Restaurant</label><input type="text" id="restaurant-name" value="${settings.name || ''}" class="form-input"></div><div class="flex items-center gap-6"><img id="logo-preview" src="${logoSrc}" alt="Aperçu du logo" class="w-24 h-24 rounded-lg object-contain bg-gray-100 p-1"><div class="flex-1"><label for="logo-file" class="block text-sm font-medium text-gray-700">Changer le logo</label><input type="file" id="logo-file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-color-light file:text-brand-color hover:file:bg-brand-color/20" accept="image/png, image/jpeg, image/gif"><p class="text-xs text-gray-500 mt-1">L'aperçu se met à jour automatiquement.</p></div></div><div><label for="primary-color" class="block text-sm font-medium text-gray-700">Couleur principale</label><input type="color" id="primary-color" value="${settings.primaryColor || '#BF5B3F'}" class="mt-1 h-10 w-20 rounded-md border-gray-300 p-1"></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Liens de Notation</h2><div class="space-y-4"><div><label for="google-link" class="block text-sm font-medium text-gray-700">Lien Google</label><textarea id="google-link" rows="3" class="form-input" placeholder="https://search.google.com/local/writereview?placeid=...">${settings.googleLink || ''}</textarea></div><div><label for="tripadvisor-link" class="block text-sm font-medium text-gray-700">Lien TripAdvisor</label><textarea id="tripadvisor-link" rows="3" class="form-input" placeholder="https://www.tripadvisor.com/UserReview-g...-d...">${settings.tripadvisorLink || ''}</textarea></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Langues</h2><p class="text-sm text-gray-600 mb-4">Sélectionnez les langues à proposer.</p><div id="languages-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">${Object.entries(availableLangs).map(([code, name]) => `<label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" name="languages" value="${code}" class="h-5 w-5 rounded border-gray-300 text-brand-color focus:ring-brand-color" ${enabledLanguages.includes(code) ? 'checked' : ''}><span class="text-gray-700">${name}</span></label>`).join('')}</div></div></div><div class="lg:col-span-1"><div class="card sticky top-8" id="qr-code-card"></div></div></div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-0"><button type="submit" class="bg-brand-color text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors text-lg">Enregistrer les modifications</button></div></form>`;
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Gestion de la Page</h1><form id="page-settings-form"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-8"><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Informations Générales</h2><div class="space-y-6"><div><label for="restaurant-name" class="block text-sm font-medium text-gray-700">Nom du Restaurant</label><input type="text" id="restaurant-name" value="${settings.name || ''}" class="form-input"></div><div class="flex items-center gap-6"><img id="logo-preview" src="${logoSrc}" alt="Aperçu du logo" class="w-24 h-24 rounded-lg object-contain bg-gray-100 p-1"><div class="flex-1"><label for="logo-file" class="block text-sm font-medium text-gray-700">Changer le logo</label><input type="file" id="logo-file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-color-light file:text-brand-color hover:file:bg-brand-color/20" accept="image/png, image/jpeg, image/gif"><p class="text-xs text-gray-500 mt-1">L'aperçu se met à jour automatiquement.</p></div></div><div><label for="primary-color" class="block text-sm font-medium text-gray-700">Couleur principale</label><input type="color" id="primary-color" value="${settings.primaryColor || '#BF5B3F'}" class="mt-1 h-10 w-20 rounded-md border-gray-300 p-1"></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Liens de Notation</h2><div class="space-y-4"><div><label for="google-link" class="block text-sm font-medium text-gray-700">Lien Google</label><textarea id="google-link" rows="3" class="form-input" placeholder="https://search.google.com/local/writereview?placeid=...">${settings.googleLink || ''}</textarea></div><div><label for="tripadvisor-link" class="block text-sm font-medium text-gray-700">Lien TripAdvisor</label><textarea id="tripadvisor-link" rows="3" class="form-input" placeholder="https://www.tripadvisor.com/UserReview-g...-d...">${settings.tripadvisorLink || ''}</textarea></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Langues</h2><p class="text-sm text-gray-600 mb-4">Sélectionnez les langues à proposer.</p><div id="languages-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">${Object.entries(availableLangs).map(([code, name]) => `<label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" name="languages" value="${code}" class="h-5 w-5 rounded border-gray-300 text-brand-color focus:ring-brand-color" ${enabledLanguages.includes(code) ? 'checked' : ''}><span class="text-gray-700">${name}</span></label>`).join('')}</div></div></div><div class="lg:col-span-1"><div class="card sticky top-8" id="qr-code-card"></div></div></div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-color text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors text-lg w-full md:w-auto">Enregistrer</button></div></form>`;
                 
                 const qrCard = document.getElementById('qr-code-card');
                 const slug = settings.slug;
@@ -307,19 +368,283 @@
             }
         }
 
-        // --- NOUVELLES FONCTIONS VIDES (à remplir plus tard) ---
+        // --- GESTION DES OPTIONS (TAGS) ---
         async function renderOptionsManagement() {
             const section = document.getElementById('options-management');
-            if(section) section.innerHTML = `<h1 class="text-4xl font-bold font-serif mb-6">Gestion des Options</h1><div class="card"><p>Cette section est en cours de construction.</p></div>`;
+            if(!section) return;
+            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion des Options</h1><div class="text-center p-10">Chargement...</div>`;
+
+            try {
+                const tagsData = await fetchWithAuth('/api/tags');
+                const categories = {
+                    service: "Qualités du Service",
+                    occasion: "Occasions Spéciales",
+                    atmosphere: "Points Forts de l'Atmosphère"
+                };
+
+                let contentHtml = '<div class="space-y-8">';
+                for (const [key, title] of Object.entries(categories)) {
+                    const tags = tagsData[key] || [];
+                    contentHtml += `
+                        <div class="card">
+                            <h2 class="text-2xl font-bold font-serif mb-4">${title}</h2>
+                            <div id="tags-list-${key}" class="space-y-2 mb-4">
+                                ${tags.map(tag => `
+                                    <div class="tag-item" id="tag-item-${tag.id}">
+                                        <span>${tag.text}</span>
+                                        <button class="delete-tag-btn text-red-500 hover:text-red-700" data-tag-id="${tag.id}">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </div>
+                                `).join('')}
+                                ${tags.length === 0 ? '<p class="text-gray-500">Aucune option pour cette catégorie.</p>' : ''}
+                            </div>
+                            <form class="add-tag-form flex gap-2" data-category="${key}">
+                                <input type="text" placeholder="Ajouter une option..." class="form-input flex-grow" required>
+                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors">Ajouter</button>
+                            </form>
+                        </div>
+                    `;
+                }
+                contentHtml += '</div>';
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion des Options</h1>${contentHtml}`;
+            } catch (error) {
+                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des options.</div>`;
+            }
         }
+
+        // --- GESTION DES ÉQUIPES (SERVEURS) ---
         async function renderTeamManagement() {
             const section = document.getElementById('team-management');
-            if(section) section.innerHTML = `<h1 class="text-4xl font-bold font-serif mb-6">Gestion des Équipes</h1><div class="card"><p>Cette section est en cours de construction.</p></div>`;
+            if(!section) return;
+            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion des Équipes</h1><div class="text-center p-10">Chargement...</div>`;
+
+            try {
+                const servers = await fetchWithAuth('/api/servers');
+                let contentHtml = `
+                    <div class="card mb-8">
+                        <h2 class="text-2xl font-bold font-serif mb-4">Ajouter un Membre</h2>
+                        <form id="add-server-form" class="space-y-4">
+                            <div>
+                                <label for="server-name" class="block text-sm font-medium text-gray-700">Nom du membre</label>
+                                <input type="text" id="server-name" class="form-input" required>
+                            </div>
+                            <div>
+                                <label for="server-avatar" class="block text-sm font-medium text-gray-700">Photo (optionnel)</label>
+                                <input type="file" id="server-avatar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" accept="image/png, image/jpeg">
+                            </div>
+                            <div class="text-right">
+                                <button type="submit" class="bg-brand-color text-white px-6 py-2 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors">Ajouter</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h2 class="text-2xl font-bold font-serif mb-4">Membres Actuels</h2>
+                        <div id="servers-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            ${servers.map(server => `
+                                <div class="border rounded-lg p-4 text-center" id="server-item-${server.id}">
+                                    <img src="${server.avatar_url ? API_BASE_URL + server.avatar_url : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(server.name) + '&background=eeeeee&color=555555'}" alt="${server.name}" class="w-24 h-24 rounded-full mx-auto mb-2 object-cover">
+                                    <p class="font-semibold">${server.name}</p>
+                                    <button class="delete-server-btn mt-2 text-sm text-red-500 hover:underline" data-server-id="${server.id}">Supprimer</button>
+                                </div>
+                            `).join('')}
+                            ${servers.length === 0 ? '<p class="text-gray-500 col-span-full">Aucun membre dans l\'équipe.</p>' : ''}
+                        </div>
+                    </div>
+                `;
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion des Équipes</h1>${contentHtml}`;
+            } catch (error) {
+                 section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement de l'équipe.</div>`;
+            }
         }
+
+        // --- GESTION DU MENU ---
         async function renderMenuManagement() {
             const section = document.getElementById('menu-management');
-            if(section) section.innerHTML = `<h1 class="text-4xl font-bold font-serif mb-6">Gestion du Menu</h1><div class="card"><p>Cette section est en cours de construction.</p></div>`;
+            if(!section) return;
+            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion du Menu</h1><div class="text-center p-10">Chargement...</div>`;
+
+            try {
+                const menu = await fetchWithAuth('/api/menu');
+                const categories = Object.keys(menu).sort(); // Trier les catégories par ordre alphabétique
+                
+                let contentHtml = `
+                    <div class="card mb-8">
+                        <h2 class="text-2xl font-bold font-serif mb-4">Ajouter un Plat</h2>
+                        <form id="add-dish-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="dish-name" class="block text-sm font-medium text-gray-700">Nom du plat</label>
+                                <input type="text" id="dish-name" class="form-input" required>
+                            </div>
+                            <div>
+                                <label for="dish-category" class="block text-sm font-medium text-gray-700">Catégorie</label>
+                                <input type="text" id="dish-category" class="form-input" placeholder="Ex: Entrées, Plats, Desserts" required>
+                            </div>
+                            <div class="md:self-end">
+                                <button type="submit" class="bg-brand-color text-white px-6 py-2 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors w-full">Ajouter</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="space-y-8">
+                `;
+
+                if (categories.length > 0) {
+                    categories.forEach(category => {
+                        contentHtml += `
+                            <div class="card">
+                                <h2 class="text-2xl font-bold font-serif mb-4">${category}</h2>
+                                <div class="space-y-2">
+                                    ${menu[category].map(dish => `
+                                        <div class="tag-item" id="dish-item-${dish.id}">
+                                            <span>${dish.name}</span>
+                                            <button class="delete-dish-btn text-red-500 hover:text-red-700" data-dish-id="${dish.id}">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            </button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    contentHtml += '<div class="card text-center text-gray-500"><p>Votre menu est vide. Ajoutez des plats pour commencer.</p></div>';
+                }
+
+                contentHtml += '</div>';
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion du Menu</h1>${contentHtml}`;
+            } catch (error) {
+                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement du menu.</div>`;
+            }
         }
+
+        // --- GESTION DES ÉVÉNEMENTS (AJOUT/SUPPRESSION) ---
+        contentArea.addEventListener('submit', async (e) => {
+            // Sauvegarder les paramètres de la page
+            if (e.target.matches('#page-settings-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData();
+                formData.append('name', form.querySelector('#restaurant-name').value);
+                formData.append('primaryColor', form.querySelector('#primary-color').value);
+                formData.append('googleLink', form.querySelector('#google-link').value);
+                formData.append('tripadvisorLink', form.querySelector('#tripadvisor-link').value);
+                
+                const selectedLangs = Array.from(form.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value);
+                formData.append('enabledLanguages', JSON.stringify(selectedLangs));
+
+                const logoFile = form.querySelector('#logo-file').files[0];
+                if (logoFile) {
+                    formData.append('logo', logoFile);
+                }
+
+                try {
+                    const result = await fetchWithAuthFormData('/api/restaurant', formData);
+                    alert('Paramètres enregistrés avec succès !');
+                    // Mettre à jour l'aperçu du logo si une nouvelle URL est renvoyée
+                    if(result.logoUrl) {
+                        document.getElementById('logo-preview').src = API_BASE_URL + result.logoUrl;
+                    }
+                } catch (error) {
+                    alert('Erreur lors de la sauvegarde: ' + error.message);
+                }
+            }
+            // Ajouter un tag
+            if (e.target.matches('.add-tag-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const category = form.dataset.category;
+                const input = form.querySelector('input');
+                const text = input.value.trim();
+                if (!text) return;
+                
+                try {
+                    await fetchWithAuth('/api/tags', {
+                        method: 'POST',
+                        body: JSON.stringify({ category, text })
+                    });
+                    renderOptionsManagement(); // Re-render
+                } catch (error) {
+                    alert('Erreur lors de l\'ajout du tag: ' + error.message);
+                }
+            }
+            // Ajouter un serveur
+            if (e.target.matches('#add-server-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const nameInput = form.querySelector('#server-name');
+                const avatarInput = form.querySelector('#server-avatar');
+                const formData = new FormData();
+                formData.append('name', nameInput.value);
+                if (avatarInput.files[0]) {
+                    formData.append('avatar', avatarInput.files[0]);
+                }
+                try {
+                    await postWithAuthFormData('/api/servers', formData);
+                    renderTeamManagement();
+                } catch (error) {
+                    alert('Erreur lors de l\'ajout du membre: ' + error.message);
+                }
+            }
+            // Ajouter un plat
+            if (e.target.matches('#add-dish-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const name = form.querySelector('#dish-name').value;
+                const category = form.querySelector('#dish-category').value;
+                try {
+                    await fetchWithAuth('/api/menu', {
+                        method: 'POST',
+                        body: JSON.stringify({ name, category })
+                    });
+                    renderMenuManagement();
+                } catch (error) {
+                    alert('Erreur lors de l\'ajout du plat: ' + error.message);
+                }
+            }
+        });
+
+        contentArea.addEventListener('click', async (e) => {
+            // Supprimer un tag
+            if (e.target.closest('.delete-tag-btn')) {
+                const button = e.target.closest('.delete-tag-btn');
+                const tagId = button.dataset.tagId;
+                if (confirm('Voulez-vous vraiment supprimer cette option ?')) {
+                    try {
+                        await fetchWithAuth(`/api/tags/${tagId}`, { method: 'DELETE' });
+                        document.getElementById(`tag-item-${tagId}`).remove();
+                    } catch (error) {
+                        alert('Erreur lors de la suppression: ' + error.message);
+                    }
+                }
+            }
+            // Supprimer un serveur
+            if (e.target.closest('.delete-server-btn')) {
+                const button = e.target.closest('.delete-server-btn');
+                const serverId = button.dataset.serverId;
+                if (confirm('Voulez-vous vraiment supprimer ce membre ?')) {
+                    try {
+                        await fetchWithAuth(`/api/servers/${serverId}`, { method: 'DELETE' });
+                        document.getElementById(`server-item-${serverId}`).remove();
+                    } catch (error) {
+                        alert('Erreur lors de la suppression: ' + error.message);
+                    }
+                }
+            }
+            // Supprimer un plat
+            if (e.target.closest('.delete-dish-btn')) {
+                const button = e.target.closest('.delete-dish-btn');
+                const dishId = button.dataset.dishId;
+                if (confirm('Voulez-vous vraiment supprimer ce plat ?')) {
+                    try {
+                        await fetchWithAuth(`/api/menu/${dishId}`, { method: 'DELETE' });
+                        document.getElementById(`dish-item-${dishId}`).remove();
+                    } catch (error) {
+                        alert('Erreur lors de la suppression: ' + error.message);
+                    }
+                }
+            }
+        });
+
     });
     </script>
 </body>
