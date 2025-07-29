@@ -41,7 +41,7 @@
 
         .bg-cream { background-color: var(--color-bg); }
         .bg-surface { background-color: var(--color-surface); }
-        .text-brown-dark { color: var(--color-text); } /* Renommer la classe serait idéal, mais on garde pour la simplicité */
+        .text-brown-dark { color: var(--color-text); }
         .brand-accent { color: var(--color-primary); }
         .bg-brand-accent { background-color: var(--color-primary); }
         .hover\:bg-brand-accent-dark:hover { background-color: var(--color-primary-dark); }
@@ -386,48 +386,31 @@
         </section>
     </main>
 
-    <!-- ===== Footer ===== -->
-    <footer class="text-cream" style="background-color: #2D3748;">
-        <div class="container mx-auto px-6 py-12">
-            <div class="md:flex md:justify-between items-center">
-                <div class="mb-6 md:mb-0">
-                    <a href="#" class="text-2xl font-serif font-bold">Avis Pro Resto</a>
-                    <p class="mt-2 opacity-70">Votre partenaire e-réputation.</p>
+    <!-- ===== Footer Adapté ===== -->
+    <footer class="text-white" style="background-color: #2D3748;">
+        <div class="container mx-auto px-6 py-16">
+            <div class="grid lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-4">
+                    <a href="#" class="text-2xl font-serif font-bold text-white">Avis Pro Resto</a>
+                    <p class="mt-4 opacity-80 max-w-sm">La solution élégante pour transformer vos clients satisfaits en votre meilleur atout marketing.</p>
                 </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="opacity-70 hover:opacity-100 transition-opacity">Mentions Légales</a>
-                    <a href="#" class="opacity-70 hover:opacity-100 transition-opacity">Confidentialité</a>
-                    <a href="#contact" class="opacity-70 hover:opacity-100 transition-opacity">Contact</a>
+                <div class="lg:col-span-2">
+                    <h3 class="font-bold tracking-wider uppercase text-white">Solution</h3>
+                    <ul class="mt-4 space-y-3">
+                        <li><a href="#solution" class="opacity-80 hover:opacity-100 transition-opacity">Fonctionnalités</a></li>
+                        <li><a href="#tarifs" class="opacity-80 hover:opacity-100 transition-opacity">Tarifs</a></li>
+                        <li><a href="#temoignages" class="opacity-80 hover:opacity-100 transition-opacity">Témoignages</a></li>
+                    </ul>
                 </div>
-            </div>
-            <div class="mt-8 border-t border-cream/20 pt-6 text-center opacity-50">
-                <p>&copy; <span id="copyright-year"></span> Avis Pro Resto. Tous droits réservés.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Set current year in footer
-        document.getElementById('copyright-year').textContent = new Date().getFullYear();
-        
-        // --- Code pour les animations au scroll ---
-        const animatedElements = document.querySelectorAll('.fade-in-up');
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, {
-            threshold: 0.1
-        });
-
-        animatedElements.forEach(el => {
-            observer.observe(el);
-        });
-    </script>
-
-</body>
-</html>
+                <div class="lg:col-span-2">
+                    <h3 class="font-bold tracking-wider uppercase text-white">Entreprise</h3>
+                    <ul class="mt-4 space-y-3">
+                        <li><a href="#" class="opacity-80 hover:opacity-100 transition-opacity">À propos</a></li>
+                        <li><a href="#" class="opacity-80 hover:opacity-100 transition-opacity">Blog</a></li>
+                        <li><a href="#" class="opacity-80 hover:opacity-100 transition-opacity">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="lg:col-span-2">
+                    <h3 class="font-bold tracking-wider uppercase text-white">Légal</h3>
+                    <ul class="mt-4 space-y-3">
+                        <l
