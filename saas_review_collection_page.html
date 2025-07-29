@@ -568,7 +568,7 @@
                 if (!response.ok) throw new Error(`Restaurant non trouvé ou erreur serveur (code: ${response.status})`);
                 
                 const data = await response.json();
-                restaurantData = { ...data, servers: data.servers || [], languages: data.languages || ['fr', 'en'], tags: data.tags || {} };
+                restaurantData = { ...data, servers: data.servers || [], languages: data.languages || ['fr'], tags: data.tags || {} };
                 
                 const menuResponse = await fetch(`${API_BASE_URL}/api/public/menu/${slug}`);
                 if (menuResponse.ok) {
@@ -608,4 +608,253 @@
             }
 
             document.title = `Avis - ${restaurantData.name}`;
-            const logoUrl = restaurantData.logoUrl ? `${API_BASE_URL}${restaurantData.logoUrl}` : `https://placehold.co/200x60/${color.substring(1)}/FFFFFF?text
+            // FIX: Corrected the placeholder URL and added the line to set the logo.
+            const logoUrl = restaurantData.logoUrl 
+                ? `${API_BASE_URL}${restaurantData.logoUrl}` 
+                : `https://placehold.co/200x60/${color.replace('#','')}/FFFFFF?text=${encodeURIComponent(restaurantData.name)}`;
+            document.getElementById('logo-container').innerHTML = `<img src="${logoUrl}" alt="Logo ${restaurantData.name}">`;
+        }
+
+        function initializePage() {
+            if (!restaurantData || !restaurantData.name) {
+                // Data not loaded, abort. Error is already shown.
+                return;
+            }
+            applyBranding();
+            setupLanguages();
+            setupServers();
+            setupTags();
+            updateNavigation();
+
+            loader.classList.add('hidden');
+            appContent.classList.remove('hidden');
+            reviewContainer.classList.add('loaded');
+        }
+
+        // ... (le reste du script reste identique)
+
+        function setupLanguages() {
+            const langContainer = document.querySelector('#section-lang .gap-4');
+            if(restaurantData.languages.length <= 1){
+                document.getElementById('section-lang').classList.add('is-empty');
+                return;
+            }
+            langContainer.innerHTML = restaurantData.languages.map(lang => {
+                const langName = translations[lang]?.lang_name_native || lang;
+                return `<button class="lang-button" data-lang="${lang}">${langName}</button>`;
+            }).join('');
+            langContainer.addEventListener('click', (e) => {
+                const btn = e.target.closest('.lang-button');
+                if (btn) {
+                    reviewData.lang = btn.dataset.lang;
+                    translatePage();
+                    moveToNextSection();
+                }
+            });
+        }
+
+        function setupServers() {
+            const serverGrid = document.getElementById('server-grid');
+            if(!restaurantData.servers || restaurantData.servers.length === 0){
+                document.getElementById('section-server').classList.add('is-empty');
+                return;
+            }
+            serverGrid.innerHTML = restaurantData.servers.map(server => `
+                <div class="selection-item" data-server-name="${server.name}">
+                    <img src="${server.avatar ? API_BASE_URL + server.avatar : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(server.name) + '&background=eeeeee&color=2D3748'}" alt="${server.name}">
+                    <span>${server.name}</span>
+                </div>
+            `).join('');
+            serverGrid.addEventListener('click', (e) => {
+                const selected = e.target.closest('.selection-item');
+                if (selected) {
+                    document.querySelectorAll('#server-grid .selection-item').forEach(el => el.classList.remove('selected'));
+                    selected.classList.add('selected');
+                    reviewData.server = selected.dataset.serverName;
+                    document.getElementById('service-qualities-container').classList.remove('hidden');
+                }
+            });
+        }
+
+        function createTagInput(category, tagData, limit) {
+            const id = `tag_${category}_${tagData.key}`;
+            return `
+                <div>
+                    <input type="checkbox" id="${id}" name="${category}" value="${tagData.key}">
+                    <label for="${id}">${tagData.translations[reviewData.lang] || tagData.translations.fr}</label>
+                </div>
+            `;
+        }
+
+        function handleTagSelection(container, dataArray, reviewKey, limit) {
+             if(!dataArray || dataArray.length === 0){
+                container.closest('.form-section').classList.add('is-empty');
+                return;
+            }
+            container.innerHTML = dataArray.map(item => createTagInput(reviewKey, item, limit)).join('');
+            
+            const notificationEl = container.parentElement.querySelector('.limit-notification');
+            notificationEl.textContent = getTranslation('limit_reached', limit);
+
+            container.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    const checked = container.querySelectorAll('input:checked');
+                    reviewData[reviewKey] = Array.from(checked).map(cb => cb.value);
+
+                    if (checked.length >= limit) {
+                        notificationEl.classList.remove('hidden');
+                        container.querySelectorAll('input:not(:checked)').forEach(cb => cb.disabled = true);
+                    } else {
+                        notificationEl.classList.add('hidden');
+                        container.querySelectorAll('input:not(:checked)').forEach(cb => cb.disabled = false);
+                    }
+                }
+            });
+        }
+        
+        function setupTags() {
+            const serviceTagsContainer = document.getElementById('service-tags');
+            handleTagSelection(serviceTagsContainer, restaurantData.tags.service, 'serviceQualities', 3);
+
+            const occasionTagsContainer = document.getElementById('occasion-tags');
+            handleTagSelection(occasionTagsContainer, restaurantData.tags.occasion, 'occasion', 1); // Limit is 1 for radio-like behavior
+            occasionTagsContainer.addEventListener('change', (e) => {
+                if(e.target.type === 'checkbox' && e.target.checked) {
+                    occasionTagsContainer.querySelectorAll('input').forEach(cb => {
+                        if(cb !== e.target) cb.checked = false;
+                    });
+                    reviewData.occasion = e.target.value;
+                }
+            });
+            
+            const flavorsTagsContainer = document.getElementById('flavors-tags');
+            const allDishes = Object.values(restaurantData.menu || {}).flat().map(dish => ({
+                key: dish.name,
+                translations: { fr: dish.name, en: dish.name, es: dish.name, it: dish.name, pt: dish.name, zh: dish.name }
+            }));
+            handleTagSelection(flavorsTagsContainer, allDishes, 'flavors', 6);
+
+            const atmosphereTagsContainer = document.getElementById('atmosphere-tags');
+            handleTagSelection(atmosphereTagsContainer, restaurantData.tags.atmosphere, 'atmosphere', 3);
+        }
+
+        function updateNavigation() {
+            translatePage();
+            sections.forEach((section, index) => {
+                section.classList.toggle('active', index === currentSectionIndex);
+            });
+
+            backBtn.style.visibility = currentSectionIndex > 0 ? 'visible' : 'hidden';
+            navButtons.style.display = currentSectionIndex === sectionOrder.length - 1 ? 'none' : 'flex';
+            
+            if (currentSectionIndex === sectionOrder.length - 2) { // Feedback section
+                nextBtn.innerText = getTranslation('nav_generate');
+            } else {
+                nextBtn.innerText = getTranslation('nav_next');
+            }
+        }
+
+        function moveToNextSection() {
+            if (currentSectionIndex < sectionOrder.length - 1) {
+                currentSectionIndex++;
+                // Skip empty sections
+                while(document.getElementById(`section-${sectionOrder[currentSectionIndex]}`).classList.contains('is-empty') && currentSectionIndex < sectionOrder.length -1) {
+                    currentSectionIndex++;
+                }
+                updateNavigation();
+                if (sectionOrder[currentSectionIndex] === 'result') {
+                    generateReview();
+                }
+            }
+        }
+
+        function moveToPrevSection() {
+            if (currentSectionIndex > 0) {
+                currentSectionIndex--;
+                 // Skip empty sections
+                while(document.getElementById(`section-${sectionOrder[currentSectionIndex]}`).classList.contains('is-empty') && currentSectionIndex > 0) {
+                    currentSectionIndex--;
+                }
+                updateNavigation();
+            }
+        }
+
+        nextBtn.addEventListener('click', moveToNextSection);
+        backBtn.addEventListener('click', moveToPrevSection);
+
+        async function generateReview() {
+            reviewData.privateFeedback = document.getElementById('feedback-textarea').value;
+
+            const findTranslation = (key, category, lang) => {
+                const item = restaurantData.tags[category]?.find(t => t.key === key);
+                return item?.translations[lang] || key;
+            };
+            
+            const findDishName = (key) => {
+                 const allDishes = Object.values(restaurantData.menu || {}).flat();
+                 const dish = allDishes.find(d => d.name === key);
+                 return dish ? dish.name : key;
+            };
+
+            let promptParts = [];
+            if (reviewData.server) promptParts.push(`le service a été réalisé par ${reviewData.server}.`);
+            if (reviewData.serviceQualities.length > 0) promptParts.push(`Le service était particulièrement ${reviewData.serviceQualities.map(q => findTranslation(q, 'service', 'fr')).join(', ')}.`);
+            if (reviewData.occasion) promptParts.push(`C'était pour une occasion spéciale : ${findTranslation(reviewData.occasion, 'occasion', 'fr')}.`);
+            if (reviewData.flavors.length > 0) promptParts.push(`Nous avons adoré les plats suivants : ${reviewData.flavors.map(f => findDishName(f)).join(', ')}.`);
+            if (reviewData.atmosphere.length > 0) promptParts.push(`L'atmosphère était marquée par : ${reviewData.atmosphere.map(a => findTranslation(a, 'atmosphere', 'fr')).join(', ')}.`);
+
+            const prompt = `Rédige un avis de restaurant positif et chaleureux en français, en utilisant un ton naturel et engageant. L'avis doit faire environ 3-5 phrases. Intègre les éléments suivants de manière fluide : ${promptParts.join(' ')}. Termine par une recommandation enthousiaste.`;
+            
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const slug = urlParams.get('slug');
+                const response = await fetch(`${API_BASE_URL}/api/public/review/generate/${slug}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt, reviewData })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "La génération de l'avis a échoué.");
+                }
+
+                const result = await response.json();
+                document.getElementById('review-text-display').innerText = result.review;
+                document.getElementById('generation-loader').classList.add('hidden');
+                document.getElementById('result-display').classList.remove('hidden');
+
+            } catch (error) {
+                document.getElementById('generation-loader').innerHTML = `<p class="text-red-500">Erreur: ${error.message}</p>`;
+            }
+        }
+
+        const copyBtn = document.getElementById('copy-btn');
+        copyBtn.addEventListener('click', () => {
+            const textToCopy = document.getElementById('review-text-display').innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                copyBtn.innerText = "Copié !";
+                setTimeout(() => { copyBtn.innerText = getTranslation('copy_button'); }, 2000);
+            });
+        });
+
+        const googleBtn = document.getElementById('google-btn');
+        const tripadvisorBtn = document.getElementById('tripadvisor-btn');
+
+        // Initialisation
+        if (await fetchRestaurantData()) {
+            initializePage();
+            if (restaurantData.links?.google) {
+                googleBtn.href = restaurantData.links.google;
+            } else {
+                googleBtn.style.display = 'none';
+            }
+            if (restaurantData.links?.tripadvisor) {
+                tripadvisorBtn.href = restaurantData.links.tripadvisor;
+                tripadvisorBtn.classList.remove('hidden');
+            }
+        }
+    });
+    </script>
+</body>
+</html>
