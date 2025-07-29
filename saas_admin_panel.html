@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - ReviewGenius</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-color: #BF5B3F;
+            --background-color: #F8F9FA;
+            --surface-color: #FFFFFF;
+            --text-primary: #212529;
+            --text-secondary: #6C757D;
+            --border-color: #DEE2E6;
+        }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--background-color); }
+        .font-serif { font-family: 'Cormorant Garamond', serif; }
+        .brand-color { color: var(--brand-color); }
+        .bg-brand-color { background-color: var(--brand-color); }
+        .bg-brand-color-light { background-color: rgba(191, 91, 63, 0.1); }
+        .border-brand-color { border-color: var(--brand-color); }
+        .hover\:bg-brand-color-dark:hover { background-color: #A64B35; }
+        .ring-brand-color { --tw-ring-color: var(--brand-color); }
+        .nav-item.active { background-color: var(--brand-color-light); color: var(--brand-color); font-weight: 600; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        button:disabled { opacity: 0.7; cursor: not-allowed; }
+        .form-input {
+            margin-top: 0.25rem; display: block; width: 100%;
+            border-radius: 0.5rem; border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus {
+            outline: none; border-color: var(--brand-color);
+            box-shadow: 0 0 0 3px rgba(191, 91, 63, 0.2);
+        }
+        .card {
+            background-color: var(--surface-color); padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05), 0 2px 4px -1px rgba(0,0,0,.03);
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="auth-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                <h1 class="text-3xl font-bold font-serif brand-color mb-6">ReviewGenius</h1>
+                <form id="login-form">
+                    <h2 class="text-xl font-semibold mb-4">Connexion</h2>
+                    <input type="email" id="login-email" placeholder="Email" class="form-input mb-3" required>
+                    <input type="password" id="login-password" placeholder="Mot de passe" class="form-input mb-4" required>
+                    <button type="submit" id="login-button" class="w-full bg-brand-color text-white py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors">Se connecter</button>
+                    <p id="login-error" class="text-red-500 text-sm mt-2 h-4"></p>
+                </form>
+                <p class="text-gray-500 my-4">ou</p>
+                <form id="register-form">
+                    <h2 class="text-xl font-semibold mb-4">Créer un compte</h2>
+                    <input type="text" id="register-resto-name" placeholder="Nom de votre restaurant" class="form-input mb-3" required>
+                    <input type="email" id="register-email" placeholder="Email" class="form-input mb-3" required>
+                    <input type="password" id="register-password" placeholder="Mot de passe" class="form-input mb-4" required>
+                    <button type="submit" id="register-button" class="w-full bg-gray-700 text-white py-3 rounded-full font-semibold hover:bg-gray-800 transition-colors">S'inscrire</button>
+                    <p id="register-error" class="text-red-500 text-sm mt-2 h-4"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-app" class="hidden">
+        <div class="flex h-screen bg-gray-100">
+            <aside class="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex-col hidden md:flex">
+                <div class="h-20 flex items-center justify-center px-4 border-b">
+                    <h1 class="text-2xl font-bold font-serif brand-color">ReviewGenius</h1>
+                </div>
+                <nav id="sidebar-nav" class="mt-6 flex-1">
+                    <a href="#dashboard" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Tableau de bord</span></a>
+                    <a href="#page-settings" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Gestion Page</span></a>
+                    <a href="#team-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg><span>Gestion Équipes</span></a>
+                    <a href="#menu-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg><span>Gestion Menu</span></a>
+                </nav>
+                <div class="p-4 border-t">
+                    <button id="logout-btn" class="w-full text-left flex items-center px-2 py-2 text-gray-600 hover:bg-red-50 hover:text-red-700 rounded-md"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg><span>Déconnexion</span></button>
+                </div>
+            </aside>
+            <main class="flex-1 overflow-y-auto">
+                <div id="content-area" class="p-4 md:p-8">
+                    <section id="dashboard" class="content-section fade-in"></section>
+                    <section id="page-settings" class="content-section"></section>
+                    <section id="team-management" class="content-section"></section>
+                    <section id="menu-management" class="content-section"></section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const API_BASE_URL = 'https://repup-test.onrender.com';
+
+        const authOverlay = document.getElementById('auth-overlay');
+        const mainApp = document.getElementById('main-app');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const logoutBtn = document.getElementById('logout-btn');
+        const contentArea = document.getElementById('content-area');
+
+        async function fetchPublic(url, options = {}) {
+            const headers = { 'Content-Type': 'application/json', ...options.headers };
+            const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+            if (!response.ok) {
+                let errorMsg = `Erreur du serveur (code: ${response.status})`;
+                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) { console.error("Could not parse error response as JSON.", e); }
+                throw new Error(errorMsg);
+            }
+            return response.json();
+        }
+
+        async function fetchWithAuth(url, options = {}) {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
+            const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...options.headers };
+            const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+            if (response.status === 401 || response.status === 422) {
+                logout();
+                const errorText = response.status === 401 ? 'Token invalide ou expiré.' : 'Requête invalide.';
+                throw new Error(`Session expirée. ${errorText} Veuillez vous reconnecter.`);
+            }
+            if (!response.ok) {
+                let errorMsg = `Erreur du serveur (code: ${response.status})`;
+                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) {}
+                throw new Error(errorMsg);
+            }
+            if (response.headers.get('Content-Length') === '0' || response.status === 204) { return null; }
+            return response.json();
+        }
+        
+        async function fetchWithAuthFormData(url, formData, options = {}) {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
+            const headers = { 'Authorization': `Bearer ${token}`, ...options.headers };
+            const response = await fetch(`${API_BASE_URL}${url}`, { method: 'POST', body: formData, headers });
+            if (response.status === 401 || response.status === 422) {
+                logout();
+                const errorText = response.status === 401 ? 'Token invalide ou expiré.' : 'Requête invalide.';
+                throw new Error(`Session expirée. ${errorText} Veuillez vous reconnecter.`);
+            }
+            if (!response.ok) {
+                let errorMsg = `Erreur du serveur (code: ${response.status})`;
+                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) {}
+                throw new Error(errorMsg);
+            }
+            return response.json();
+        }
+
+        function logout() {
+            localStorage.removeItem('jwt_token');
+            mainApp.classList.add('hidden');
+            authOverlay.classList.remove('hidden');
+            contentArea.innerHTML = `<section id="dashboard" class="content-section fade-in"></section><section id="page-settings" class="content-section"></section><section id="team-management" class="content-section"></section><section id="menu-management" class="content-section"></section>`;
+        }
+
+        logoutBtn.addEventListener('click', logout);
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const button = document.getElementById('login-button');
+            const errorP = document.getElementById('login-error');
+            errorP.textContent = '';
+            button.disabled = true; button.textContent = 'Connexion...';
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            try {
+                const data = await fetchPublic('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+                if (data && data.access_token) {
+                    localStorage.setItem('jwt_token', data.access_token);
+                    await loadAppData();
+                } else { throw new Error('Réponse de connexion invalide.'); }
+            } catch (error) {
+                errorP.textContent = error.message;
+            } finally {
+                button.disabled = false; button.textContent = 'Se connecter';
+            }
+        });
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const button = document.getElementById('register-button');
+            const errorP = document.getElementById('register-error');
+            errorP.textContent = '';
+            button.disabled = true; button.textContent = 'Inscription...';
+            const restaurant_name = document.getElementById('register-resto-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            try {
+                const data = await fetchPublic('/api/register', { method: 'POST', body: JSON.stringify({ restaurant_name, email, password }) });
+                alert(data.message + " Vous pouvez maintenant vous connecter.");
+                loginForm.reset(); registerForm.reset();
+            } catch (error) {
+                errorP.textContent = error.message;
+            } finally {
+                button.disabled = false; button.textContent = "S'inscrire";
+            }
+        });
+
+        function switchTab(hash) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.toggle('active', item.getAttribute('href') === hash));
+            document.querySelectorAll('.content-section').forEach(section => section.classList.toggle('active', `#${section.id}` === hash));
+        }
+
+        document.getElementById('sidebar-nav').addEventListener('click', (e) => {
+            const navLink = e.target.closest('a');
+            if (navLink) { e.preventDefault(); const targetId = navLink.getAttribute('href'); window.location.hash = targetId; switchTab(targetId); }
+        });
+
+        async function renderDashboard() {
+            const section = document.getElementById('dashboard');
+            if (!section) return;
+            section.innerHTML = `<h1 class="text-4xl font-bold font-serif mb-6">Tableau de bord</h1><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"><div class="card"><h3 class="text-sm font-semibold text-gray-500">Avis (30j)</h3><p class="text-3xl font-bold mt-1">128</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Note moyenne</h3><p class="text-3xl font-bold mt-1">4.8 <span class="text-yellow-400">★</span></p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Serveur du mois</h3><p class="text-3xl font-bold mt-1">Clara</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Feedbacks privés</h3><p class="text-3xl font-bold mt-1">3</p></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Tendance des avis</h2><div class="h-80"><canvas id="reviewsTrendChart"></canvas></div></div>`;
+            const ctx = document.getElementById('reviewsTrendChart').getContext('2d');
+            new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--brand-color)', backgroundColor: 'var(--brand-color-light)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
+        }
+
+        async function renderPageSettings() {
+            const section = document.getElementById('page-settings');
+            if (!section) return;
+            section.innerHTML = `<div class="text-center p-10">Chargement...</div>`;
+            const settings = await fetchWithAuth('/api/restaurant');
+            const availableLangs = { 'fr': 'Français', 'en': 'English', 'es': 'Español', 'it': 'Italiano' };
+            const enabledLanguages = Array.isArray(settings.enabledLanguages) ? settings.enabledLanguages : [];
+            const logoSrc = settings.logoUrl ? `${API_BASE_URL}${settings.logoUrl}` : 'https://placehold.co/100x100/DEE2E6/6C757D?text=Logo';
+            
+            section.innerHTML = `<h1 class="text-4xl font-bold font-serif mb-8">Gestion de la Page de Collecte d'Avis</h1><form id="page-settings-form"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-8"><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Personnalisation Visuelle</h2><div class="space-y-6"><div class="flex items-center gap-6"><img id="logo-preview" src="${logoSrc}" alt="Aperçu du logo" class="w-24 h-24 rounded-lg object-contain bg-gray-100 p-1"><div class="flex-1"><label for="logo-file" class="block text-sm font-medium text-gray-700">Changer le logo</label><input type="file" id="logo-file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-color-light file:text-brand-color hover:file:bg-brand-color/20" accept="image/png, image/jpeg, image/gif"><p class="text-xs text-gray-500 mt-1">L'aperçu se met à jour automatiquement.</p></div></div><div><label for="primary-color" class="block text-sm font-medium text-gray-700">Couleur principale</label><input type="color" id="primary-color" value="${settings.primaryColor || '#BF5B3F'}" class="mt-1 h-10 w-20 rounded-md border-gray-300 p-1"></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Liens de Notation</h2><div class="space-y-4"><div><label for="google-link" class="block text-sm font-medium text-gray-700">Lien Google</label><input type="url" id="google-link" value="${settings.googleLink || ''}" class="form-input" placeholder="https://search.google.com/local/writereview?placeid=..."></div><div><label for="tripadvisor-link" class="block text-sm font-medium text-gray-700">Lien TripAdvisor</label><input type="url" id="tripadvisor-link" value="${settings.tripadvisorLink || ''}" class="form-input" placeholder="https://www.tripadvisor.com/UserReview-g...-d..."></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Langues</h2><p class="text-sm text-gray-600 mb-4">Sélectionnez les langues à proposer.</p><div id="languages-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">${Object.entries(availableLangs).map(([code, name]) => `<label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" name="languages" value="${code}" class="h-5 w-5 rounded border-gray-300 text-brand-color focus:ring-brand-color" ${enabledLanguages.includes(code) ? 'checked' : ''}><span class="text-gray-700">${name}</span></label>`).join('')}</div></div></div><div class="lg:col-span-1"><div class="card sticky top-8" id="qr-code-card"></div></div></div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-0"><button type="submit" class="bg-brand-color text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors text-lg">Enregistrer les modifications</button></div></form>`;
+            
+            const qrCard = document.getElementById('qr-code-card');
+            const slug = settings.slug;
+            if (!slug) { qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">Votre QR Code</h2><div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg text-center"><p class="font-bold">Erreur</p><p class="text-sm mt-1">Le "slug" du restaurant est manquant.</p></div>`; } 
+            else {
+                qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">Votre QR Code</h2><p class="text-sm text-gray-600 mb-4">Vos clients scannent ce code pour laisser un avis.</p><div class="flex justify-center items-center bg-gray-50 p-4 rounded-lg"><div id="qrcode-container" class="p-2 bg-white rounded-md shadow-inner"></div></div><a id="download-qr-btn" href="#" class="mt-4 block w-full text-center bg-gray-800 text-white px-4 py-2 rounded-full font-semibold hover:bg-gray-900">Télécharger</a><div class="mt-4"><label class="text-sm font-medium text-gray-700">Votre lien direct :</label><input type="text" id="review-page-link" readonly class="form-input bg-gray-100 mt-1 cursor-pointer" title="Cliquez pour copier"></div>`;
+                const reviewPageUrl = new URL('saas_review_collection_page.html', window.location.href);
+                reviewPageUrl.searchParams.set('slug', slug);
+                document.getElementById('review-page-link').value = reviewPageUrl.href;
+                new QRCode(document.getElementById('qrcode-container'), { text: reviewPageUrl.href, width: 200, height: 200 });
+                document.getElementById('download-qr-btn').addEventListener('click', (e) => { e.preventDefault(); const canvas = qrcodeContainer.querySelector('canvas'); if (canvas) { const link = document.createElement('a'); link.download = `qrcode-${slug}.png`; link.href = canvas.toDataURL('image/png'); link.click(); } });
+                document.getElementById('review-page-link').addEventListener('click', () => { const input = document.getElementById('review-page-link'); input.select(); document.execCommand('copy'); alert('Lien copié !'); });
+            }
+            
+            document.getElementById('logo-file').addEventListener('change', (e) => {
+                const preview = document.getElementById('logo-preview');
+                const file = e.target.files[0];
+                if (file) { preview.src = URL.createObjectURL(file); }
+            });
+            document.getElementById('page-settings-form').addEventListener('submit', handleSaveSettings);
+        }
+
+        async function renderTeamManagement() {
+            const section = document.getElementById('team-management');
+            if (!section) return;
+            section.innerHTML = `<div class="text-center p-10">Chargement...</div>`;
+            const servers = await fetchWithAuth('/api/servers');
+            section.innerHTML = `<div class="flex justify-between items-center mb-6"><h1 class="text-4xl font-bold font-serif">Gestion des équipes</h1><button id="add-server-btn" class="bg-brand-color text-white px-5 py-2 rounded-full font-semibold hover:bg-brand-color-dark">Ajouter un serveur</button></div><div class="card"><table class="w-full text-left"><thead class="bg-gray-50"><tr><th class="p-4 font-semibold">Nom</th><th class="p-4 font-semibold text-right">Actions</th></tr></thead><tbody id="servers-list">${servers.length > 0 ? servers.map(s => `<tr class="border-b last:border-b-0"><td class="p-4">${s.name}</td><td class="p-4 text-right"><button class="delete-server-btn text-red-500 hover:text-red-700 font-medium" data-id="${s.id}">Supprimer</button></td></tr>`).join('') : '<tr><td colspan="2" class="p-4 text-center text-gray-500">Aucun serveur ajouté.</td></tr>'}</tbody></table></div>`;
+            document.getElementById('add-server-btn').addEventListener('click', handleAddServer);
+            document.querySelectorAll('.delete-server-btn').forEach(b => b.addEventListener('click', handleDeleteServer));
+        }
+
+        async function renderMenuManagement() {
+            const section = document.getElementById('menu-management');
+            if (!section) return;
+            section.innerHTML = `<div class="text-center p-10">Chargement...</div>`;
+            const menu = await fetchWithAuth('/api/menu-items');
+            section.innerHTML = `<div class="flex justify-between items-center mb-6"><h1 class="text-4xl font-bold font-serif">Gestion du menu</h1><button id="add-dish-btn" class="bg-brand-color text-white px-5 py-2 rounded-full font-semibold hover:bg-brand-color-dark">Ajouter un plat</button></div><div id="menu-list" class="card">${Object.keys(menu).length === 0 ? '<p class="text-center text-gray-500">Aucun plat ajouté.</p>' : Object.entries(menu).map(([category, dishes]) => `<div class="mb-6 last:mb-0"><h3 class="text-xl font-bold font-serif border-b pb-2 mb-3">${category}</h3><ul class="space-y-2">${dishes.map(d => `<li class="flex justify-between items-center p-2 hover:bg-gray-50 rounded-md"><span>${d.name}</span><button class="delete-dish-btn text-red-500 hover:text-red-700 font-medium" data-id="${d.id}">Supprimer</button></li>`).join('')}</ul></div>`).join('')}</div>`;
+            document.getElementById('add-dish-btn').addEventListener('click', handleAddDish);
+            document.querySelectorAll('.delete-dish-btn').forEach(b => b.addEventListener('click', handleDeleteDish));
+        }
+
+        async function handleSaveSettings(e) {
+            e.preventDefault();
+            const button = e.target.querySelector('button[type="submit"]');
+            button.disabled = true; button.textContent = 'Enregistrement...';
+            const logoFileInput = document.getElementById('logo-file');
+            try {
+                if (logoFileInput.files && logoFileInput.files[0]) {
+                    const formData = new FormData();
+                    formData.append('logo', logoFileInput.files[0]);
+                    await fetchWithAuthFormData('/api/logo-upload', formData);
+                }
+                const selectedLangs = Array.from(document.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value);
+                const data = {
+                    primaryColor: document.getElementById('primary-color').value,
+                    googleLink: document.getElementById('google-link').value,
+                    tripadvisorLink: document.getElementById('tripadvisor-link').value,
+                    enabledLanguages: selectedLangs
+                };
+                await fetchWithAuth('/api/restaurant', { method: 'PUT', body: JSON.stringify(data) });
+                alert('Paramètres enregistrés !');
+                await renderPageSettings();
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+            } finally {
+                button.disabled = false; button.textContent = 'Enregistrer les modifications';
+            }
+        }
+
+        async function handleAddServer() { const name = prompt("Nom du nouveau serveur :"); if (name && name.trim()) { await fetchWithAuth('/api/servers', { method: 'POST', body: JSON.stringify({ name: name.trim() }) }); renderTeamManagement(); } }
+        async function handleDeleteServer(e) { const id = e.target.dataset.id; if (confirm("Supprimer ce serveur ?")) { await fetchWithAuth(`/api/servers/${id}`, { method: 'DELETE' }); renderTeamManagement(); } }
+        async function handleAddDish() { const name = prompt("Nom du nouveau plat :"); if (!name || !name.trim()) return; const category = prompt("Catégorie (ex: Entrées):"); if (name && category && name.trim() && category.trim()) { await fetchWithAuth('/api/dishes', { method: 'POST', body: JSON.stringify({ name: name.trim(), category: category.trim() }) }); renderMenuManagement(); } }
+        async function handleDeleteDish(e) { const id = e.target.dataset.id; if (confirm("Supprimer ce plat ?")) { await fetchWithAuth(`/api/dishes/${id}`, { method: 'DELETE' }); renderMenuManagement(); } }
+
+        async function loadAppData() {
+            authOverlay.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            try {
+                await renderDashboard();
+                await renderPageSettings();
+                await renderTeamManagement();
+                await renderMenuManagement();
+                const hash = window.location.hash || '#dashboard';
+                switchTab(hash);
+            } catch (error) {
+                console.error("Failed to load app data:", error);
+                // FINAL FIX: Only show the critical error message if it's NOT an auth error,
+                // because auth errors are already handled by redirecting to the login page.
+                if (!error.message.includes("Session expirée")) {
+                    contentArea.innerHTML = `<div class="card text-center p-10"><p class="text-red-500 font-semibold">Une erreur critique est survenue :</p><p class="text-gray-600 mt-2">${error.message}</p></div>`;
+                }
+            }
+        }
+        
+        async function initializeApp() {
+            const token = localStorage.getItem('jwt_token');
+            if (token && token !== 'undefined' && token !== 'null') {
+                try {
+                    await fetchWithAuth('/api/restaurant');
+                    await loadAppData();
+                } catch (error) {
+                    console.warn("La vérification initiale du token a échoué, affichage de l'écran de connexion.", error.message);
+                    mainApp.classList.add('hidden');
+                    authOverlay.classList.remove('hidden');
+                }
+            } else {
+                authOverlay.classList.remove('hidden');
+                mainApp.classList.add('hidden');
+            }
+        }
+        
+        initializeApp();
+    });
+    </script>
+</body>
+</ht
