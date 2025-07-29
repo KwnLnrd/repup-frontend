@@ -7,28 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Palette de couleurs et polices de index.html */
         :root {
-            --brand-color: #BF5B3F; /* Sera surchargé par JS */
-            --brand-color-light: rgba(191, 91, 63, 0.1);
-            --brand-color-dark: #A64B35;
-            --background-color: #F8F9FA;
-            --surface-color: #FFFFFF;
-            --text-primary: #212529;
-            --text-secondary: #6C757D;
-            --border-color: #DEE2E6;
+            --color-bg: #F8F9FA;
+            --color-text: #2D3748;
+            --color-primary: #D69E2E; /* Couleur par défaut, sera surchargée par JS */
+            --color-primary-dark: #B7791F;
+            --color-surface: #FFFFFF;
+            --color-border: #DEE2E6;
             --font-serif: 'Cormorant Garamond', serif;
             --font-sans: 'Montserrat', sans-serif;
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04);
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         body {
             font-family: var(--font-sans);
-            background-color: var(--background-color);
-            color: var(--text-primary);
+            background-color: var(--color-bg);
+            color: var(--color-text);
             margin: 0;
             padding: 20px;
             display: flex;
@@ -40,14 +39,14 @@
         }
 
         .review-container {
-            background-color: var(--surface-color);
-            border-radius: 12px;
+            background-color: var(--color-surface);
+            border-radius: 1rem;
             padding: 28px 32px;
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-xl);
             width: 100%;
             max-width: 520px;
             text-align: center;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--color-border);
             animation: fadeIn .8s ease-out;
             margin: 20px 0;
             opacity: 0;
@@ -59,12 +58,12 @@
         .logo-container img { max-height: 60px; height: auto; margin: 0 auto; object-fit: contain; }
         
         h1 { font-family: var(--font-serif); font-size: 2rem; margin-bottom: 8px; }
-        p.subtitle { font-size: 1rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 28px; }
+        p.subtitle { font-size: 1rem; line-height: 1.6; color: var(--color-text); opacity: 0.8; margin-bottom: 28px; }
         
         .form-section { display: none; animation: fadeIn 0.6s ease-out; text-align: left; }
         .form-section.active { display: block; }
         .form-section.is-empty { display: none !important; }
-        .form-section h2 { font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 12px; color: var(--text-primary); text-align: center; }
+        .form-section h2 { font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 12px; color: var(--color-text); text-align: center; }
         .form-section .subtitle { text-align: center;}
 
         .selection-grid {
@@ -77,16 +76,16 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--color-border);
             border-radius: 0.75rem;
             padding: 1rem;
             cursor: pointer;
             transition: all 0.2s ease;
         }
         .selection-item.selected {
-            border-color: var(--brand-color);
-            background-color: var(--brand-color-light);
-            box-shadow: 0 0 0 2px var(--brand-color);
+            border-color: var(--color-primary);
+            background-color: rgba(214, 158, 46, 0.1); /* Utilise la couleur de base pour le RGBA */
+            box-shadow: 0 0 0 2px var(--color-primary);
         }
         .selection-item img {
             width: 64px; height: 64px; border-radius: 50%;
@@ -97,54 +96,54 @@
         .tag-group { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
         .tag-group input { position: absolute; opacity: 0; width: 0; height: 0; }
         .tag-group label {
-            background-color: var(--surface-color); color: var(--text-secondary);
-            padding: 10px 18px; border-radius: 8px; cursor: pointer;
-            font-size: .9rem; font-weight: 500; transition: all .3s ease;
-            border: 1px solid var(--border-color); user-select: none;
+            background-color: var(--color-surface); color: #6C757D;
+            padding: 10px 18px; border-radius: 50px; cursor: pointer;
+            font-size: .9rem; font-weight: 600; transition: all .3s ease;
+            border: 1px solid var(--color-border); user-select: none;
         }
         .tag-group input:checked+label {
-            background-color: var(--brand-color); color: #fff; border-color: var(--brand-color);
-            box-shadow: 0 4px 15px rgba(191,91,63,.25);
+            background-color: var(--color-primary); color: #fff; border-color: var(--color-primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,.1);
         }
         .tag-group input:disabled+label {
-            cursor: not-allowed; background-color: var(--background-color);
+            cursor: not-allowed; background-color: var(--color-bg);
             color: #BDBDBD; opacity: 0.7; box-shadow: none;
         }
-        .limit-notification { color: var(--brand-color); font-size: 0.9rem; margin-top: 15px; text-align: center; font-weight: 500; transition: opacity 0.3s ease-in-out; }
+        .limit-notification { color: var(--color-primary); font-size: 0.9rem; margin-top: 15px; text-align: center; font-weight: 500; transition: opacity 0.3s ease-in-out; }
 
         textarea {
             width: 100%; padding: 12px; border-radius: 8px;
-            border: 1px solid var(--border-color); background-color: var(--surface-color);
-            font-family: var(--font-sans); font-size: 1rem; color: var(--text-primary);
+            border: 1px solid var(--color-border); background-color: var(--color-surface);
+            font-family: var(--font-sans); font-size: 1rem; color: var(--color-text);
             box-sizing: border-box; min-height: 120px; resize: vertical;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         textarea:focus {
-            outline: none; border-color: var(--brand-color);
-            box-shadow: 0 0 0 3px rgba(191, 91, 63, 0.2);
+            outline: none; border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(214, 158, 46, 0.2);
         }
         
         .button-group { display: flex; justify-content: space-between; margin-top: 2rem; }
         .button {
-            display: inline-block; background-color: var(--brand-color); color: #fff; border: none;
-            padding: 14px 28px; border-radius: 50px; font-size: 1rem; font-weight: 600;
+            display: inline-block; background-color: var(--color-primary); color: #fff; border: none;
+            padding: 14px 28px; border-radius: 50px; font-size: 1rem; font-weight: 700;
             cursor: pointer; width: 100%; transition: all .3s ease; text-decoration: none;
             box-sizing: border-box;
         }
         .button:hover {
-            background-color: var(--brand-color-dark); transform: translateY(-2px);
+            background-color: var(--color-primary-dark); transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.1);
         }
         .button.secondary {
-            background: var(--surface-color); color: var(--brand-color);
-            border: 1px solid var(--brand-color);
+            background: var(--color-surface); color: var(--color-text);
+            border: 1px solid var(--color-border); font-weight: 600;
         }
-        .button.secondary:hover { background-color: var(--brand-color-light); }
+        .button.secondary:hover { background-color: #f1f1f1; }
         .button.nav-btn { width: auto; min-width: 120px; }
 
         #loader { text-align: center; padding: 3rem; }
         .loader-dots div {
-            width: 12px; height: 12px; background-color: var(--brand-color);
+            width: 12px; height: 12px; background-color: var(--color-primary);
             border-radius: 100%; display: inline-block;
             animation: sk-bouncedelay 1.4s infinite ease-in-out both;
         }
@@ -155,21 +154,20 @@
           40% { transform: scale(1.0); }
         }
 
-        /* Nouveaux styles pour l'écran de résultat */
         .contribution-box {
-            border: 1px solid #FBC2C2;
-            background-color: #FFF8F8;
+            border: 1px solid rgba(214, 158, 46, 0.3);
+            background-color: rgba(214, 158, 46, 0.05);
             border-radius: 8px;
             padding: 1rem 1.5rem;
             margin: 1.5rem auto;
-            color: #444;
+            color: var(--color-text);
         }
         .contribution-box p, .contribution-box li {
              font-size: 0.95rem;
         }
 
         .review-text-display {
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--color-border);
             border-radius: 8px;
             padding: 1.5rem;
             margin-top: 1.5rem;
@@ -185,26 +183,38 @@
             max-width: 400px;
             margin-left: auto;
             margin-right: auto;
-            border-radius: 8px;
         }
         #result-buttons .button.secondary {
-            background: #fff;
-            color: #333;
-            border: 1px solid #ccc;
+            background: var(--color-surface);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
         }
         #result-buttons .button.secondary:hover {
-            background: #f5f5f5;
+            background-color: #f1f1f1;
         }
-        #result-buttons .button#google-btn {
-            background-color: var(--brand-color);
+        #result-buttons .button#google-btn, #result-buttons .button#tripadvisor-btn {
+            background-color: var(--color-primary);
         }
-        #result-buttons .button#google-btn:hover {
-            background-color: var(--brand-color-dark);
+        #result-buttons .button#google-btn:hover, #result-buttons .button#tripadvisor-btn:hover {
+            background-color: var(--color-primary-dark);
         }
         
         .font-serif {
              font-family: var(--font-serif);
         }
+        .lang-button {
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 1px solid var(--color-border);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .lang-button:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
 
         @media (max-width: 600px) {
             body { padding: 10px; }
@@ -216,17 +226,22 @@
 <body class="antialiased">
 
     <div id="review-container" class="review-container">
+        <!-- Le contenu initial est juste le loader -->
         <div id="loader">
             <p data-translate-key="loading_restaurant">Chargement des informations...</p>
+             <div class="loader-dots mt-6">
+                <div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div>
+            </div>
         </div>
         
+        <!-- L'application sera injectée ici par le script si tout se passe bien -->
         <div id="app-content" class="hidden">
             <div class="logo-container" id="logo-container"></div>
 
             <div id="section-lang" class="form-section">
                  <h2 data-translate-key="lang_title">Choisissez votre langue</h2>
-                 <div class="tag-group mt-6">
-                    <!-- Language buttons injected here -->
+                 <div class="flex flex-wrap justify-center gap-4 mt-6">
+                    <!-- Les boutons de langue seront injectés ici -->
                  </div>
             </div>
 
@@ -309,6 +324,7 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
+        // IMPORTANT: Ne pas changer l'URL de l'API
         const API_BASE_URL = 'https://repup-test.onrender.com';
         
         const reviewContainer = document.getElementById('review-container');
@@ -480,7 +496,7 @@
                 api_key_error: "Errore: La chiave API non è configurata. Si prega di contattare il proprietario del sito."
             },
             zh: {
-                lang_name_native: "�🇳 简体中文",
+                lang_name_native: "🇨🇳 简体中文",
                 lang_title: "选择您的语言",
                 server_title: "是谁为您服务的？",
                 service_subtitle: "您特别欣赏什么？ (最多3个)",
@@ -544,10 +560,10 @@
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const slug = urlParams.get('slug');
-                if (!slug) throw new Error("Slug manquant.");
+                if (!slug) throw new Error("Identifiant (slug) du restaurant manquant dans l'URL.");
                 
                 const response = await fetch(`${API_BASE_URL}/api/public/restaurant/${slug}`);
-                if (!response.ok) throw new Error(`Erreur serveur (code: ${response.status})`);
+                if (!response.ok) throw new Error(`Restaurant non trouvé ou erreur serveur (code: ${response.status})`);
                 
                 const data = await response.json();
                 restaurantData = { ...data, servers: data.servers || [], languages: data.languages || ['fr', 'en'], tags: data.tags || {} };
@@ -563,15 +579,20 @@
                 reviewData.lang = restaurantData.languages.includes('fr') ? 'fr' : restaurantData.languages[0];
                 return true;
             } catch (error) {
-                loader.innerHTML = `<p class="text-red-500 font-semibold">Erreur de chargement</p><p class="text-gray-600 mt-2">${error.message}</p>`;
+                reviewContainer.innerHTML = `<div class="text-center p-8">
+                    <h2 class="font-serif text-2xl font-bold text-red-600">Erreur de Chargement</h2>
+                    <p class="mt-4 text-gray-700">Impossible de charger la page d'avis.</p>
+                    <p class="mt-2 text-sm text-gray-500"><b>Détail :</b> ${error.message}</p>
+                    <p class="mt-6 text-sm text-gray-500">Veuillez vérifier que le lien (URL) que vous avez utilisé est correct et complet.</p>
+                </div>`;
                 return false;
             }
         }
 
         function applyBranding() {
             const root = document.documentElement;
-            const color = restaurantData.primaryColor || '#BF5B3F';
-            root.style.setProperty('--brand-color', color);
+            const color = restaurantData.primaryColor || '#D69E2E';
+            root.style.setProperty('--color-primary', color);
             
             if (/^#([0-9A-F]{3}){1,2}$/i.test(color)) {
                 const hex = color.substring(1);
@@ -581,8 +602,7 @@
                 const bHex = isShort ? hex[2] + hex[2] : hex.substring(4, 6);
                 const [r, g, b] = [parseInt(rHex, 16), parseInt(gHex, 16), parseInt(bHex, 16)];
                 
-                root.style.setProperty('--brand-color-light', `rgba(${r}, ${g}, ${b}, 0.1)`);
-                root.style.setProperty('--brand-color-dark', `rgb(${Math.max(0, r-20)}, ${Math.max(0, g-20)}, ${Math.max(0, b-20)})`);
+                root.style.setProperty('--color-primary-dark', `rgb(${Math.max(0, r-20)}, ${Math.max(0, g-20)}, ${Math.max(0, b-20)})`);
             }
 
             document.title = `Avis - ${restaurantData.name}`;
@@ -591,16 +611,16 @@
         }
 
         function renderAllSections() {
-            const langContainer = document.querySelector('#section-lang .tag-group');
+            const langContainer = document.querySelector('#section-lang .flex');
             langContainer.innerHTML = (restaurantData.languages || ['fr', 'en']).map(lang => {
                 const langName = translations[lang]?.lang_name_native || lang.toUpperCase();
-                return `<button class="button" data-lang-select="${lang}">${langName}</button>`;
+                return `<button class="lang-button" data-lang-select="${lang}">${langName}</button>`;
             }).join('');
             
             document.getElementById('server-grid').innerHTML = (restaurantData.servers || []).map(server => {
                 const avatarSrc = server.avatar 
                     ? `${API_BASE_URL}${server.avatar}` 
-                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=555555`;
+                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=2D3748`;
                 return `
                     <div class="selection-item" data-server-name="${server.name}">
                         <img src="${avatarSrc}" alt="${server.name}">
@@ -856,4 +876,3 @@
     </script>
 </body>
 </html>
-�
