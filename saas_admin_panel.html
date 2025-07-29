@@ -3,31 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de Bord - ReviewGenius</title>
+    <title>Tableau de Bord - Avis Pro Resto</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Palette de couleurs "Luxe - Bleu Ardoise & Or" de index.html */
         :root {
-            --brand-color: #BF5B3F;
-            --background-color: #F8F9FA;
-            --surface-color: #FFFFFF;
-            --text-primary: #212529;
-            --text-secondary: #6C757D;
-            --border-color: #DEE2E6;
+            --color-bg: #F8F9FA; /* Gris très clair */
+            --color-text: #2D3748; /* Bleu-gris très foncé */
+            --color-primary: #D69E2E; /* Or vieilli */
+            --color-primary-dark: #B7791F; /* Or plus foncé */
+            --color-surface: #FFFFFF; /* Blanc pur */
+            --color-border: #DEE2E6; /* Bordure standard */
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Montserrat', sans-serif;
         }
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--background-color); }
-        .font-serif { font-family: 'Cormorant Garamond', serif; }
-        .brand-color { color: var(--brand-color); }
-        .bg-brand-color { background-color: var(--brand-color); }
-        .bg-brand-color-light { background-color: rgba(191, 91, 63, 0.1); }
-        .border-brand-color { border-color: var(--brand-color); }
-        .hover\:bg-brand-color-dark:hover { background-color: #A64B35; }
-        .ring-brand-color { --tw-ring-color: var(--brand-color); }
-        .nav-item.active { background-color: var(--brand-color-light); color: var(--brand-color); font-weight: 600; }
+
+        body { 
+            font-family: var(--font-sans); 
+            background-color: var(--color-bg); 
+            color: var(--color-text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .font-serif { font-family: var(--font-serif); }
+        .brand-accent { color: var(--color-primary); }
+        .bg-brand-accent { background-color: var(--color-primary); }
+        .hover\:bg-brand-accent-dark:hover { background-color: var(--color-primary-dark); }
+        .border-brand-accent { border-color: var(--color-primary); }
+        .ring-brand-accent { --tw-ring-color: var(--color-primary); }
+        .nav-item.active { 
+            background-color: rgba(214, 158, 46, 0.1); /* Or léger */
+            color: var(--color-primary); 
+            font-weight: 600; 
+            border-right: 3px solid var(--color-primary);
+        }
         .content-section { display: none; }
         .content-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -35,19 +49,19 @@
         button:disabled { opacity: 0.7; cursor: not-allowed; }
         .form-input, .form-select {
             margin-top: 0.25rem; display: block; width: 100%;
-            border-radius: 0.5rem; border: 1px solid var(--border-color);
+            border-radius: 0.5rem; border: 1px solid var(--color-border);
             padding: 0.75rem 1rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         .form-input:focus, .form-select:focus {
-            outline: none; border-color: var(--brand-color);
-            box-shadow: 0 0 0 3px rgba(191, 91, 63, 0.2);
+            outline: none; border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(214, 158, 46, 0.2);
         }
         .card {
-            background-color: var(--surface-color); padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05), 0 2px 4px -1px rgba(0,0,0,.03);
-            border: 1px solid var(--border-color);
+            background-color: var(--color-surface); padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05), 0 2px 4px -2px rgba(0,0,0,.05);
+            border: 1px solid var(--color-border);
         }
         @media (min-width: 768px) {
             .card { padding: 2rem; }
@@ -55,7 +69,7 @@
         .item-list-entry {
             display: flex; justify-content: space-between; align-items: center;
             padding: 0.75rem; background-color: #f9fafb; border-radius: 0.5rem;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--color-border);
         }
         /* Modal Styles */
         .modal-backdrop {
@@ -72,7 +86,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--color-border);
         }
         .accordion-content {
             max-height: 0;
@@ -96,13 +110,16 @@
 
     <div id="auth-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-md">
-            <div class="bg-white p-8 rounded-lg shadow-lg text-center">
-                <h1 class="text-3xl font-bold font-serif brand-color mb-6">ReviewGenius</h1>
+            <div class="bg-white p-8 rounded-2xl shadow-2xl text-center">
+                <div class="flex items-center justify-center space-x-2 mb-6">
+                    <svg class="h-8 w-8 brand-accent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    <span class="text-2xl font-serif font-bold">Avis Pro Resto</span>
+                </div>
                 <form id="login-form">
                     <h2 class="text-xl font-semibold mb-4">Connexion</h2>
                     <input type="email" id="login-email" placeholder="Email" class="form-input mb-3" required>
                     <input type="password" id="login-password" placeholder="Mot de passe" class="form-input mb-4" required>
-                    <button type="submit" id="login-button" class="w-full bg-brand-color text-white py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors">Se connecter</button>
+                    <button type="submit" id="login-button" class="w-full bg-brand-accent text-white py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors">Se connecter</button>
                     <p id="login-error" class="text-red-500 text-sm mt-2 h-4"></p>
                 </form>
                 <p class="text-gray-500 my-4">ou</p>
@@ -111,7 +128,7 @@
                     <input type="text" id="register-resto-name" placeholder="Nom de votre restaurant" class="form-input mb-3" required>
                     <input type="email" id="register-email" placeholder="Email" class="form-input mb-3" required>
                     <input type="password" id="register-password" placeholder="Mot de passe" class="form-input mb-4" required>
-                    <button type="submit" id="register-button" class="w-full bg-gray-700 text-white py-3 rounded-full font-semibold hover:bg-gray-800 transition-colors">S'inscrire</button>
+                    <button type="submit" id="register-button" class="w-full bg-gray-700 text-white py-3 rounded-full font-bold hover:bg-gray-800 transition-colors">S'inscrire</button>
                     <p id="register-error" class="text-red-500 text-sm mt-2 h-4"></p>
                 </form>
             </div>
@@ -124,18 +141,19 @@
             <aside id="sidebar" class="fixed inset-y-0 left-0 bg-white border-r border-gray-200 w-64 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40 flex flex-col">
                 <div class="h-20 flex items-center justify-between px-4 border-b shrink-0">
                     <a href="#dashboard" id="sidebar-logo-link" class="flex items-center justify-center h-full">
-                        <!-- Le logo sera injecté ici par JS -->
+                         <svg class="h-8 w-8 brand-accent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                         <span class="text-2xl font-serif font-bold ml-2">Avis Pro Resto</span>
                     </a>
                     <button id="sidebar-close-btn" class="md:hidden">
                         <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
                 <nav id="sidebar-nav" class="mt-6 flex-1 overflow-y-auto">
-                    <a href="#dashboard" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Tableau de bord</span></a>
-                    <a href="#page-settings" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Page</span></a>
-                    <a href="#options-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg><span>Options</span></a>
-                    <a href="#team-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg><span>Équipes</span></a>
-                    <a href="#menu-management" class="nav-item flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg mx-2"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg><span>Menu</span></a>
+                    <a href="#dashboard" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Tableau de bord</span></a>
+                    <a href="#page-settings" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Page</span></a>
+                    <a href="#options-management" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg><span>Options</span></a>
+                    <a href="#team-management" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg><span>Équipes</span></a>
+                    <a href="#menu-management" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg><span>Menu</span></a>
                 </nav>
                 <div class="p-4 border-t shrink-0">
                     <button id="logout-btn" class="w-full text-left flex items-center px-2 py-2 text-gray-600 hover:bg-red-50 hover:text-red-700 rounded-md"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg><span>Déconnexion</span></button>
@@ -177,6 +195,7 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // IMPORTANT: Ne pas changer l'URL de l'API
         const API_BASE_URL = 'https://repup-test.onrender.com';
 
         const authOverlay = document.getElementById('auth-overlay');
@@ -363,7 +382,17 @@
         });
 
         function switchTab(hash) {
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.toggle('active', item.getAttribute('href') === hash));
+            document.querySelectorAll('.nav-item').forEach(item => {
+                const isActive = item.getAttribute('href') === hash;
+                item.classList.toggle('active', isActive);
+                if(isActive) {
+                    item.style.borderRight = '3px solid var(--color-primary)';
+                    item.style.backgroundColor = 'rgba(214, 158, 46, 0.1)';
+                } else {
+                    item.style.borderRight = '3px solid transparent';
+                    item.style.backgroundColor = 'transparent';
+                }
+            });
             document.querySelectorAll('.content-section').forEach(section => section.classList.toggle('active', `#${section.id}` === hash));
         }
 
@@ -385,7 +414,10 @@
             if (logoUrl) {
                 logoContent = `<img src="${API_BASE_URL}${logoUrl}" alt="Logo" class="h-10 object-contain">`;
             } else {
-                logoContent = `<h1 class="text-2xl font-bold font-serif brand-color">ReviewGenius</h1>`;
+                logoContent = `<div class="flex items-center space-x-2">
+                    <svg class="h-8 w-8 brand-accent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    <span class="text-2xl font-serif font-bold">Avis Pro Resto</span>
+                </div>`;
             }
             sidebarLogoLink.innerHTML = logoContent;
             mobileLogoLink.innerHTML = logoContent;
@@ -396,7 +428,7 @@
             if (!section) return;
             section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Tableau de bord</h1><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8"><div class="card"><h3 class="text-sm font-semibold text-gray-500">Avis (30j)</h3><p class="text-3xl font-bold mt-1">128</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Note moyenne</h3><p class="text-3xl font-bold mt-1">4.8 <span class="text-yellow-400">★</span></p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Serveur du mois</h3><p class="text-3xl font-bold mt-1">Clara</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Feedbacks privés</h3><p class="text-3xl font-bold mt-1">3</p></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Tendance des avis</h2><div class="h-80"><canvas id="reviewsTrendChart"></canvas></div></div>`;
             const ctx = document.getElementById('reviewsTrendChart').getContext('2d');
-            new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--brand-color)', backgroundColor: 'var(--brand-color-light)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
+            new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--color-primary)', backgroundColor: 'rgba(214, 158, 46, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
         }
 
         async function renderPageSettings() {
@@ -411,19 +443,19 @@
                     'it': 'Italiano', 'pt': 'Português', 'zh': '简体中文' 
                 };
                 const enabledLanguages = Array.isArray(settings.enabledLanguages) ? settings.enabledLanguages : [];
-                const logoSrc = settings.logoUrl ? `${API_BASE_URL}${settings.logoUrl}` : 'https://placehold.co/100x100/DEE2E6/6C757D?text=Logo';
+                const logoSrc = settings.logoUrl ? `${API_BASE_URL}${settings.logoUrl}` : 'https://placehold.co/100x100/DEE2E6/2D3748?text=Logo';
                 
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Page</h1><form id="page-settings-form"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-8"><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Informations Générales</h2><div class="space-y-6"><div><label for="restaurant-name" class="block text-sm font-medium text-gray-700">Nom du Restaurant</label><input type="text" id="restaurant-name" value="${settings.name || ''}" class="form-input"></div><div class="flex items-center gap-6"><img id="logo-preview" src="${logoSrc}" alt="Aperçu du logo" class="w-24 h-24 rounded-lg object-contain bg-gray-100 p-1"><div class="flex-1"><label for="logo-file" class="block text-sm font-medium text-gray-700">Changer le logo</label><input type="file" id="logo-file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-color-light file:text-brand-color hover:file:bg-brand-color/20" accept="image/png, image/jpeg, image/gif"><p class="text-xs text-gray-500 mt-1">L'aperçu se met à jour automatiquement.</p></div></div><div><label for="primary-color" class="block text-sm font-medium text-gray-700">Couleur principale</label><input type="color" id="primary-color" value="${settings.primaryColor || '#BF5B3F'}" class="mt-1 h-10 w-20 rounded-md border-gray-300 p-1"></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Liens de Notation</h2><div class="space-y-4"><div><label for="google-link" class="block text-sm font-medium text-gray-700">Lien Google</label><textarea id="google-link" rows="3" class="form-input" placeholder="https://search.google.com/local/writereview?placeid=...">${settings.googleLink || ''}</textarea></div><div><label for="tripadvisor-link" class="block text-sm font-medium text-gray-700">Lien TripAdvisor</label><textarea id="tripadvisor-link" rows="3" class="form-input" placeholder="https://www.tripadvisor.com/UserReview-g...-d...">${settings.tripadvisorLink || ''}</textarea></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Langues</h2><p class="text-sm text-gray-600 mb-4">Sélectionnez les langues à proposer.</p><div id="languages-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">${Object.entries(availableLangs).map(([code, name]) => `<label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" name="languages" value="${code}" class="h-5 w-5 rounded border-gray-300 text-brand-color focus:ring-brand-color" ${enabledLanguages.includes(code) ? 'checked' : ''}><span class="text-gray-700">${name}</span></label>`).join('')}</div></div></div><div class="lg:col-span-1"><div class="card sticky top-8" id="qr-code-card"></div></div></div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-color text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors text-lg w-full md:w-auto">Enregistrer</button></div></form>`;
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Personnalisation de la Page</h1><form id="page-settings-form"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-8"><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Informations Générales</h2><div class="space-y-6"><div><label for="restaurant-name" class="block text-sm font-medium text-gray-700">Nom du Restaurant</label><input type="text" id="restaurant-name" value="${settings.name || ''}" class="form-input"></div><div class="flex items-center gap-6"><img id="logo-preview" src="${logoSrc}" alt="Aperçu du logo" class="w-24 h-24 rounded-lg object-contain bg-gray-100 p-1"><div class="flex-1"><label for="logo-file" class="block text-sm font-medium text-gray-700">Changer le logo</label><input type="file" id="logo-file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" accept="image/png, image/jpeg, image/gif"><p class="text-xs text-gray-500 mt-1">L'aperçu se met à jour automatiquement.</p></div></div><div><label for="primary-color" class="block text-sm font-medium text-gray-700">Couleur principale</label><input type="color" id="primary-color" value="${settings.primaryColor || '#D69E2E'}" class="mt-1 h-10 w-20 rounded-md border-gray-300 p-1"></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Liens de Notation</h2><div class="space-y-4"><div><label for="google-link" class="block text-sm font-medium text-gray-700">Lien Google</label><textarea id="google-link" rows="3" class="form-input" placeholder="https://search.google.com/local/writereview?placeid=...">${settings.googleLink || ''}</textarea></div><div><label for="tripadvisor-link" class="block text-sm font-medium text-gray-700">Lien TripAdvisor</label><textarea id="tripadvisor-link" rows="3" class="form-input" placeholder="https://www.tripadvisor.com/UserReview-g...-d...">${settings.tripadvisorLink || ''}</textarea></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Langues</h2><p class="text-sm text-gray-600 mb-4">Sélectionnez les langues à proposer.</p><div id="languages-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">${Object.entries(availableLangs).map(([code, name]) => `<label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" name="languages" value="${code}" class="h-5 w-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" ${enabledLanguages.includes(code) ? 'checked' : ''}><span class="text-gray-700">${name}</span></label>`).join('')}</div></div></div><div class="lg:col-span-1"><div class="card sticky top-8" id="qr-code-card"></div></div></div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors text-lg w-full md:w-auto">Enregistrer</button></div></form>`;
                 
                 const qrCard = document.getElementById('qr-code-card');
                 const slug = settings.slug;
                 if (!slug) { qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">Votre QR Code</h2><div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg text-center"><p class="font-bold">Erreur</p><p class="text-sm mt-1">Le "slug" du restaurant est manquant.</p></div>`; } 
                 else {
-                    qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">Votre QR Code</h2><p class="text-sm text-gray-600 mb-4">Vos clients scannent ce code pour laisser un avis.</p><div class="flex justify-center items-center bg-gray-50 p-4 rounded-lg"><div id="qrcode-container" class="p-2 bg-white rounded-md shadow-inner"></div></div><a id="download-qr-btn" href="#" class="mt-4 block w-full text-center bg-gray-800 text-white px-4 py-2 rounded-full font-semibold hover:bg-gray-900">Télécharger</a><div class="mt-4"><label class="text-sm font-medium text-gray-700">Votre lien direct :</label><input type="text" id="review-page-link" readonly class="form-input bg-gray-100 mt-1 cursor-pointer" title="Cliquez pour copier"></div>`;
+                    qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">Votre QR Code</h2><p class="text-sm text-gray-600 mb-4">Vos clients scannent ce code pour laisser un avis.</p><div class="flex justify-center items-center bg-gray-50 p-4 rounded-lg"><div id="qrcode-container" class="p-2 bg-white rounded-md shadow-inner"></div></div><a id="download-qr-btn" href="#" class="mt-4 block w-full text-center bg-gray-800 text-white px-4 py-2 rounded-full font-bold hover:bg-gray-900">Télécharger</a><div class="mt-4"><label class="text-sm font-medium text-gray-700">Votre lien direct :</label><input type="text" id="review-page-link" readonly class="form-input bg-gray-100 mt-1 cursor-pointer" title="Cliquez pour copier"></div>`;
                     const reviewPageUrl = new URL('saas_review_collection_page.html', window.location.origin + window.location.pathname.replace('saas_admin_panel.html', ''));
                     reviewPageUrl.searchParams.set('slug', slug);
                     document.getElementById('review-page-link').value = reviewPageUrl.href;
-                    new QRCode(document.getElementById('qrcode-container'), { text: reviewPageUrl.href, width: 200, height: 200 });
+                    new QRCode(document.getElementById('qrcode-container'), { text: reviewPageUrl.href, width: 200, height: 200, colorDark: "#2D3748", colorLight: "#ffffff" });
                     document.getElementById('download-qr-btn').addEventListener('click', (e) => { e.preventDefault(); const canvas = document.getElementById('qrcode-container').querySelector('canvas'); if (canvas) { const link = document.createElement('a'); link.download = `qrcode-${slug}.png`; link.href = canvas.toDataURL('image/png'); link.click(); } });
                     document.getElementById('review-page-link').addEventListener('click', () => { const input = document.getElementById('review-page-link'); input.select(); document.execCommand('copy'); alert('Lien copié !'); });
                 }
@@ -432,11 +464,10 @@
             }
         }
 
-        // MODIFIÉ: Nouvelle fonction pour gérer les options
         async function renderOptionsManagement() {
             const section = document.getElementById('options-management');
             if(!section) return;
-            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Options</h1><div class="text-center p-10">Chargement...</div>`;
+            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion des Options</h1><div class="text-center p-10">Chargement...</div>`;
 
             try {
                 const data = await fetchWithAuth('/api/options');
@@ -457,7 +488,7 @@
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                                 ${available_tags[category].map(tag => `
                                     <label class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer border">
-                                        <input type="checkbox" name="option_tag" value="${tag.key}" class="h-5 w-5 rounded border-gray-300 text-brand-color focus:ring-brand-color" ${selected_keys.includes(tag.key) ? 'checked' : ''}>
+                                        <input type="checkbox" name="option_tag" value="${tag.key}" class="h-5 w-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" ${selected_keys.includes(tag.key) ? 'checked' : ''}>
                                         <span class="text-gray-700">${tag.fr}</span>
                                     </label>
                                 `).join('')}
@@ -465,8 +496,8 @@
                         </div>
                     `;
                 }
-                contentHtml += `</div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-color text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors text-lg w-full md:w-auto">Enregistrer les options</button></div></form>`;
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Options</h1>${contentHtml}`;
+                contentHtml += `</div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors text-lg w-full md:w-auto">Enregistrer les options</button></div></form>`;
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion des Options</h1>${contentHtml}`;
             } catch (error) {
                 section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des options. ${error.message}</div>`;
             }
@@ -475,7 +506,7 @@
         async function renderTeamManagement() {
             const section = document.getElementById('team-management');
             if(!section) return;
-            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Équipes</h1><div class="text-center p-10">Chargement...</div>`;
+            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion de l'Équipe</h1><div class="text-center p-10">Chargement...</div>`;
 
             try {
                 const servers = await fetchWithAuth('/api/servers');
@@ -492,7 +523,7 @@
                                 <input type="file" id="server-avatar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" accept="image/png, image/jpeg">
                             </div>
                             <div class="text-right">
-                                <button type="submit" class="bg-brand-color text-white px-6 py-2 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors">Ajouter</button>
+                                <button type="submit" class="bg-brand-accent text-white px-6 py-2 rounded-lg font-bold hover:bg-brand-accent-dark transition-colors">Ajouter</button>
                             </div>
                         </form>
                     </div>
@@ -501,7 +532,7 @@
                         <div id="servers-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             ${servers.map(server => `
                                 <div class="border rounded-lg p-4 text-center" id="server-item-${server.id}">
-                                    <img src="${server.avatar_url ? API_BASE_URL + server.avatar_url : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(server.name) + '&background=eeeeee&color=555555'}" alt="${server.name}" class="w-24 h-24 rounded-full mx-auto mb-2 object-cover bg-gray-200">
+                                    <img src="${server.avatar_url ? API_BASE_URL + server.avatar_url : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(server.name) + '&background=eeeeee&color=2D3748'}" alt="${server.name}" class="w-24 h-24 rounded-full mx-auto mb-2 object-cover bg-gray-200">
                                     <p class="font-semibold">${server.name}</p>
                                     <div class="flex justify-center gap-4 mt-2">
                                         <button class="edit-server-btn text-sm text-blue-500 hover:underline" data-server-id="${server.id}" data-server-name="${server.name}">Modifier</button>
@@ -513,7 +544,7 @@
                         </div>
                     </div>
                 `;
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Équipes</h1>${contentHtml}`;
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion de l'Équipe</h1>${contentHtml}`;
             } catch (error) {
                  section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement de l'équipe.</div>`;
             }
@@ -522,7 +553,7 @@
         async function renderMenuManagement() {
             const section = document.getElementById('menu-management');
             if(!section) return;
-            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Menu</h1><div class="text-center p-10">Chargement...</div>`;
+            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion du Menu</h1><div class="text-center p-10">Chargement...</div>`;
 
             try {
                 const menu = await fetchWithAuth('/api/menu');
@@ -544,7 +575,7 @@
                                 </datalist>
                             </div>
                             <div class="md:col-span-1">
-                                <button type="submit" class="bg-brand-color text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors w-full h-full">Ajouter le plat</button>
+                                <button type="submit" class="bg-brand-accent text-white px-6 py-3 rounded-lg font-bold hover:bg-brand-accent-dark transition-colors w-full h-full">Ajouter le plat</button>
                             </div>
                         </form>
                     </div>
@@ -584,7 +615,7 @@
                 }
 
                 contentHtml += '</div>';
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Menu</h1>${contentHtml}`;
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion du Menu</h1>${contentHtml}`;
             } catch (error) {
                 section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement du menu.</div>`;
             }
@@ -595,6 +626,10 @@
             if (e.target.matches('#page-settings-form')) {
                 e.preventDefault();
                 const form = e.target;
+                const button = form.querySelector('button[type="submit"]');
+                button.disabled = true;
+                button.textContent = 'Enregistrement...';
+
                 const formData = new FormData();
                 formData.append('name', form.querySelector('#restaurant-name').value);
                 formData.append('primaryColor', form.querySelector('#primary-color').value);
@@ -618,9 +653,12 @@
                     }
                 } catch (error) {
                     alert('Erreur lors de la sauvegarde: ' + error.message);
+                } finally {
+                    button.disabled = false;
+                    button.textContent = 'Enregistrer';
                 }
             }
-            // MODIFIÉ: Soumission du formulaire des options
+            
             if (e.target.matches('#options-form')) {
                 e.preventDefault();
                 const form = e.target;
@@ -746,7 +784,7 @@
                              </div>
                              <div class="flex justify-end gap-2 mt-4">
                                 <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
-                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold">Enregistrer</button>
+                                <button type="submit" class="bg-brand-accent text-white px-4 py-2 rounded-lg font-bold">Enregistrer</button>
                             </div>
                         </form>
                     `);
@@ -775,7 +813,7 @@
                              </div>
                              <div class="flex justify-end gap-2 mt-4">
                                 <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
-                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold">Enregistrer</button>
+                                <button type="submit" class="bg-brand-accent text-white px-4 py-2 rounded-lg font-bold">Enregistrer</button>
                             </div>
                         </form>
                     `);
@@ -787,4 +825,4 @@
     </script>
 </body>
 </html>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                                             
