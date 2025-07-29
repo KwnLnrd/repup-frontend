@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> <!-- Ajout de Marked.js pour le Markdown -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -104,6 +105,25 @@
         .accordion-header.open .accordion-icon {
             transform: rotate(90deg);
         }
+        /* Styles pour la section Analyse IA */
+        .analysis-content h1, .analysis-content h2, .analysis-content h3 {
+            font-family: var(--font-serif);
+            font-weight: bold;
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .analysis-content h1 { font-size: 1.5rem; }
+        .analysis-content h2 { font-size: 1.25rem; }
+        .analysis-content h3 { font-size: 1.1rem; }
+        .analysis-content ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .analysis-content p {
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -150,6 +170,7 @@
                 </div>
                 <nav id="sidebar-nav" class="mt-6 flex-1 overflow-y-auto">
                     <a href="#dashboard" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Tableau de bord</span></a>
+                    <a href="#reviews-analysis" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.17 48.17 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg><span>Avis & Analyse</span></a>
                     <a href="#page-settings" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Page</span></a>
                     <a href="#options-management" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg><span>Options</span></a>
                     <a href="#team-management" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg><span>Équipes</span></a>
@@ -176,6 +197,7 @@
                 <main class="flex-1">
                     <div id="content-area" class="p-4 md:p-8">
                         <section id="dashboard" class="content-section fade-in"></section>
+                        <section id="reviews-analysis" class="content-section"></section>
                         <section id="page-settings" class="content-section"></section>
                         <section id="options-management" class="content-section"></section>
                         <section id="team-management" class="content-section"></section>
@@ -249,6 +271,7 @@
                 mainApp.classList.remove('hidden');
                 await Promise.all([
                     renderDashboard(),
+                    renderReviewsAnalysis(),
                     renderPageSettings(),
                     renderOptionsManagement(),
                     renderTeamManagement(),
@@ -335,7 +358,7 @@
             localStorage.removeItem('jwt_token');
             mainApp.classList.add('hidden');
             authOverlay.classList.remove('hidden');
-            contentArea.innerHTML = `<section id="dashboard" class="content-section fade-in"></section><section id="page-settings" class="content-section"></section><section id="team-management" class="content-section"></section><section id="menu-management" class="content-section"></section><section id="options-management" class="content-section"></section>`;
+            contentArea.innerHTML = `<section id="dashboard" class="content-section fade-in"></section><section id="reviews-analysis" class="content-section"></section><section id="page-settings" class="content-section"></section><section id="team-management" class="content-section"></section><section id="menu-management" class="content-section"></section><section id="options-management" class="content-section"></section>`;
         }
 
         logoutBtn.addEventListener('click', logout);
@@ -429,6 +452,72 @@
             section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Tableau de bord</h1><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8"><div class="card"><h3 class="text-sm font-semibold text-gray-500">Avis (30j)</h3><p class="text-3xl font-bold mt-1">128</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Note moyenne</h3><p class="text-3xl font-bold mt-1">4.8 <span class="text-yellow-400">★</span></p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Serveur du mois</h3><p class="text-3xl font-bold mt-1">Clara</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Feedbacks privés</h3><p class="text-3xl font-bold mt-1">3</p></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Tendance des avis</h2><div class="h-80"><canvas id="reviewsTrendChart"></canvas></div></div>`;
             const ctx = document.getElementById('reviewsTrendChart').getContext('2d');
             new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--color-primary)', backgroundColor: 'rgba(214, 158, 46, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
+        }
+        
+        async function renderReviewsAnalysis() {
+            const section = document.getElementById('reviews-analysis');
+            if (!section) return;
+            section.innerHTML = `<div class="text-center p-10">Chargement des avis...</div>`;
+
+            try {
+                const reviews = await fetchWithAuth('/api/reviews');
+                let contentHtml = `
+                    <h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Avis & Analyse IA</h1>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-1">
+                            <div class="card sticky top-8">
+                                <h2 class="text-2xl font-bold font-serif mb-4">Analyse Stratégique</h2>
+                                <div id="analysis-content" class="text-left text-gray-700">
+                                    <p class="text-sm">Cliquez sur le bouton pour obtenir une analyse de tous vos avis par notre IA. Découvrez vos points forts, vos axes d'amélioration et des suggestions concrètes.</p>
+                                </div>
+                                <button id="generate-analysis-btn" class="mt-6 w-full bg-brand-accent text-white py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors">
+                                    Lancer l'analyse IA
+                                </button>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-2">
+                            <h2 class="text-2xl font-bold font-serif mb-4">Derniers Avis Générés</h2>
+                            <div id="reviews-list" class="space-y-4">
+                                <!-- Les avis seront injectés ici -->
+                            </div>
+                        </div>
+                    </div>
+                `;
+                section.innerHTML = contentHtml;
+
+                const reviewsList = document.getElementById('reviews-list');
+                if (reviews.length > 0) {
+                    reviewsList.innerHTML = reviews.map(review => `
+                        <div class="card !p-4">
+                            <p class="text-gray-800 whitespace-pre-wrap">${review.review_text}</p>
+                            <p class="text-xs text-gray-400 mt-3 text-right">Généré le ${new Date(review.created_at).toLocaleDateString('fr-FR')}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    reviewsList.innerHTML = `<p class="text-gray-500 text-center py-8">Aucun avis généré pour le moment.</p>`;
+                }
+
+                document.getElementById('generate-analysis-btn').addEventListener('click', async (e) => {
+                    const btn = e.target;
+                    const analysisContent = document.getElementById('analysis-content');
+                    btn.disabled = true;
+                    btn.textContent = 'Analyse en cours...';
+                    analysisContent.innerHTML = '<p class="text-sm text-center">Notre IA analyse vos avis. Cela peut prendre un moment...</p>';
+
+                    try {
+                        const result = await fetchWithAuth('/api/reviews/analyze', { method: 'POST' });
+                        analysisContent.innerHTML = marked.parse(result.analysis);
+                    } catch (error) {
+                        analysisContent.innerHTML = `<p class="text-red-500">Erreur: ${error.message}</p>`;
+                    } finally {
+                         btn.disabled = false;
+                         btn.textContent = "Relancer l'analyse IA";
+                    }
+                });
+
+            } catch (error) {
+                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des avis. ${error.message}</div>`;
+            }
         }
 
         async function renderPageSettings() {
@@ -828,4 +917,32 @@
                     `);
                 }
                  if (editBtn.matches('.edit-dish-btn')) {
-                    const dishId =
+                    const dishId = editBtn.dataset.dishId;
+                    const dishName = editBtn.dataset.dishName;
+                    const dishCategory = editBtn.dataset.dishCategory;
+                     openModal(`
+                        <form id="edit-dish-form" data-dish-id="${dishId}" class="card w-full max-w-md modal-content">
+                             <h2 class="text-2xl font-bold font-serif mb-4">Modifier le Plat</h2>
+                             <div class="space-y-4">
+                                <div>
+                                    <label for="edit-dish-name" class="block text-sm font-medium text-gray-700">Nom</label>
+                                    <input type="text" id="edit-dish-name" value="${dishName}" class="form-input" required>
+                                </div>
+                                 <div>
+                                    <label for="edit-dish-category" class="block text-sm font-medium text-gray-700">Catégorie</label>
+                                    <input type="text" id="edit-dish-category" value="${dishCategory}" class="form-input" required>
+                                </div>
+                             </div>
+                             <div class="flex justify-end gap-2 mt-4">
+                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
+                                <button type="submit" class="bg-brand-accent text-white px-4 py-2 rounded-lg font-bold">Enregistrer</button>
+                            </div>
+                        </form>
+                    `);
+                }
+            }
+        });
+    });
+    </script>
+</body>
+</html>
