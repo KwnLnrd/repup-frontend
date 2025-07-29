@@ -226,10 +226,15 @@
 <body class="antialiased">
 
     <div id="review-container" class="review-container">
+        <!-- Le contenu initial est juste le loader -->
         <div id="loader">
             <p data-translate-key="loading_restaurant">Chargement des informations...</p>
+             <div class="loader-dots mt-6">
+                <div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div>
+            </div>
         </div>
         
+        <!-- L'application sera injectée ici par le script si tout se passe bien -->
         <div id="app-content" class="hidden">
             <div class="logo-container" id="logo-container"></div>
 
@@ -555,10 +560,10 @@
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const slug = urlParams.get('slug');
-                if (!slug) throw new Error("Slug manquant.");
+                if (!slug) throw new Error("Identifiant (slug) du restaurant manquant dans l'URL.");
                 
                 const response = await fetch(`${API_BASE_URL}/api/public/restaurant/${slug}`);
-                if (!response.ok) throw new Error(`Erreur serveur (code: ${response.status})`);
+                if (!response.ok) throw new Error(`Restaurant non trouvé ou erreur serveur (code: ${response.status})`);
                 
                 const data = await response.json();
                 restaurantData = { ...data, servers: data.servers || [], languages: data.languages || ['fr', 'en'], tags: data.tags || {} };
@@ -574,7 +579,12 @@
                 reviewData.lang = restaurantData.languages.includes('fr') ? 'fr' : restaurantData.languages[0];
                 return true;
             } catch (error) {
-                loader.innerHTML = `<p class="text-red-500 font-semibold">Erreur de chargement</p><p class="text-gray-600 mt-2">${error.message}</p>`;
+                reviewContainer.innerHTML = `<div class="text-center p-8">
+                    <h2 class="font-serif text-2xl font-bold text-red-600">Erreur de Chargement</h2>
+                    <p class="mt-4 text-gray-700">Impossible de charger la page d'avis.</p>
+                    <p class="mt-2 text-sm text-gray-500"><b>Détail :</b> ${error.message}</p>
+                    <p class="mt-6 text-sm text-gray-500">Veuillez vérifier que le lien (URL) que vous avez utilisé est correct et complet.</p>
+                </div>`;
                 return false;
             }
         }
@@ -601,11 +611,9 @@
         }
 
         function renderAllSections() {
-            // CORRECTIF : Le sélecteur cible maintenant la div avec la classe .flex
             const langContainer = document.querySelector('#section-lang .flex');
             langContainer.innerHTML = (restaurantData.languages || ['fr', 'en']).map(lang => {
                 const langName = translations[lang]?.lang_name_native || lang.toUpperCase();
-                // CORRECTIF : Utilisation de la classe .lang-button pour le style correct
                 return `<button class="lang-button" data-lang-select="${lang}">${langName}</button>`;
             }).join('');
             
