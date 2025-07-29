@@ -201,6 +201,10 @@
         #result-buttons .button#google-btn:hover {
             background-color: var(--brand-color-dark);
         }
+        
+        .font-serif {
+             font-family: var(--font-serif);
+        }
 
         @media (max-width: 600px) {
             body { padding: 10px; }
@@ -229,10 +233,10 @@
             <div id="section-server" class="form-section">
                 <h2 data-translate-key="server_title">Qui a enchanté votre service ?</h2>
                 <div id="server-grid" class="selection-grid mt-6"></div>
-                <div id="service-qualities-container" class="hidden mt-4">
-                    <h3 class="text-lg font-semibold text-center mb-4" data-translate-key="service_subtitle">Qu'avez-vous particulièrement apprécié ?</h3>
+                <div id="service-qualities-container" class="hidden mt-8">
+                    <h3 class="text-lg font-serif font-semibold text-center mb-4" data-translate-key="service_subtitle">Qu'avez-vous particulièrement apprécié ?</h3>
                     <p class="limit-notification hidden"></p>
-                    <div id="service-qualities-tags" class="tag-group"></div>
+                    <div id="service-tags" class="tag-group"></div>
                 </div>
             </div>
 
@@ -386,7 +390,7 @@
                 api_key_error: "Error: API Key is not configured. Please contact the site owner."
             },
             es: {
-                lang_name_native: "�🇸 Español",
+                lang_name_native: "🇪🇸 Español",
                 lang_title: "Elige tu idioma",
                 server_title: "¿Quién te atendió?",
                 service_subtitle: "¿Qué te gustó especialmente? (máx. 3)",
@@ -476,7 +480,7 @@
                 api_key_error: "Errore: La chiave API non è configurata. Si prega di contattare il proprietario del sito."
             },
             zh: {
-                lang_name_native: "🇨🇳 简体中文",
+                lang_name_native: "�🇳 简体中文",
                 lang_title: "选择您的语言",
                 server_title: "是谁为您服务的？",
                 service_subtitle: "您特别欣赏什么？ (最多3个)",
@@ -788,7 +792,7 @@
                     }
                 });
             }
-            setupCheckboxLimit('service-qualities-tags', 'serviceQualities', 3);
+            setupCheckboxLimit('service-tags', 'serviceQualities', 3);
             setupCheckboxLimit('flavors-tags', 'flavors', 6);
             setupCheckboxLimit('atmosphere-tags', 'atmosphere', 3);
 
