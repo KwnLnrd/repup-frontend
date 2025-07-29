@@ -318,7 +318,7 @@
                 atmosphere_decoration: "The Decoration", atmosphere_music: "The Music", atmosphere_energy: "Festive Energy", atmosphere_lighting: "The Lighting", atmosphere_comfort: "Comfort", atmosphere_romantic: "Romantic"
             },
             es: {
-                lang_name_native: "🇪🇸 Español",
+                lang_name_native: "�🇸 Español",
                 lang_title: "Elige tu idioma",
                 server_title: "¿Quién te ha atendido?",
                 service_subtitle: "¿Qué te gustó especialmente? (3 máx.)",
@@ -488,7 +488,10 @@
 
         function renderAllSections() {
             const langContainer = document.querySelector('#section-lang .tag-group');
-            langContainer.innerHTML = Object.keys(translations).map(lang => `<button class="button" data-lang-select="${lang}">${translations[lang].lang_name_native}</button>`).join('');
+            langContainer.innerHTML = (restaurantData.languages || ['fr', 'en']).map(lang => {
+                const langName = translations[lang]?.lang_name_native || lang.toUpperCase();
+                return `<button class="button" data-lang-select="${lang}">${langName}</button>`;
+            }).join('');
             
             document.getElementById('server-grid').innerHTML = restaurantData.servers.map(server => `
                 <div class="selection-item" data-server-name="${server.name}">
@@ -507,16 +510,17 @@
             `).join('');
 
             const flavorsContainer = document.getElementById('flavors-tags');
+            const flavorsSection = document.getElementById('section-flavors');
             flavorsContainer.innerHTML = '';
             if(restaurantData.menu && Object.keys(restaurantData.menu).length > 0) {
-                document.getElementById('section-flavors').style.display = 'block';
+                flavorsSection.classList.remove('is-empty');
                 Object.entries(restaurantData.menu).forEach(([category, dishes]) => {
                     dishes.forEach(dish => {
                         flavorsContainer.innerHTML += `<input type="checkbox" id="dish_${dish.id}" name="flavor" value="${dish.name}"><label for="dish_${dish.id}">${dish.name}</label>`;
                     });
                 });
             } else {
-                document.getElementById('section-flavors').style.display = 'none';
+                flavorsSection.classList.add('is-empty');
             }
 
             const atmospheres = ['atmosphere_decoration', 'atmosphere_music', 'atmosphere_energy', 'atmosphere_lighting', 'atmosphere_comfort', 'atmosphere_romantic'];
@@ -538,13 +542,14 @@
         }
 
         function goToSection(index) {
-            if (sectionOrder[index] === 'flavors' && document.getElementById('section-flavors').style.display === 'none') {
+            const sectionElement = document.getElementById(`section-${sectionOrder[index]}`);
+            if (sectionElement && sectionElement.classList.contains('is-empty')) {
                 const direction = index > currentSectionIndex ? 1 : -1;
-                currentSectionIndex = index + direction;
-            } else {
-                currentSectionIndex = index;
+                goToSection(index + direction);
+                return;
             }
-
+            
+            currentSectionIndex = index;
             sections.forEach((s, i) => s.classList.toggle('active', i === currentSectionIndex));
             updateNavButtons();
         }
@@ -697,9 +702,13 @@
                 }
 
                 if (!restaurantData.languages || restaurantData.languages.length <= 1) {
-                    currentSectionIndex = 1;
+                    // If only one language, set it and skip the language selection screen
+                    reviewData.lang = restaurantData.languages[0] || 'fr';
+                    renderAllSections();
+                    goToSection(1);
+                } else {
+                    goToSection(0);
                 }
-                goToSection(currentSectionIndex);
             }
         }
 
@@ -708,3 +717,4 @@
     </script>
 </body>
 </html>
+�
