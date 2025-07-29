@@ -432,47 +432,43 @@
             }
         }
 
+        // MODIFIÉ: Nouvelle fonction pour gérer les options
         async function renderOptionsManagement() {
             const section = document.getElementById('options-management');
             if(!section) return;
             section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Options</h1><div class="text-center p-10">Chargement...</div>`;
 
             try {
-                const tagsData = await fetchWithAuth('/api/tags');
-                const categories = { service: "Qualités du Service", occasion: "Occasions", atmosphere: "Atmosphère" };
+                const data = await fetchWithAuth('/api/options');
+                const { available_tags, selected_keys } = data;
 
-                let contentHtml = '<div class="space-y-8">';
-                for (const [key, title] of Object.entries(categories)) {
-                    const tags = tagsData[key] || [];
+                const categoryTitles = {
+                    service: "Qualités du Service",
+                    occasion: "Occasions",
+                    atmosphere: "Atmosphère"
+                };
+
+                let contentHtml = `<form id="options-form"><div class="space-y-8">`;
+                for (const category in available_tags) {
                     contentHtml += `
                         <div class="card">
-                            <h2 class="text-2xl font-bold font-serif mb-4">${title}</h2>
-                            <div id="tags-list-${key}" class="space-y-2 mb-4">
-                                ${tags.map(tag => `
-                                    <div class="item-list-entry" id="tag-item-${tag.id}">
-                                        <span>${tag.text}</span>
-                                        <div class="flex items-center gap-2">
-                                            <button class="edit-tag-btn text-gray-500 hover:text-blue-700" data-tag-id="${tag.id}" data-tag-text="${tag.text}">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
-                                            </button>
-                                            <button class="delete-tag-btn text-gray-500 hover:text-red-700" data-tag-id="${tag.id}">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            </button>
-                                        </div>
-                                    </div>
+                            <h2 class="text-2xl font-bold font-serif mb-4">${categoryTitles[category] || category}</h2>
+                            <p class="text-sm text-gray-600 mb-4">Cochez les options que vous souhaitez proposer à vos clients.</p>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                ${available_tags[category].map(tag => `
+                                    <label class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer border">
+                                        <input type="checkbox" name="option_tag" value="${tag.key}" class="h-5 w-5 rounded border-gray-300 text-brand-color focus:ring-brand-color" ${selected_keys.includes(tag.key) ? 'checked' : ''}>
+                                        <span class="text-gray-700">${tag.fr}</span>
+                                    </label>
                                 `).join('')}
                             </div>
-                            <form class="add-tag-form flex gap-2" data-category="${key}">
-                                <input type="text" placeholder="Ajouter une option..." class="form-input flex-grow" required>
-                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors">Ajouter</button>
-                            </form>
                         </div>
                     `;
                 }
-                contentHtml += '</div>';
+                contentHtml += `</div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-color text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors text-lg w-full md:w-auto">Enregistrer les options</button></div></form>`;
                 section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Options</h1>${contentHtml}`;
             } catch (error) {
-                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des options.</div>`;
+                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des options. ${error.message}</div>`;
             }
         }
 
@@ -624,17 +620,18 @@
                     alert('Erreur lors de la sauvegarde: ' + error.message);
                 }
             }
-            if (e.target.matches('.add-tag-form')) {
+            // MODIFIÉ: Soumission du formulaire des options
+            if (e.target.matches('#options-form')) {
                 e.preventDefault();
                 const form = e.target;
-                const category = form.dataset.category;
-                const input = form.querySelector('input');
-                const text = input.value.trim();
-                if (!text) return;
+                const selected_keys = Array.from(form.querySelectorAll('input[name="option_tag"]:checked')).map(cb => cb.value);
                 
                 try {
-                    await fetchWithAuth('/api/tags', { method: 'POST', body: JSON.stringify({ category, text }) });
-                    renderOptionsManagement();
+                    await fetchWithAuth('/api/options', { 
+                        method: 'POST', 
+                        body: JSON.stringify({ selected_keys }) 
+                    });
+                    alert('Options enregistrées avec succès !');
                 } catch (error) {
                     alert('Erreur: ' + error.message);
                 }
@@ -668,19 +665,6 @@
                 }
             }
             // MODAL SUBMISSIONS
-            if (e.target.matches('#edit-tag-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const tagId = form.dataset.tagId;
-                const text = form.querySelector('input').value;
-                try {
-                    await fetchWithAuth(`/api/tags/${tagId}`, { method: 'PUT', body: JSON.stringify({ text }) });
-                    closeModal();
-                    renderOptionsManagement();
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
             if (e.target.matches('#edit-server-form')) {
                 e.preventDefault();
                 const form = e.target;
@@ -716,8 +700,8 @@
         });
 
         contentArea.addEventListener('click', async (e) => {
-            const deleteBtn = e.target.closest('.delete-tag-btn, .delete-server-btn, .delete-dish-btn');
-            const editBtn = e.target.closest('.edit-tag-btn, .edit-server-btn, .edit-dish-btn');
+            const deleteBtn = e.target.closest('.delete-server-btn, .delete-dish-btn');
+            const editBtn = e.target.closest('.edit-server-btn, .edit-dish-btn');
             const accordionHeader = e.target.closest('.accordion-header');
 
             if (accordionHeader) {
@@ -727,7 +711,7 @@
             }
 
             if (deleteBtn) {
-                const dataType = deleteBtn.className.includes('tag') ? 'tag' : (deleteBtn.className.includes('server') ? 'server' : 'dish');
+                const dataType = deleteBtn.className.includes('server') ? 'server' : 'dish';
                 const dataId = deleteBtn.dataset[`${dataType}Id`];
                 if (confirm(`Voulez-vous vraiment supprimer cet élément ?`)) {
                     try {
@@ -744,20 +728,6 @@
             }
 
             if (editBtn) {
-                if (editBtn.matches('.edit-tag-btn')) {
-                    const tagId = editBtn.dataset.tagId;
-                    const tagText = editBtn.dataset.tagText;
-                    openModal(`
-                        <form id="edit-tag-form" data-tag-id="${tagId}" class="card w-full max-w-md modal-content">
-                            <h2 class="text-2xl font-bold font-serif mb-4">Modifier l'Option</h2>
-                            <input type="text" value="${tagText}" class="form-input" required>
-                            <div class="flex justify-end gap-2 mt-4">
-                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
-                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold">Enregistrer</button>
-                            </div>
-                        </form>
-                    `);
-                }
                 if (editBtn.matches('.edit-server-btn')) {
                     const serverId = editBtn.dataset.serverId;
                     const serverName = editBtn.dataset.serverName;
@@ -817,3 +787,4 @@
     </script>
 </body>
 </html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
