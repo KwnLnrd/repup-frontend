@@ -463,39 +463,4 @@
                 if (e.target.id === 'close-positive-btn') {
                     e.preventDefault();
                     document.getElementById('thank-you-title').innerText = getTranslation('final_thank_you_title');
-                    document.getElementById('thank-you-subtitle').innerText = getTranslation('final_thank_you_subtitle');
-                    goToStep('thank-you');
-                }
-            });
-
-            document.getElementById('internal-feedback-form').addEventListener('submit', e => {
-                e.preventDefault();
-                goToStep('thank-you');
-            });
-        }
-
-        // --- INITIALIZATION ---
-        async function init() {
-            const success = await fetchRestaurantData();
-            if (success) {
-                loader.classList.add('hidden');
-                appContent.classList.remove('hidden');
-                mainContainer.classList.add('loaded');
-                
-                applyBranding();
-                renderStepContent();
-                setupEventListeners();
-
-                if (restaurantData.languages && restaurantData.languages.length > 1) {
-                     goToStep('lang');
-                } else {
-                     goToStep('server');
-                }
-            }
-        }
-
-        init();
-    });
-    </script>
-</body>
-</html>
+                    document.getElementById('
