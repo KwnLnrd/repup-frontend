@@ -348,9 +348,14 @@
                 const data = await response.json();
                 restaurantData = { ...data, servers: data.servers || [], languages: data.languages || ['fr', 'en'] };
                 
-                // Fetch menu items separately
+                // Fetch menu items separately with error handling
                 const menuResponse = await fetch(`${API_BASE_URL}/api/public/menu/${slug}`);
-                restaurantData.menu = await menuResponse.json();
+                if (menuResponse.ok) {
+                    restaurantData.menu = await menuResponse.json();
+                } else {
+                    console.warn(`Could not fetch menu (status: ${menuResponse.status}). The flavor section will be empty.`);
+                    restaurantData.menu = {}; // Set to empty object to prevent errors
+                }
 
                 reviewData.lang = restaurantData.languages.includes('fr') ? 'fr' : restaurantData.languages[0];
                 return true;
@@ -400,13 +405,17 @@
             // Flavors
             const flavorsContainer = document.getElementById('flavors-tags');
             flavorsContainer.innerHTML = '';
-            if(restaurantData.menu) {
+            if(restaurantData.menu && Object.keys(restaurantData.menu).length > 0) {
                 Object.entries(restaurantData.menu).forEach(([category, dishes]) => {
                     dishes.forEach(dish => {
                         flavorsContainer.innerHTML += `<input type="checkbox" id="dish_${dish.id}" name="flavor" value="${dish.name}"><label for="dish_${dish.id}">${dish.name}</label>`;
                     });
                 });
+            } else {
+                // Hide the flavors section if no menu items are available
+                document.getElementById('section-flavors').style.display = 'none';
             }
+
 
             // Atmosphere
             const atmospheres = ['atmosphere_decoration', 'atmosphere_music', 'atmosphere_energy', 'atmosphere_lighting', 'atmosphere_comfort', 'atmosphere_romantic'];
@@ -428,8 +437,15 @@
         }
 
         function goToSection(index) {
-            currentSectionIndex = index;
-            sections.forEach((s, i) => s.classList.toggle('active', i === index));
+            // Skip flavors section if it's hidden
+            if (sectionOrder[index] === 'flavors' && document.getElementById('section-flavors').style.display === 'none') {
+                const direction = index > currentSectionIndex ? 1 : -1;
+                currentSectionIndex = index + direction;
+            } else {
+                currentSectionIndex = index;
+            }
+
+            sections.forEach((s, i) => s.classList.toggle('active', i === currentSectionIndex));
             updateNavButtons();
         }
         
