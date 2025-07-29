@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* --- DESIGN SYSTEM (Inspiré de indexmodel.html) --- */
         :root {
             --brand-color: #BF5B3F; /* Sera surchargé par JS */
             --brand-color-light: rgba(191, 91, 63, 0.1);
@@ -24,7 +23,6 @@
             --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
         }
 
-        /* --- STYLES GLOBAUX --- */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         body {
@@ -55,9 +53,7 @@
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
         }
-        .review-container.loaded {
-            opacity: 1;
-        }
+        .review-container.loaded { opacity: 1; }
 
         .logo-container { margin-bottom: 24px; }
         .logo-container img { max-height: 60px; height: auto; margin: 0 auto; object-fit: contain; }
@@ -65,17 +61,15 @@
         h1 { font-family: var(--font-serif); font-size: 2rem; margin-bottom: 8px; }
         p.subtitle { font-size: 1rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 28px; }
         
-        /* --- SECTIONS DE FORMULAIRE --- */
-        .form-section { display: none; animation: fadeIn 0.6s ease-out; }
+        .form-section { display: none; animation: fadeIn 0.6s ease-out; text-align: left; }
         .form-section.active { display: block; }
-        .form-section h2 { font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 12px; color: var(--text-primary); }
+        .form-section h2 { font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 12px; color: var(--text-primary); text-align: center; }
+        .form-section .subtitle { text-align: center;}
 
-        /* --- GRILLE DE SÉLECTION (Serveurs) --- */
         .selection-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 1rem;
-            margin-bottom: 2rem;
         }
         .selection-item {
             display: flex;
@@ -94,113 +88,79 @@
             box-shadow: 0 0 0 2px var(--brand-color);
         }
         .selection-item img {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 0.75rem;
-            background-color: #f0f0f0;
+            width: 64px; height: 64px; border-radius: 50%;
+            object-fit: cover; margin-bottom: 0.75rem; background-color: #f0f0f0;
         }
-        .selection-item span {
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
+        .selection-item span { font-weight: 500; font-size: 0.9rem; }
         
-        /* --- ÉVALUATION PAR ÉTOILES --- */
-        .star-rating {
-            display: flex;
-            justify-content: center;
-            gap: 0.75rem;
-            margin: 1.5rem 0;
+        .tag-group { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+        .tag-group input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .tag-group label {
+            background-color: var(--surface-color); color: var(--text-secondary);
+            padding: 10px 18px; border-radius: 8px; cursor: pointer;
+            font-size: .9rem; font-weight: 500; transition: all .3s ease;
+            border: 1px solid var(--border-color); user-select: none;
         }
-        .star-rating svg {
-            width: 3rem;
-            height: 3rem;
-            color: #E0E0E0;
-            cursor: pointer;
-            transition: all 0.2s;
+        .tag-group input:checked+label {
+            background-color: var(--brand-color); color: #fff; border-color: var(--brand-color);
+            box-shadow: 0 4px 15px rgba(191,91,63,.25);
         }
-        .star-rating svg.selected {
-            color: #FFC107;
+        .tag-group input:disabled+label {
+            cursor: not-allowed; background-color: var(--background-color);
+            color: #BDBDBD; opacity: 0.7; box-shadow: none;
         }
-        .star-rating:hover svg:hover,
-        .star-rating:hover svg:hover ~ svg {
-             color: #E0E0E0;
-        }
-        .star-rating:hover svg:hover {
-            color: #FFD700;
-            transform: scale(1.15);
-        }
-        #rating-feedback {
-            min-height: 28px;
-            font-weight: 600;
-            font-size: 1.25rem;
-            color: var(--brand-color);
-            margin-top: 1rem;
-        }
+        .limit-notification { color: var(--brand-color); font-size: 0.9rem; margin-top: 15px; text-align: center; font-weight: 500; transition: opacity 0.3s ease-in-out; }
 
-        /* --- FORMULAIRES & BOUTONS --- */
         textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: var(--surface-color);
-            font-family: var(--font-sans);
-            font-size: 1rem;
-            color: var(--text-primary);
-            box-sizing: border-box;
-            min-height: 120px;
-            resize: vertical;
+            width: 100%; padding: 12px; border-radius: 8px;
+            border: 1px solid var(--border-color); background-color: var(--surface-color);
+            font-family: var(--font-sans); font-size: 1rem; color: var(--text-primary);
+            box-sizing: border-box; min-height: 120px; resize: vertical;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         textarea:focus {
             outline: none; border-color: var(--brand-color);
             box-shadow: 0 0 0 3px rgba(191, 91, 63, 0.2);
         }
-
+        
+        .button-group { display: flex; justify-content: space-between; margin-top: 2rem; }
         .button {
-            display: inline-block;
-            background-color: var(--brand-color);
-            color: #fff;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: all .3s ease;
-            text-decoration: none;
+            display: inline-block; background-color: var(--brand-color); color: #fff; border: none;
+            padding: 14px 28px; border-radius: 50px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; width: 100%; transition: all .3s ease; text-decoration: none;
             box-sizing: border-box;
         }
         .button:hover {
-            background-color: var(--brand-color-dark);
-            transform: translateY(-2px);
+            background-color: var(--brand-color-dark); transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.1);
         }
         .button.secondary {
-            background: var(--surface-color);
-            color: var(--brand-color);
+            background: var(--surface-color); color: var(--brand-color);
             border: 1px solid var(--brand-color);
         }
-        .button.secondary:hover {
-            background-color: var(--brand-color-light);
-            border-color: var(--brand-color);
-        }
-        
-        .language-switcher { margin-bottom: 24px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .lang-btn { background-color: var(--background-color); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 50px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
-        .lang-btn.active { background-color: var(--brand-color); color: white; border-color: var(--brand-color); }
-        
+        .button.secondary:hover { background-color: var(--brand-color-light); }
+        .button.nav-btn { width: auto; min-width: 120px; }
+
         #loader { text-align: center; padding: 3rem; }
-        #thank-you-message svg { width: 4rem; height: 4rem; margin: 0 auto 1rem; color: #28a745; }
+        .loader-dots div {
+            width: 12px; height: 12px; background-color: var(--brand-color);
+            border-radius: 100%; display: inline-block;
+            animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+        }
+        .loader-dots .bounce1 { animation-delay: -0.32s; }
+        .loader-dots .bounce2 { animation-delay: -0.16s; }
+        @keyframes sk-bouncedelay {
+          0%, 80%, 100% { transform: scale(0); }
+          40% { transform: scale(1.0); }
+        }
+
+        #result-area .button { margin-top: 1rem; }
+        #result-area #google-btn.hidden, #result-area #tripadvisor-btn.hidden { display: none; }
 
         @media (max-width: 600px) {
             body { padding: 10px; }
             .review-container { padding: 20px 15px; margin: 10px 0; }
-            h1 { font-size: 1.8rem; }
-            .selection-grid { gap: 0.75rem; }
+            h1, .form-section h2 { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -212,55 +172,72 @@
         </div>
         
         <div id="app-content" class="hidden">
-            <!-- Header: Logo & Language Switcher -->
-            <div id="lang-container" class="language-switcher"></div>
             <div class="logo-container" id="logo-container"></div>
 
-            <!-- Step 0: Language Selection (if more than one) -->
             <div id="section-lang" class="form-section">
-                 <h1 data-translate-key="choose_language_title">Choose your language</h1>
-                 <div id="lang-selector" class="flex flex-wrap justify-center gap-3 mt-6"></div>
-            </div>
-
-            <!-- Step 1: Server Selection -->
-            <div id="section-server" class="form-section">
-                <h1 id="server-title"></h1>
-                <p id="server-subtitle" class="subtitle"></p>
-                <div id="server-grid" class="selection-grid"></div>
-            </div>
-
-            <!-- Step 2: Rating -->
-            <div id="section-rating" class="form-section">
-                <h1 id="rating-title"></h1>
-                <p id="rating-subtitle" class="subtitle"></p>
-                <div id="star-rating" class="star-rating"></div>
-                <p id="rating-feedback"></p>
-            </div>
-            
-            <!-- Step 3: Positive Feedback -->
-            <div id="section-positive-feedback" class="form-section">
-                <h1 id="positive-title"></h1>
-                <p id="positive-subtitle" class="subtitle"></p>
-                <div id="positive-buttons" class="space-y-4"></div>
-            </div>
-
-            <!-- Step 4: Negative Feedback -->
-            <div id="section-negative-feedback" class="form-section">
-                <h1 id="negative-title"></h1>
-                <p id="negative-subtitle" class="subtitle"></p>
-                <form id="internal-feedback-form" class="mt-6">
-                    <textarea id="feedback-textarea" rows="5" required></textarea>
-                    <button id="submit-feedback-btn" type="submit" class="button mt-4"></button>
-                </form>
-            </div>
-            
-            <!-- Step 5: Thank You -->
-            <div id="section-thank-you" class="form-section text-center">
-                 <div id="thank-you-message">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <h1 id="thank-you-title"></h1>
-                    <p id="thank-you-subtitle" class="subtitle"></p>
+                 <h2 data-translate-key="lang_title">Choisissez votre langue</h2>
+                 <div class="tag-group mt-6">
+                    <!-- Language buttons injected here -->
                  </div>
+            </div>
+
+            <div id="section-server" class="form-section">
+                <h2 data-translate-key="server_title">Qui a enchanté votre service ?</h2>
+                <div id="server-grid" class="selection-grid mt-6"></div>
+                <div id="service-qualities-container" class="hidden mt-4">
+                    <h3 class="text-lg font-semibold text-center mb-4" data-translate-key="service_subtitle">Qu'avez-vous particulièrement apprécié ?</h3>
+                    <p class="limit-notification hidden"></p>
+                    <div id="service-qualities-tags" class="tag-group"></div>
+                </div>
+            </div>
+
+            <div id="section-occasion" class="form-section">
+                <h2 data-translate-key="occasion_title">Une occasion spéciale ?</h2>
+                <div id="occasion-tags" class="tag-group mt-6"></div>
+            </div>
+
+            <div id="section-flavors" class="form-section">
+                <h2 data-translate-key="flavors_title">Les saveurs qui vous ont marqué</h2>
+                <p class="subtitle" data-translate-key="flavors_subtitle">Choisissez jusqu'à 6 de vos coups de cœur.</p>
+                <p class="limit-notification hidden"></p>
+                <div id="flavors-tags" class="tag-group mt-4"></div>
+            </div>
+
+            <div id="section-atmosphere" class="form-section">
+                <h2 data-translate-key="atmosphere_title">L'atmosphère du lieu</h2>
+                <p class="subtitle" data-translate-key="atmosphere_subtitle">Sélectionnez jusqu'à 3 options.</p>
+                <p class="limit-notification hidden"></p>
+                <div id="atmosphere-tags" class="tag-group mt-4"></div>
+            </div>
+
+            <div id="section-feedback" class="form-section">
+                <h2 data-translate-key="feedback_title">Une suggestion privée ?</h2>
+                <p class="subtitle" data-translate-key="feedback_subtitle">Ce message sera envoyé uniquement à l'équipe (optionnel).</p>
+                <textarea id="feedback-textarea" rows="5" class="mt-2"></textarea>
+            </div>
+            
+            <div id="section-result" class="form-section text-center">
+                <div id="generation-loader">
+                    <h2 data-translate-key="generating_title">Création de votre avis...</h2>
+                    <p class="subtitle" data-translate-key="generating_subtitle">Notre IA personnalise votre expérience.</p>
+                    <div class="loader-dots mt-6">
+                        <div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div>
+                    </div>
+                </div>
+                <div id="result-display" class="hidden">
+                    <h2 data-translate-key="result_title">Votre avis est prêt !</h2>
+                    <textarea id="review-text" readonly class="mt-4"></textarea>
+                    <div id="result-buttons" class="mt-2 space-y-3">
+                        <button id="copy-btn" class="button secondary"></button>
+                        <a id="google-btn" href="#" target="_blank" class="button"></a>
+                        <a id="tripadvisor-btn" href="#" target="_blank" class="button"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="navigation-buttons" class="button-group">
+                <button id="back-btn" class="button secondary nav-btn">Précédent</button>
+                <button id="next-btn" class="button nav-btn">Suivant</button>
             </div>
         </div>
     </div>
@@ -268,102 +245,114 @@
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
         const API_BASE_URL = 'https://repup-test.onrender.com';
-
-        // --- DOM Elements ---
+        
         const reviewContainer = document.getElementById('review-container');
         const loader = document.getElementById('loader');
         const appContent = document.getElementById('app-content');
         const sections = document.querySelectorAll('.form-section');
+        const nextBtn = document.getElementById('next-btn');
+        const backBtn = document.getElementById('back-btn');
 
         let restaurantData = {};
+        let reviewData = {
+            lang: 'fr', server: null, serviceQualities: [], occasion: null,
+            flavors: [], atmosphere: [], privateFeedback: ''
+        };
+        
+        const sectionOrder = ['lang', 'server', 'occasion', 'flavors', 'atmosphere', 'feedback', 'result'];
+        let currentSectionIndex = 0;
+
         const translations = {
             fr: {
-                lang_name: "Français",
-                choose_language_title: "Choisissez votre langue",
+                lang_title: "Choisissez votre langue",
                 server_title: "Qui a enchanté votre service ?",
-                server_subtitle: "Sélectionnez la personne qui s'est occupée de vous.",
-                rating_title: (server) => `Comment évalueriez-vous le service de <strong>${server}</strong> ?`,
-                rating_subtitle: "Votre note nous est précieuse.",
-                rating_feedback: ["Terrible", "Moyen", "Bien", "Très bien", "Excellent !"],
-                positive_title: "Merci infiniment !",
-                positive_subtitle: "Votre avis est essentiel. Aidez d'autres gourmands en le partageant sur une plateforme publique.",
-                publish_on: (platform) => `Publier sur ${platform}`,
-                no_thanks: "Non merci",
-                negative_title: "Nous sommes désolés",
-                negative_subtitle: "Votre expérience n'a pas été à la hauteur. Laissez-nous un message privé pour que nous puissions nous améliorer.",
-                feedback_placeholder: "Dites-nous tout...",
-                submit_feedback: "Envoyer mon retour",
-                thank_you_title: "Merci pour votre retour !",
-                thank_you_subtitle: "Nous avons bien reçu votre message. À bientôt !",
-                final_thank_you_title: "Merci !",
-                final_thank_you_subtitle: "Votre soutien est notre plus belle récompense.",
-                loading_restaurant: "Chargement des informations du restaurant...",
+                service_subtitle: "Qu'avez-vous particulièrement apprécié ? (3 max)",
+                occasion_title: "Une occasion spéciale ?",
+                flavors_title: "Les saveurs qui vous ont marqué",
+                flavors_subtitle: "Choisissez jusqu'à 6 de vos coups de cœur.",
+                atmosphere_title: "L'atmosphère du lieu",
+                atmosphere_subtitle: "Sélectionnez jusqu'à 3 options.",
+                feedback_title: "Une suggestion privée ?",
+                feedback_subtitle: "Ce message sera envoyé uniquement à l'équipe (optionnel).",
+                generating_title: "Création de votre avis...",
+                generating_subtitle: "Notre IA personnalise votre expérience.",
+                result_title: "Votre avis est prêt !",
+                copy_button: "Copier le texte",
+                publish_on_google: "Publier sur Google",
+                publish_on_tripadvisor: "Publier sur TripAdvisor",
+                loading_restaurant: "Chargement...",
+                nav_next: "Suivant",
+                nav_back: "Précédent",
+                nav_generate: "Générer mon avis",
+                limit_reached: (limit) => `Limite de ${limit} choix atteinte.`,
+                // Data for tags
+                service_q1: "Attentionné", service_q2: "Souriant", service_q3: "Professionnel", service_q4: "Efficace", service_q5: "De bon conseil", service_q6: "Discret",
+                occasion_birthday: "Anniversaire", occasion_romantic: "Dîner romantique", occasion_friends: "Entre amis", occasion_family: "En famille", occasion_business: "Affaires", occasion_visit: "Simple visite",
+                atmosphere_decoration: "La Décoration", atmosphere_music: "La Musique", atmosphere_energy: "L'Énergie Festive", atmosphere_lighting: "L'Éclairage", atmosphere_comfort: "Le Confort", atmosphere_romantic: "Romantique"
             },
             en: {
-                lang_name: "English",
-                choose_language_title: "Choose your language",
+                lang_title: "Choose your language",
                 server_title: "Who provided your service?",
-                server_subtitle: "Select the person who took care of you.",
-                rating_title: (server) => `How would you rate <strong>${server}</strong>'s service?`,
-                rating_subtitle: "Your rating is valuable to us.",
-                rating_feedback: ["Terrible", "Average", "Good", "Very good", "Excellent!"],
-                positive_title: "Thank you so much!",
-                positive_subtitle: "Your opinion is essential. Help other food lovers by sharing it on a public platform.",
-                publish_on: (platform) => `Publish on ${platform}`,
-                no_thanks: "No, thank you",
-                negative_title: "We are sorry",
-                negative_subtitle: "Your experience was not up to par. Please leave us a private message so we can improve.",
-                feedback_placeholder: "Tell us everything...",
-                submit_feedback: "Send my feedback",
-                thank_you_title: "Thank you for your feedback!",
-                thank_you_subtitle: "We have received your message. See you soon!",
-                final_thank_you_title: "Thank You!",
-                final_thank_you_subtitle: "Your support is our greatest reward.",
-                loading_restaurant: "Loading restaurant information...",
-            },
-            es: {
-                lang_name: "Español",
-                choose_language_title: "Elige tu idioma",
-                server_title: "¿Quién le atendió?",
-                server_subtitle: "Seleccione la persona que le atendió.",
-                rating_title: (server) => `¿Cómo calificaría el servicio de <strong>${server}</strong>?`,
-                rating_subtitle: "Su calificación es muy valiosa para nosotros.",
-                rating_feedback: ["Terrible", "Regular", "Bueno", "Muy bueno", "¡Excelente!"],
-                positive_title: "¡Muchas gracias!",
-                positive_subtitle: "Su opinión es esencial. Ayude a otros gourmets compartiéndola en una plataforma pública.",
-                publish_on: (platform) => `Publicar en ${platform}`,
-                no_thanks: "No, gracias",
-                negative_title: "Lo sentimos",
-                negative_subtitle: "Su experiencia no estuvo a la altura. Déjenos un mensaje privado para que podamos mejorar.",
-                feedback_placeholder: "Cuéntenos todo...",
-                submit_feedback: "Enviar mi comentario",
-                thank_you_title: "¡Gracias por su comentario!",
-                thank_you_subtitle: "Hemos recibido su mensaje. ¡Hasta pronto!",
-                final_thank_you_title: "¡Gracias!",
-                final_thank_you_subtitle: "Su apoyo es nuestra mayor recompensa.",
-                loading_restaurant: "Cargando información del restaurante...",
+                service_subtitle: "What did you particularly appreciate? (3 max)",
+                occasion_title: "A special occasion?",
+                flavors_title: "The flavors that stood out",
+                flavors_subtitle: "Choose up to 6 of your favorites.",
+                atmosphere_title: "The atmosphere",
+                atmosphere_subtitle: "Select up to 3 options.",
+                feedback_title: "A private suggestion?",
+                feedback_subtitle: "This message will be sent only to the team (optional).",
+                generating_title: "Creating your review...",
+                generating_subtitle: "Our AI is personalizing your experience.",
+                result_title: "Your review is ready!",
+                copy_button: "Copy text",
+                publish_on_google: "Publish on Google",
+                publish_on_tripadvisor: "Publish on TripAdvisor",
+                loading_restaurant: "Loading...",
+                nav_next: "Next",
+                nav_back: "Back",
+                nav_generate: "Generate my review",
+                limit_reached: (limit) => `Limit of ${limit} choices reached.`,
+                service_q1: "Attentive", service_q2: "Smiling", service_q3: "Professional", service_q4: "Efficient", service_q5: "Good advice", service_q6: "Discreet",
+                occasion_birthday: "Birthday", occasion_romantic: "Romantic dinner", occasion_friends: "With friends", occasion_family: "With family", occasion_business: "Business", occasion_visit: "Just visiting",
+                atmosphere_decoration: "The Decoration", atmosphere_music: "The Music", atmosphere_energy: "Festive Energy", atmosphere_lighting: "The Lighting", atmosphere_comfort: "Comfort", atmosphere_romantic: "Romantic"
             }
         };
 
-        let currentState = {
-            section: 'lang',
-            lang: 'fr',
-            selectedServer: null,
-            rating: 0,
-        };
+        function getTranslation(key, ...args) {
+            const langPack = translations[reviewData.lang] || translations.fr;
+            const translation = langPack[key] || key;
+            return typeof translation === 'function' ? translation(...args) : translation;
+        }
+
+        function translatePage() {
+            document.querySelectorAll('[data-translate-key]').forEach(el => {
+                const key = el.dataset.translateKey;
+                el.innerHTML = getTranslation(key);
+            });
+            nextBtn.innerText = getTranslation('nav_next');
+            backBtn.innerText = getTranslation('nav_back');
+            document.getElementById('copy-btn').innerText = getTranslation('copy_button');
+            document.getElementById('google-btn').innerText = getTranslation('publish_on_google');
+            document.getElementById('tripadvisor-btn').innerText = getTranslation('publish_on_tripadvisor');
+        }
 
         async function fetchRestaurantData() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const slug = urlParams.get('slug');
-                if (!slug) throw new Error("Slug du restaurant manquant dans l'URL.");
+                if (!slug) throw new Error("Slug manquant.");
                 
                 const response = await fetch(`${API_BASE_URL}/api/public/restaurant/${slug}`);
-                if (!response.ok) throw new Error(`Erreur de récupération (code: ${response.status})`);
+                if (!response.ok) throw new Error(`Erreur serveur (code: ${response.status})`);
                 
                 const data = await response.json();
                 restaurantData = { ...data, servers: data.servers || [], languages: data.languages || ['fr', 'en'] };
-                currentState.lang = restaurantData.languages.includes('fr') ? 'fr' : restaurantData.languages[0];
+                
+                // Fetch menu items separately
+                const menuResponse = await fetch(`${API_BASE_URL}/api/public/menu/${slug}`);
+                restaurantData.menu = await menuResponse.json();
+
+                reviewData.lang = restaurantData.languages.includes('fr') ? 'fr' : restaurantData.languages[0];
                 return true;
             } catch (error) {
                 loader.innerHTML = `<p class="text-red-500 font-semibold">Erreur de chargement</p><p class="text-gray-600 mt-2">${error.message}</p>`;
@@ -379,164 +368,198 @@
             root.style.setProperty('--brand-color-light', `rgba(${r}, ${g}, ${b}, 0.1)`);
             root.style.setProperty('--brand-color-dark', `rgb(${Math.max(0, r-20)}, ${Math.max(0, g-20)}, ${Math.max(0, b-20)})`);
             
-            document.title = `Donnez votre avis - ${restaurantData.name}`;
-            
+            document.title = `Avis - ${restaurantData.name}`;
             const logoUrl = restaurantData.logoUrl ? `${API_BASE_URL}${restaurantData.logoUrl}` : `https://placehold.co/200x60/${color.substring(1)}/FFFFFF?text=${encodeURIComponent(restaurantData.name)}`;
             document.getElementById('logo-container').innerHTML = `<img src="${logoUrl}" alt="Logo de ${restaurantData.name}">`;
         }
 
-        function getTranslation(key, ...args) {
-            const langPack = translations[currentState.lang] || translations.fr;
-            const translation = langPack[key] || key;
-            return typeof translation === 'function' ? translation(...args) : translation;
-        }
-        
-        function renderContent() {
-            // Language Switcher
-            const langContainer = document.getElementById('lang-container');
-            if (restaurantData.languages.length > 1) {
-                langContainer.innerHTML = restaurantData.languages.map(langCode => {
-                    const langData = translations[langCode] || { lang_name: langCode.toUpperCase() };
-                    return `<button class="lang-btn ${currentState.lang === langCode ? 'active' : ''}" data-lang="${langCode}">${langData.lang_name}</button>`;
-                }).join('');
-            } else {
-                langContainer.innerHTML = '';
-            }
-
-            // Language Selection Screen
-            const langSelector = document.getElementById('lang-selector');
-            langSelector.innerHTML = restaurantData.languages.map(langCode => {
-                const langData = translations[langCode] || { lang_name: langCode.toUpperCase() };
-                return `<button class="button" data-lang-select="${langCode}">${langData.lang_name}</button>`;
-            }).join('<div class="my-2"></div>');
-            document.querySelector('[data-translate-key="choose_language_title"]').innerText = getTranslation('choose_language_title');
-
-
-            // Server Step
-            document.getElementById('server-title').innerText = getTranslation('server_title');
-            document.getElementById('server-subtitle').innerText = getTranslation('server_subtitle');
+        function renderAllSections() {
+            // Lang
+            const langContainer = document.querySelector('#section-lang .tag-group');
+            langContainer.innerHTML = Object.keys(translations).map(lang => `<button class="button" data-lang-select="${lang}">${translations[lang].lang_title}</button>`).join('');
+            
+            // Server
             document.getElementById('server-grid').innerHTML = restaurantData.servers.map(server => `
-                <div class="selection-item" data-server-id="${server.id}" data-server-name="${server.name}">
-                    <img src="${server.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=cccccc`}" alt="Avatar de ${server.name}">
+                <div class="selection-item" data-server-name="${server.name}">
+                    <img src="${server.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=cccccc`}" alt="${server.name}">
                     <span>${server.name}</span>
-                </div>
+                </div>`).join('');
+
+            // Service Qualities
+            const serviceQualities = ['service_q1', 'service_q2', 'service_q3', 'service_q4', 'service_q5', 'service_q6'];
+            document.getElementById('service-qualities-tags').innerHTML = serviceQualities.map(q => `
+                <input type="checkbox" id="${q}" name="service_quality" value="${q}"><label for="${q}" data-translate-key="${q}"></label>
             `).join('');
 
-            // Rating Step
-            document.getElementById('star-rating').innerHTML = Array(5).fill(0).map((_, i) => 
-                `<svg data-value="${i + 1}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
-            ).join('');
+            // Occasion
+            const occasions = ['occasion_birthday', 'occasion_romantic', 'occasion_friends', 'occasion_family', 'occasion_business', 'occasion_visit'];
+            document.getElementById('occasion-tags').innerHTML = occasions.map(o => `
+                <input type="radio" id="${o}" name="occasion" value="${o}"><label for="${o}" data-translate-key="${o}"></label>
+            `).join('');
 
-            // Positive Feedback Step
-            const positiveButtons = document.getElementById('positive-buttons');
-            positiveButtons.innerHTML = '';
-            if (restaurantData.links && restaurantData.links.google) {
-                positiveButtons.innerHTML += `<a href="${restaurantData.links.google}" target="_blank" class="button">${getTranslation('publish_on', 'Google')}</a>`;
+            // Flavors
+            const flavorsContainer = document.getElementById('flavors-tags');
+            flavorsContainer.innerHTML = '';
+            if(restaurantData.menu) {
+                Object.entries(restaurantData.menu).forEach(([category, dishes]) => {
+                    dishes.forEach(dish => {
+                        flavorsContainer.innerHTML += `<input type="checkbox" id="dish_${dish.id}" name="flavor" value="${dish.name}"><label for="dish_${dish.id}">${dish.name}</label>`;
+                    });
+                });
             }
-            if (restaurantData.links && restaurantData.links.tripadvisor) {
-                positiveButtons.innerHTML += `<a href="${restaurantData.links.tripadvisor}" target="_blank" class="button secondary mt-3">${getTranslation('publish_on', 'TripAdvisor')}</a>`;
-            }
-            positiveButtons.innerHTML += `<a href="#" id="close-positive-btn" class="block text-center text-sm text-gray-500 mt-6 hover:underline">${getTranslation('no_thanks')}</a>`;
 
-            // Negative Feedback Step
-            document.getElementById('feedback-textarea').placeholder = getTranslation('feedback_placeholder');
-            document.getElementById('submit-feedback-btn').innerText = getTranslation('submit_feedback');
+            // Atmosphere
+            const atmospheres = ['atmosphere_decoration', 'atmosphere_music', 'atmosphere_energy', 'atmosphere_lighting', 'atmosphere_comfort', 'atmosphere_romantic'];
+            document.getElementById('atmosphere-tags').innerHTML = atmospheres.map(a => `
+                <input type="checkbox" id="${a}" name="atmosphere" value="${a}"><label for="${a}" data-translate-key="${a}"></label>
+            `).join('');
+
+            translatePage();
         }
 
-        function goToSection(sectionName) {
-            currentState.section = sectionName;
-            sections.forEach(s => s.classList.toggle('active', s.id === `section-${sectionName}`));
-            updateSectionContent();
+        function updateNavButtons() {
+            backBtn.style.visibility = currentSectionIndex > 0 ? 'visible' : 'hidden';
+            if (currentSectionIndex === sectionOrder.indexOf('feedback')) {
+                nextBtn.innerText = getTranslation('nav_generate');
+            } else {
+                nextBtn.innerText = getTranslation('nav_next');
+            }
+            nextBtn.style.visibility = currentSectionIndex === sectionOrder.length - 1 ? 'hidden' : 'visible';
         }
 
-        function updateSectionContent() {
-            switch (currentState.section) {
-                case 'rating':
-                    document.getElementById('rating-title').innerHTML = getTranslation('rating_title', currentState.selectedServer.name);
-                    document.getElementById('rating-subtitle').innerText = getTranslation('rating_subtitle');
-                    break;
-                case 'positive-feedback':
-                    document.getElementById('positive-title').innerText = getTranslation('positive_title');
-                    document.getElementById('positive-subtitle').innerText = getTranslation('positive_subtitle');
-                    break;
-                case 'negative-feedback':
-                    document.getElementById('negative-title').innerText = getTranslation('negative_title');
-                    document.getElementById('negative-subtitle').innerText = getTranslation('negative_subtitle');
-                    break;
-                case 'thank-you':
-                     document.getElementById('thank-you-title').innerText = getTranslation('thank_you_title');
-                     document.getElementById('thank-you-subtitle').innerText = getTranslation('thank_you_subtitle');
-                    break;
-            }
+        function goToSection(index) {
+            currentSectionIndex = index;
+            sections.forEach((s, i) => s.classList.toggle('active', i === index));
+            updateNavButtons();
         }
         
-        function changeLanguage(langCode) {
-            currentState.lang = langCode;
-            renderContent();
-            updateSectionContent();
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === currentState.lang));
+        async function generateReview() {
+            goToSection(sectionOrder.indexOf('result'));
+            document.getElementById('generation-loader').classList.remove('hidden');
+            document.getElementById('result-display').classList.add('hidden');
+
+            const promptParts = [];
+            promptParts.push(`Rédige un avis de restaurant en langue "${reviewData.lang}" pour "${restaurantData.name}". Le ton doit être positif et engageant. Voici les détails de l'expérience :`);
+            if (reviewData.server) promptParts.push(`- Le service a été assuré par ${reviewData.server}.`);
+            if (reviewData.serviceQualities.length > 0) promptParts.push(`- Qualités du service remarquées : ${reviewData.serviceQualities.join(', ')}.`);
+            if (reviewData.occasion) promptParts.push(`- L'occasion de la visite était : ${reviewData.occasion}.`);
+            if (reviewData.flavors.length > 0) promptParts.push(`- Plats et saveurs particulièrement appréciés : ${reviewData.flavors.join(', ')}.`);
+            if (reviewData.atmosphere.length > 0) promptParts.push(`- Points forts de l'atmosphère : ${reviewData.atmosphere.join(', ')}.`);
+            if (reviewData.privateFeedback) promptParts.push(`Ne mentionne pas la suggestion privée suivante dans l'avis public : "${reviewData.privateFeedback}"`);
+            promptParts.push("Termine par une recommandation chaleureuse.");
+            
+            const prompt = promptParts.join('\n');
+
+            try {
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // API key will be injected by the environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const text = result.candidates[0].content.parts[0].text;
+                
+                const reviewTextArea = document.getElementById('review-text');
+                reviewTextArea.value = text;
+                reviewTextArea.style.height = 'auto';
+                reviewTextArea.style.height = (reviewTextArea.scrollHeight) + 'px';
+
+                document.getElementById('generation-loader').classList.add('hidden');
+                document.getElementById('result-display').classList.remove('hidden');
+            } catch (error) {
+                console.error("Error generating review:", error);
+                document.getElementById('review-text').value = "Désolé, une erreur est survenue lors de la génération de l'avis. Veuillez réessayer.";
+                document.getElementById('generation-loader').classList.add('hidden');
+                document.getElementById('result-display').classList.remove('hidden');
+            }
         }
 
         function setupEventListeners() {
-            document.getElementById('lang-container').addEventListener('click', (e) => {
-                if (e.target.matches('.lang-btn')) {
-                    changeLanguage(e.target.dataset.lang);
+            // Navigation
+            nextBtn.addEventListener('click', () => {
+                if (currentSectionIndex < sectionOrder.length - 1) {
+                    if (sectionOrder[currentSectionIndex] === 'feedback') {
+                        reviewData.privateFeedback = document.getElementById('feedback-textarea').value;
+                        generateReview();
+                    } else {
+                        goToSection(currentSectionIndex + 1);
+                    }
                 }
             });
-            
-            document.getElementById('lang-selector').addEventListener('click', (e) => {
-                const btn = e.target.closest('[data-lang-select]');
-                if (btn) {
-                    changeLanguage(btn.dataset.langSelect);
-                    goToSection('server');
+            backBtn.addEventListener('click', () => {
+                if (currentSectionIndex > 0) goToSection(currentSectionIndex - 1);
+            });
+
+            // Language
+            document.querySelector('#section-lang').addEventListener('click', e => {
+                if(e.target.dataset.langSelect) {
+                    reviewData.lang = e.target.dataset.langSelect;
+                    translatePage();
+                    renderAllSections(); // Re-render to apply translations to dynamic content
+                    goToSection(currentSectionIndex + 1);
                 }
             });
 
-            document.getElementById('server-grid').addEventListener('click', (e) => {
+            // Server
+            document.getElementById('server-grid').addEventListener('click', e => {
                 const serverItem = e.target.closest('.selection-item');
                 if (serverItem) {
-                    document.querySelectorAll('.selection-item').forEach(item => item.classList.remove('selected'));
+                    document.querySelectorAll('#server-grid .selection-item').forEach(i => i.classList.remove('selected'));
                     serverItem.classList.add('selected');
-                    currentState.selectedServer = {
-                        id: serverItem.dataset.serverId,
-                        name: serverItem.dataset.serverName
-                    };
-                    setTimeout(() => goToSection('rating'), 300);
+                    reviewData.server = serverItem.dataset.serverName;
+                    document.getElementById('service-qualities-container').classList.remove('hidden');
                 }
             });
 
-            const starRating = document.getElementById('star-rating');
-            const stars = starRating.querySelectorAll('svg');
-            const ratingFeedback = document.getElementById('rating-feedback');
-            
-            starRating.addEventListener('click', e => {
-                const targetStar = e.target.closest('svg');
-                if (targetStar) {
-                    currentState.rating = parseInt(targetStar.dataset.value);
-                    stars.forEach((star, index) => {
-                        star.classList.toggle('selected', index < currentState.rating);
-                    });
-                    ratingFeedback.textContent = getTranslation('rating_feedback')[currentState.rating - 1];
-                    
-                    setTimeout(() => {
-                        if (currentState.rating >= 4) goToSection('positive-feedback');
-                        else goToSection('negative-feedback');
-                    }, 800);
-                }
-            });
-            
-            document.getElementById('positive-buttons').addEventListener('click', e => {
-                if (e.target.id === 'close-positive-btn') {
-                    e.preventDefault();
-                    document.getElementById('thank-you-title').innerText = getTranslation('final_thank_you_title');
-                    document.getElementById('thank-you-subtitle').innerText = getTranslation('final_thank_you_subtitle');
-                    goToSection('thank-you');
+            // Checkbox groups with limits
+            function setupCheckboxLimit(containerId, category, limit) {
+                const container = document.getElementById(containerId);
+                const notificationEl = container.parentElement.querySelector('.limit-notification');
+                container.addEventListener('change', e => {
+                    if (e.target.type === 'checkbox') {
+                        const checked = container.querySelectorAll('input:checked');
+                        reviewData[category] = Array.from(checked).map(cb => getTranslation(cb.value));
+                        
+                        if (checked.length >= limit) {
+                            container.querySelectorAll('input:not(:checked)').forEach(cb => cb.disabled = true);
+                            if(notificationEl) {
+                                notificationEl.innerText = getTranslation('limit_reached', limit);
+                                notificationEl.classList.remove('hidden');
+                            }
+                        } else {
+                            container.querySelectorAll('input').forEach(cb => cb.disabled = false);
+                            if(notificationEl) notificationEl.classList.add('hidden');
+                        }
+                    }
+                });
+            }
+            setupCheckboxLimit('service-qualities-tags', 'serviceQualities', 3);
+            setupCheckboxLimit('flavors-tags', 'flavors', 6);
+            setupCheckboxLimit('atmosphere-tags', 'atmosphere', 3);
+
+            // Radio group
+            document.getElementById('occasion-tags').addEventListener('change', e => {
+                if(e.target.name === 'occasion') {
+                    reviewData.occasion = getTranslation(e.target.value);
                 }
             });
 
-            document.getElementById('internal-feedback-form').addEventListener('submit', e => {
-                e.preventDefault();
-                goToSection('thank-you');
+            // Result buttons
+            document.getElementById('copy-btn').addEventListener('click', () => {
+                const reviewText = document.getElementById('review-text');
+                reviewText.select();
+                document.execCommand('copy');
+                alert('Texte copié !');
             });
         }
 
@@ -548,17 +571,24 @@
                 appContent.classList.remove('hidden');
                 
                 applyBranding();
-                renderContent();
+                renderAllSections();
                 setupEventListeners();
 
-                if (restaurantData.languages && restaurantData.languages.length > 1) {
-                     goToSection('lang');
-                } else if (restaurantData.servers && restaurantData.servers.length > 0) {
-                     goToSection('server');
-                } else {
-                    currentState.selectedServer = { id: 0, name: restaurantData.name };
-                    goToSection('rating');
+                const googleBtn = document.getElementById('google-btn');
+                const tripadvisorBtn = document.getElementById('tripadvisor-btn');
+                if (restaurantData.links && restaurantData.links.google) {
+                    googleBtn.href = restaurantData.links.google;
+                    googleBtn.classList.remove('hidden');
                 }
+                if (restaurantData.links && restaurantData.links.tripadvisor) {
+                    tripadvisorBtn.href = restaurantData.links.tripadvisor;
+                    tripadvisorBtn.classList.remove('hidden');
+                }
+
+                if (!restaurantData.languages || restaurantData.languages.length <= 1) {
+                    currentSectionIndex = 1; // Skip lang selection
+                }
+                goToSection(currentSectionIndex);
             }
         }
 
