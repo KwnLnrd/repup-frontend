@@ -65,6 +65,31 @@
         .modal-content {
             transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
         }
+        /* Accordion Styles */
+        .accordion-header {
+            cursor: pointer;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            padding: 0 1rem;
+        }
+        .accordion-content.open {
+            padding: 1rem;
+            max-height: 1000px; /* Adjust as needed */
+        }
+        .accordion-icon {
+            transition: transform 0.3s ease-out;
+        }
+        .accordion-header.open .accordion-icon {
+            transform: rotate(90deg);
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -371,4 +396,424 @@
             if (!section) return;
             section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Tableau de bord</h1><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8"><div class="card"><h3 class="text-sm font-semibold text-gray-500">Avis (30j)</h3><p class="text-3xl font-bold mt-1">128</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Note moyenne</h3><p class="text-3xl font-bold mt-1">4.8 <span class="text-yellow-400">★</span></p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Serveur du mois</h3><p class="text-3xl font-bold mt-1">Clara</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Feedbacks privés</h3><p class="text-3xl font-bold mt-1">3</p></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Tendance des avis</h2><div class="h-80"><canvas id="reviewsTrendChart"></canvas></div></div>`;
             const ctx = document.getElementById('reviewsTrendChart').getContext('2d');
-            new Chart(ctx, { type: 'line'
+            new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--brand-color)', backgroundColor: 'var(--brand-color-light)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
+        }
+
+        async function renderPageSettings() {
+            const section = document.getElementById('page-settings');
+            if (!section) return;
+            section.innerHTML = `<div class="text-center p-10">Chargement...</div>`;
+            try {
+                const settings = await fetchWithAuth('/api/restaurant');
+                updateLogo(settings.logoUrl);
+                const availableLangs = { 
+                    'fr': 'Français', 'en': 'English', 'es': 'Español', 
+                    'it': 'Italiano', 'pt': 'Português', 'zh': '简体中文' 
+                };
+                const enabledLanguages = Array.isArray(settings.enabledLanguages) ? settings.enabledLanguages : [];
+                const logoSrc = settings.logoUrl ? `${API_BASE_URL}${settings.logoUrl}` : 'https://placehold.co/100x100/DEE2E6/6C757D?text=Logo';
+                
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Page</h1><form id="page-settings-form"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-8"><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Informations Générales</h2><div class="space-y-6"><div><label for="restaurant-name" class="block text-sm font-medium text-gray-700">Nom du Restaurant</label><input type="text" id="restaurant-name" value="${settings.name || ''}" class="form-input"></div><div class="flex items-center gap-6"><img id="logo-preview" src="${logoSrc}" alt="Aperçu du logo" class="w-24 h-24 rounded-lg object-contain bg-gray-100 p-1"><div class="flex-1"><label for="logo-file" class="block text-sm font-medium text-gray-700">Changer le logo</label><input type="file" id="logo-file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-color-light file:text-brand-color hover:file:bg-brand-color/20" accept="image/png, image/jpeg, image/gif"><p class="text-xs text-gray-500 mt-1">L'aperçu se met à jour automatiquement.</p></div></div><div><label for="primary-color" class="block text-sm font-medium text-gray-700">Couleur principale</label><input type="color" id="primary-color" value="${settings.primaryColor || '#BF5B3F'}" class="mt-1 h-10 w-20 rounded-md border-gray-300 p-1"></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Liens de Notation</h2><div class="space-y-4"><div><label for="google-link" class="block text-sm font-medium text-gray-700">Lien Google</label><textarea id="google-link" rows="3" class="form-input" placeholder="https://search.google.com/local/writereview?placeid=...">${settings.googleLink || ''}</textarea></div><div><label for="tripadvisor-link" class="block text-sm font-medium text-gray-700">Lien TripAdvisor</label><textarea id="tripadvisor-link" rows="3" class="form-input" placeholder="https://www.tripadvisor.com/UserReview-g...-d...">${settings.tripadvisorLink || ''}</textarea></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Langues</h2><p class="text-sm text-gray-600 mb-4">Sélectionnez les langues à proposer.</p><div id="languages-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">${Object.entries(availableLangs).map(([code, name]) => `<label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" name="languages" value="${code}" class="h-5 w-5 rounded border-gray-300 text-brand-color focus:ring-brand-color" ${enabledLanguages.includes(code) ? 'checked' : ''}><span class="text-gray-700">${name}</span></label>`).join('')}</div></div></div><div class="lg:col-span-1"><div class="card sticky top-8" id="qr-code-card"></div></div></div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-color text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-color-dark transition-colors text-lg w-full md:w-auto">Enregistrer</button></div></form>`;
+                
+                const qrCard = document.getElementById('qr-code-card');
+                const slug = settings.slug;
+                if (!slug) { qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">Votre QR Code</h2><div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg text-center"><p class="font-bold">Erreur</p><p class="text-sm mt-1">Le "slug" du restaurant est manquant.</p></div>`; } 
+                else {
+                    qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">Votre QR Code</h2><p class="text-sm text-gray-600 mb-4">Vos clients scannent ce code pour laisser un avis.</p><div class="flex justify-center items-center bg-gray-50 p-4 rounded-lg"><div id="qrcode-container" class="p-2 bg-white rounded-md shadow-inner"></div></div><a id="download-qr-btn" href="#" class="mt-4 block w-full text-center bg-gray-800 text-white px-4 py-2 rounded-full font-semibold hover:bg-gray-900">Télécharger</a><div class="mt-4"><label class="text-sm font-medium text-gray-700">Votre lien direct :</label><input type="text" id="review-page-link" readonly class="form-input bg-gray-100 mt-1 cursor-pointer" title="Cliquez pour copier"></div>`;
+                    const reviewPageUrl = new URL('saas_review_collection_page.html', window.location.origin + window.location.pathname.replace('saas_admin_panel.html', ''));
+                    reviewPageUrl.searchParams.set('slug', slug);
+                    document.getElementById('review-page-link').value = reviewPageUrl.href;
+                    new QRCode(document.getElementById('qrcode-container'), { text: reviewPageUrl.href, width: 200, height: 200 });
+                    document.getElementById('download-qr-btn').addEventListener('click', (e) => { e.preventDefault(); const canvas = document.getElementById('qrcode-container').querySelector('canvas'); if (canvas) { const link = document.createElement('a'); link.download = `qrcode-${slug}.png`; link.href = canvas.toDataURL('image/png'); link.click(); } });
+                    document.getElementById('review-page-link').addEventListener('click', () => { const input = document.getElementById('review-page-link'); input.select(); document.execCommand('copy'); alert('Lien copié !'); });
+                }
+            } catch(error) {
+                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des paramètres.</div>`;
+            }
+        }
+
+        async function renderOptionsManagement() {
+            const section = document.getElementById('options-management');
+            if(!section) return;
+            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Options</h1><div class="text-center p-10">Chargement...</div>`;
+
+            try {
+                const tagsData = await fetchWithAuth('/api/tags');
+                const categories = { service: "Qualités du Service", occasion: "Occasions", atmosphere: "Atmosphère" };
+
+                let contentHtml = '<div class="space-y-8">';
+                for (const [key, title] of Object.entries(categories)) {
+                    const tags = tagsData[key] || [];
+                    contentHtml += `
+                        <div class="card">
+                            <h2 class="text-2xl font-bold font-serif mb-4">${title}</h2>
+                            <div id="tags-list-${key}" class="space-y-2 mb-4">
+                                ${tags.map(tag => `
+                                    <div class="item-list-entry" id="tag-item-${tag.id}">
+                                        <span>${tag.text}</span>
+                                        <div class="flex items-center gap-2">
+                                            <button class="edit-tag-btn text-gray-500 hover:text-blue-700" data-tag-id="${tag.id}" data-tag-text="${tag.text}">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                                            </button>
+                                            <button class="delete-tag-btn text-gray-500 hover:text-red-700" data-tag-id="${tag.id}">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <form class="add-tag-form flex gap-2" data-category="${key}">
+                                <input type="text" placeholder="Ajouter une option..." class="form-input flex-grow" required>
+                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors">Ajouter</button>
+                            </form>
+                        </div>
+                    `;
+                }
+                contentHtml += '</div>';
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Options</h1>${contentHtml}`;
+            } catch (error) {
+                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des options.</div>`;
+            }
+        }
+
+        async function renderTeamManagement() {
+            const section = document.getElementById('team-management');
+            if(!section) return;
+            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Équipes</h1><div class="text-center p-10">Chargement...</div>`;
+
+            try {
+                const servers = await fetchWithAuth('/api/servers');
+                let contentHtml = `
+                    <div class="card mb-8">
+                        <h2 class="text-2xl font-bold font-serif mb-4">Ajouter un Membre</h2>
+                        <form id="add-server-form" class="space-y-4">
+                            <div>
+                                <label for="server-name" class="block text-sm font-medium text-gray-700">Nom du membre</label>
+                                <input type="text" id="server-name" class="form-input" required>
+                            </div>
+                            <div>
+                                <label for="server-avatar" class="block text-sm font-medium text-gray-700">Photo (optionnel)</label>
+                                <input type="file" id="server-avatar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" accept="image/png, image/jpeg">
+                            </div>
+                            <div class="text-right">
+                                <button type="submit" class="bg-brand-color text-white px-6 py-2 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors">Ajouter</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h2 class="text-2xl font-bold font-serif mb-4">Membres Actuels</h2>
+                        <div id="servers-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            ${servers.map(server => `
+                                <div class="border rounded-lg p-4 text-center" id="server-item-${server.id}">
+                                    <img src="${server.avatar_url ? API_BASE_URL + server.avatar_url : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(server.name) + '&background=eeeeee&color=555555'}" alt="${server.name}" class="w-24 h-24 rounded-full mx-auto mb-2 object-cover bg-gray-200">
+                                    <p class="font-semibold">${server.name}</p>
+                                    <div class="flex justify-center gap-4 mt-2">
+                                        <button class="edit-server-btn text-sm text-blue-500 hover:underline" data-server-id="${server.id}" data-server-name="${server.name}">Modifier</button>
+                                        <button class="delete-server-btn text-sm text-red-500 hover:underline" data-server-id="${server.id}">Supprimer</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                            ${servers.length === 0 ? '<p class="text-gray-500 col-span-full">Aucun membre dans l\'équipe.</p>' : ''}
+                        </div>
+                    </div>
+                `;
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Équipes</h1>${contentHtml}`;
+            } catch (error) {
+                 section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement de l'équipe.</div>`;
+            }
+        }
+
+        async function renderMenuManagement() {
+            const section = document.getElementById('menu-management');
+            if(!section) return;
+            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Menu</h1><div class="text-center p-10">Chargement...</div>`;
+
+            try {
+                const menu = await fetchWithAuth('/api/menu');
+                const categories = Object.keys(menu).sort();
+                
+                let contentHtml = `
+                    <div class="card mb-8">
+                        <h2 class="text-2xl font-bold font-serif mb-4">Ajouter un Plat</h2>
+                        <form id="add-dish-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div class="md:col-span-1">
+                                <label for="dish-name" class="block text-sm font-medium text-gray-700">Nom du plat</label>
+                                <input type="text" id="dish-name" class="form-input" required>
+                            </div>
+                            <div class="md:col-span-1">
+                                <label for="dish-category" class="block text-sm font-medium text-gray-700">Catégorie</label>
+                                <input type="text" id="dish-category" list="category-suggestions" class="form-input" placeholder="Ex: Entrées, Plats..." required>
+                                <datalist id="category-suggestions">
+                                    ${categories.map(cat => `<option value="${cat}"></option>`).join('')}
+                                </datalist>
+                            </div>
+                            <div class="md:col-span-1">
+                                <button type="submit" class="bg-brand-color text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-color-dark transition-colors w-full h-full">Ajouter le plat</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="menu-accordion-container" class="card p-0">
+                `;
+
+                if (categories.length > 0) {
+                    categories.forEach(category => {
+                        contentHtml += `
+                            <div class="accordion-item border-b last:border-b-0">
+                                <div class="accordion-header">
+                                    <h3 class="text-xl font-semibold">${category}</h3>
+                                    <svg class="w-6 h-6 accordion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                </div>
+                                <div class="accordion-content">
+                                    <div class="space-y-2">
+                                        ${menu[category].map(dish => `
+                                            <div class="item-list-entry" id="dish-item-${dish.id}">
+                                                <span>${dish.name}</span>
+                                                <div class="flex items-center gap-2">
+                                                    <button class="edit-dish-btn text-gray-500 hover:text-blue-700" data-dish-id="${dish.id}" data-dish-name="${dish.name}" data-dish-category="${category}">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                                                    </button>
+                                                    <button class="delete-dish-btn text-gray-500 hover:text-red-700" data-dish-id="${dish.id}">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    contentHtml += '<div class="p-6 text-center text-gray-500"><p>Votre menu est vide. Ajoutez des plats pour commencer.</p></div>';
+                }
+
+                contentHtml += '</div>';
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Menu</h1>${contentHtml}`;
+            } catch (error) {
+                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement du menu.</div>`;
+            }
+        }
+
+        // --- GESTION DES ÉVÉNEMENTS ---
+        contentArea.addEventListener('submit', async (e) => {
+            if (e.target.matches('#page-settings-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData();
+                formData.append('name', form.querySelector('#restaurant-name').value);
+                formData.append('primaryColor', form.querySelector('#primary-color').value);
+                formData.append('googleLink', form.querySelector('#google-link').value);
+                formData.append('tripadvisorLink', form.querySelector('#tripadvisor-link').value);
+                
+                const selectedLangs = Array.from(form.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value);
+                formData.append('enabledLanguages', JSON.stringify(selectedLangs));
+
+                const logoFile = form.querySelector('#logo-file').files[0];
+                if (logoFile) {
+                    formData.append('logo', logoFile);
+                }
+
+                try {
+                    const result = await putWithAuthFormData('/api/restaurant', formData);
+                    alert('Paramètres enregistrés avec succès !');
+                    updateLogo(result.logoUrl);
+                    if(result.logoUrl) {
+                        document.getElementById('logo-preview').src = API_BASE_URL + result.logoUrl;
+                    }
+                } catch (error) {
+                    alert('Erreur lors de la sauvegarde: ' + error.message);
+                }
+            }
+            if (e.target.matches('.add-tag-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const category = form.dataset.category;
+                const input = form.querySelector('input');
+                const text = input.value.trim();
+                if (!text) return;
+                
+                try {
+                    await fetchWithAuth('/api/tags', { method: 'POST', body: JSON.stringify({ category, text }) });
+                    renderOptionsManagement();
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                }
+            }
+            if (e.target.matches('#add-server-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData();
+                formData.append('name', form.querySelector('#server-name').value);
+                const avatarFile = form.querySelector('#server-avatar').files[0];
+                if (avatarFile) {
+                    formData.append('avatar', avatarFile);
+                }
+                try {
+                    await postWithAuthFormData('/api/servers', formData);
+                    renderTeamManagement();
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                }
+            }
+            if (e.target.matches('#add-dish-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const name = form.querySelector('#dish-name').value;
+                const category = form.querySelector('#dish-category').value;
+                try {
+                    await fetchWithAuth('/api/menu', { method: 'POST', body: JSON.stringify({ name, category }) });
+                    renderMenuManagement();
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                }
+            }
+            // MODAL SUBMISSIONS
+            if (e.target.matches('#edit-tag-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const tagId = form.dataset.tagId;
+                const text = form.querySelector('input').value;
+                try {
+                    await fetchWithAuth(`/api/tags/${tagId}`, { method: 'PUT', body: JSON.stringify({ text }) });
+                    closeModal();
+                    renderOptionsManagement();
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                }
+            }
+            if (e.target.matches('#edit-server-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const serverId = form.dataset.serverId;
+                const formData = new FormData();
+                formData.append('name', form.querySelector('input[type="text"]').value);
+                const avatarFile = form.querySelector('input[type="file"]').files[0];
+                if (avatarFile) {
+                    formData.append('avatar', avatarFile);
+                }
+                try {
+                    await putWithAuthFormData(`/api/servers/${serverId}`, formData);
+                    closeModal();
+                    renderTeamManagement();
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                }
+            }
+            if (e.target.matches('#edit-dish-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const dishId = form.dataset.dishId;
+                const name = form.querySelector('#edit-dish-name').value;
+                const category = form.querySelector('#edit-dish-category').value;
+                 try {
+                    await fetchWithAuth(`/api/menu/${dishId}`, { method: 'PUT', body: JSON.stringify({ name, category }) });
+                    closeModal();
+                    renderMenuManagement();
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                }
+            }
+        });
+
+        contentArea.addEventListener('click', async (e) => {
+            const deleteBtn = e.target.closest('.delete-tag-btn, .delete-server-btn, .delete-dish-btn');
+            const editBtn = e.target.closest('.edit-tag-btn, .edit-server-btn, .edit-dish-btn');
+            const accordionHeader = e.target.closest('.accordion-header');
+
+            if (accordionHeader) {
+                const content = accordionHeader.nextElementSibling;
+                accordionHeader.classList.toggle('open');
+                content.classList.toggle('open');
+            }
+
+            if (deleteBtn) {
+                const dataType = deleteBtn.className.includes('tag') ? 'tag' : (deleteBtn.className.includes('server') ? 'server' : 'dish');
+                const dataId = deleteBtn.dataset[`${dataType}Id`];
+                if (confirm(`Voulez-vous vraiment supprimer cet élément ?`)) {
+                    try {
+                        await fetchWithAuth(`/api/${dataType}s/${dataId}`, { method: 'DELETE' });
+                        if (dataType === 'dish') {
+                            renderMenuManagement();
+                        } else {
+                            document.getElementById(`${dataType}-item-${dataId}`).remove();
+                        }
+                    } catch (error) {
+                        alert('Erreur: ' + error.message);
+                    }
+                }
+            }
+
+            if (editBtn) {
+                if (editBtn.matches('.edit-tag-btn')) {
+                    const tagId = editBtn.dataset.tagId;
+                    const tagText = editBtn.dataset.tagText;
+                    openModal(`
+                        <form id="edit-tag-form" data-tag-id="${tagId}" class="card w-full max-w-md modal-content">
+                            <h2 class="text-2xl font-bold font-serif mb-4">Modifier l'Option</h2>
+                            <input type="text" value="${tagText}" class="form-input" required>
+                            <div class="flex justify-end gap-2 mt-4">
+                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
+                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold">Enregistrer</button>
+                            </div>
+                        </form>
+                    `);
+                }
+                if (editBtn.matches('.edit-server-btn')) {
+                    const serverId = editBtn.dataset.serverId;
+                    const serverName = editBtn.dataset.serverName;
+                    openModal(`
+                        <form id="edit-server-form" data-server-id="${serverId}" class="card w-full max-w-md modal-content">
+                             <h2 class="text-2xl font-bold font-serif mb-4">Modifier le Membre</h2>
+                             <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Nom</label>
+                                    <input type="text" value="${serverName}" class="form-input" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Changer la photo</label>
+                                    <input type="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0" accept="image/png, image/jpeg">
+                                </div>
+                             </div>
+                             <div class="flex justify-end gap-2 mt-4">
+                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
+                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold">Enregistrer</button>
+                            </div>
+                        </form>
+                    `);
+                }
+                 if (editBtn.matches('.edit-dish-btn')) {
+                    const dishId = editBtn.dataset.dishId;
+                    const dishName = editBtn.dataset.dishName;
+                    const dishCategory = editBtn.dataset.dishCategory;
+                    const allCategories = Object.keys(await fetchWithAuth('/api/menu'));
+                    
+                    openModal(`
+                        <form id="edit-dish-form" data-dish-id="${dishId}" class="card w-full max-w-md modal-content">
+                             <h2 class="text-2xl font-bold font-serif mb-4">Modifier le Plat</h2>
+                             <div class="space-y-4">
+                                <div>
+                                    <label for="edit-dish-name" class="block text-sm font-medium text-gray-700">Nom du plat</label>
+                                    <input type="text" id="edit-dish-name" value="${dishName}" class="form-input" required>
+                                </div>
+                                <div>
+                                    <label for="edit-dish-category" class="block text-sm font-medium text-gray-700">Catégorie</label>
+                                    <input type="text" id="edit-dish-category" value="${dishCategory}" list="edit-category-suggestions" class="form-input" required>
+                                    <datalist id="edit-category-suggestions">
+                                        ${allCategories.map(cat => `<option value="${cat}"></option>`).join('')}
+                                    </datalist>
+                                </div>
+                             </div>
+                             <div class="flex justify-end gap-2 mt-4">
+                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
+                                <button type="submit" class="bg-brand-color text-white px-4 py-2 rounded-lg font-semibold">Enregistrer</button>
+                            </div>
+                        </form>
+                    `);
+                }
+            }
+        });
+
+    });
+    </script>
+</body>
+</html>
