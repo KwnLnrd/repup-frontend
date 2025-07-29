@@ -236,7 +236,10 @@
             if (!section) return;
             section.innerHTML = `<div class="text-center p-10">Chargement...</div>`;
             const settings = await fetchWithAuth('/api/restaurant');
-            const availableLangs = { 'fr': 'Français', 'en': 'English', 'es': 'Español', 'it': 'Italiano' };
+            const availableLangs = { 
+                'fr': 'Français', 'en': 'English', 'es': 'Español', 
+                'it': 'Italiano', 'pt': 'Português', 'zh': '简体中文' 
+            };
             const enabledLanguages = Array.isArray(settings.enabledLanguages) ? settings.enabledLanguages : [];
             const logoSrc = settings.logoUrl ? `${API_BASE_URL}${settings.logoUrl}` : 'https://placehold.co/100x100/DEE2E6/6C757D?text=Logo';
             
@@ -328,8 +331,6 @@
                 switchTab(hash);
             } catch (error) {
                 console.error("Failed to load app data:", error);
-                // FINAL FIX: Only show the critical error message if it's NOT an auth error,
-                // because auth errors are already handled by redirecting to the login page.
                 if (!error.message.includes("Session expirée")) {
                     contentArea.innerHTML = `<div class="card text-center p-10"><p class="text-red-500 font-semibold">Une erreur critique est survenue :</p><p class="text-gray-600 mt-2">${error.message}</p></div>`;
                 }
