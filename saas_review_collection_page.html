@@ -476,18 +476,31 @@
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error("API Error Response:", errorBody);
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                }
 
                 const result = await response.json();
-                const text = result.candidates[0].content.parts[0].text;
                 
-                const reviewTextArea = document.getElementById('review-text');
-                reviewTextArea.value = text;
-                reviewTextArea.style.height = 'auto';
-                reviewTextArea.style.height = (reviewTextArea.scrollHeight) + 'px';
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    
+                    const text = result.candidates[0].content.parts[0].text;
+                    const reviewTextArea = document.getElementById('review-text');
+                    reviewTextArea.value = text;
+                    reviewTextArea.style.height = 'auto';
+                    reviewTextArea.style.height = (reviewTextArea.scrollHeight) + 'px';
+                } else {
+                    console.error("API response is missing expected content:", result);
+                    throw new Error("La réponse de l'IA est invalide ou vide.");
+                }
 
                 document.getElementById('generation-loader').classList.add('hidden');
                 document.getElementById('result-display').classList.remove('hidden');
+
             } catch (error) {
                 console.error("Error generating review:", error);
                 document.getElementById('review-text').value = "Désolé, une erreur est survenue lors de la génération de l'avis. Veuillez réessayer.";
