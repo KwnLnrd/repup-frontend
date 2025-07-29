@@ -286,7 +286,8 @@
                 nav_next: "Suivant",
                 nav_back: "Précédent",
                 nav_generate: "Générer mon avis",
-                limit_reached: (limit) => `Limite de ${limit} choix atteinte.`
+                limit_reached: (limit) => `Limite de ${limit} choix atteinte.`,
+                api_key_error: "Erreur : La clé API OpenAI n'est pas configurée. Veuillez contacter le propriétaire du site."
             },
             en: {
                 lang_name_native: "🇬🇧 English",
@@ -310,7 +311,8 @@
                 nav_next: "Next",
                 nav_back: "Back",
                 nav_generate: "Generate my review",
-                limit_reached: (limit) => `Limit of ${limit} choices reached.`
+                limit_reached: (limit) => `Limit of ${limit} choices reached.`,
+                api_key_error: "Error: OpenAI API Key is not configured. Please contact the site owner."
             },
             es: { lang_name_native: "🇪🇸 Español" },
             pt: { lang_name_native: "🇵🇹 Português" },
@@ -465,49 +467,46 @@
             const prompt = promptParts.join('\n');
 
             try {
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                // --- MODIFICATION IMPORTANTE : APPEL AU BACKEND ---
+                // 1. L'URL pointe maintenant vers notre propre serveur
+                const apiUrl = `${API_BASE_URL}/api/generate-review`;
                 
+                // 2. Le payload contient uniquement le prompt
+                const payload = { 
+                    prompt: prompt
+                };
+                
+                // 3. L'appel fetch n'a plus besoin de clé API ici
                 const response = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error("API Error Response:", errorData);
-                    const errorMessage = errorData.error?.message || `Erreur API: ${response.status}`;
-                    throw new Error(errorMessage);
-                }
-
                 const result = await response.json();
+
+                if (!response.ok) {
+                    // Si le serveur renvoie une erreur, l'afficher
+                    throw new Error(result.error || `Erreur serveur: ${response.status}`);
+                }
                 
-                if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
-                    const text = result.candidates[0].content.parts[0].text;
+                // 4. Récupération de la réponse de notre backend
+                if (result.review) {
+                    const text = result.review;
                     const reviewTextArea = document.getElementById('review-text');
                     reviewTextArea.value = text;
                     reviewTextArea.style.height = 'auto';
                     reviewTextArea.style.height = (reviewTextArea.scrollHeight) + 'px';
                 } else {
-                    console.error("API response is missing expected content:", result);
-                    throw new Error("La réponse de l'IA est valide mais le contenu est manquant.");
+                    throw new Error("La réponse du serveur est valide mais le contenu est manquant.");
                 }
-
-                document.getElementById('generation-loader').classList.add('hidden');
-                document.getElementById('result-display').classList.remove('hidden');
 
             } catch (error) {
                 console.error("Error in generateReview function:", error);
-                let userMessage = "Désolé, une erreur est survenue lors de la génération de l'avis. Veuillez réessayer.";
-                if (error.message.includes("PERMISSION_DENIED") || error.message.includes("unregistered callers")) {
-                    userMessage = "Erreur de configuration du service de génération. Il semble y avoir un problème d'autorisation. Veuillez contacter le support.";
-                } else if (error.message) {
-                    userMessage = `Erreur de génération : ${error.message}`;
-                }
-                document.getElementById('review-text').value = userMessage;
+                document.getElementById('review-text').value = error.message;
+            } finally {
                 document.getElementById('generation-loader').classList.add('hidden');
                 document.getElementById('result-display').classList.remove('hidden');
             }
