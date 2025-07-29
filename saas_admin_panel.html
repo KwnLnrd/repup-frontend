@@ -296,7 +296,10 @@
                             ${categoryTags.length > 0 ? categoryTags.map(tag => `
                                 <div class="tag-item">
                                     <span>${tag.text}</span>
-                                    <button class="delete-tag-btn text-red-500 hover:text-red-700 font-medium" data-id="${tag.id}">✕</button>
+                                    <div>
+                                        <button class="edit-tag-btn text-blue-500 hover:text-blue-700 font-medium mr-2" data-id="${tag.id}" data-text="${tag.text}">Modifier</button>
+                                        <button class="delete-tag-btn text-red-500 hover:text-red-700 font-medium" data-id="${tag.id}">✕</button>
+                                    </div>
                                 </div>`).join('') : '<p class="text-gray-500 text-sm">Aucune option ajoutée.</p>'}
                         </div>
                         <form class="add-tag-form" data-category="${key}">
@@ -312,6 +315,7 @@
 
             document.querySelectorAll('.add-tag-form').forEach(form => form.addEventListener('submit', handleAddTag));
             document.querySelectorAll('.delete-tag-btn').forEach(btn => btn.addEventListener('click', handleDeleteTag));
+            document.querySelectorAll('.edit-tag-btn').forEach(btn => btn.addEventListener('click', handleEditTag));
         }
 
         async function handleAddTag(e) {
@@ -333,6 +337,23 @@
                 alert('Erreur: ' + error.message);
             }
         }
+        
+        async function handleEditTag(e) {
+            const id = e.target.dataset.id;
+            const currentText = e.target.dataset.text;
+            const newText = prompt("Modifier le texte de l'option :", currentText);
+            if (newText && newText.trim() && newText.trim() !== currentText) {
+                try {
+                    await fetchWithAuth(`/api/tags/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ text: newText.trim() })
+                    });
+                    await renderOptionsManagement();
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                }
+            }
+        }
 
         async function handleDeleteTag(e) {
             const tagId = e.target.dataset.id;
@@ -351,9 +372,10 @@
             if (!section) return;
             section.innerHTML = `<div class="text-center p-10">Chargement...</div>`;
             const servers = await fetchWithAuth('/api/servers');
-            section.innerHTML = `<div class="flex justify-between items-center mb-6"><h1 class="text-4xl font-bold font-serif">Gestion des équipes</h1><button id="add-server-btn" class="bg-brand-color text-white px-5 py-2 rounded-full font-semibold hover:bg-brand-color-dark">Ajouter un serveur</button></div><div class="card"><table class="w-full text-left"><thead class="bg-gray-50"><tr><th class="p-4 font-semibold">Nom</th><th class="p-4 font-semibold text-right">Actions</th></tr></thead><tbody id="servers-list">${servers.length > 0 ? servers.map(s => `<tr class="border-b last:border-b-0"><td class="p-4">${s.name}</td><td class="p-4 text-right"><button class="delete-server-btn text-red-500 hover:text-red-700 font-medium" data-id="${s.id}">Supprimer</button></td></tr>`).join('') : '<tr><td colspan="2" class="p-4 text-center text-gray-500">Aucun serveur ajouté.</td></tr>'}</tbody></table></div>`;
+            section.innerHTML = `<div class="flex justify-between items-center mb-6"><h1 class="text-4xl font-bold font-serif">Gestion des équipes</h1><button id="add-server-btn" class="bg-brand-color text-white px-5 py-2 rounded-full font-semibold hover:bg-brand-color-dark">Ajouter un serveur</button></div><div class="card"><table class="w-full text-left"><thead class="bg-gray-50"><tr><th class="p-4 font-semibold">Nom</th><th class="p-4 font-semibold text-right">Actions</th></tr></thead><tbody id="servers-list">${servers.length > 0 ? servers.map(s => `<tr class="border-b last:border-b-0"><td class="p-4">${s.name}</td><td class="p-4 text-right"><button class="edit-server-btn text-blue-500 hover:text-blue-700 font-medium mr-4" data-id="${s.id}" data-name="${s.name}">Modifier</button><button class="delete-server-btn text-red-500 hover:text-red-700 font-medium" data-id="${s.id}">Supprimer</button></td></tr>`).join('') : '<tr><td colspan="2" class="p-4 text-center text-gray-500">Aucun serveur ajouté.</td></tr>'}</tbody></table></div>`;
             document.getElementById('add-server-btn').addEventListener('click', handleAddServer);
             document.querySelectorAll('.delete-server-btn').forEach(b => b.addEventListener('click', handleDeleteServer));
+            document.querySelectorAll('.edit-server-btn').forEach(b => b.addEventListener('click', handleEditServer));
         }
 
         async function renderMenuManagement() {
@@ -361,9 +383,10 @@
             if (!section) return;
             section.innerHTML = `<div class="text-center p-10">Chargement...</div>`;
             const menu = await fetchWithAuth('/api/menu-items');
-            section.innerHTML = `<div class="flex justify-between items-center mb-6"><h1 class="text-4xl font-bold font-serif">Gestion du menu</h1><button id="add-dish-btn" class="bg-brand-color text-white px-5 py-2 rounded-full font-semibold hover:bg-brand-color-dark">Ajouter un plat</button></div><div id="menu-list" class="card">${Object.keys(menu).length === 0 ? '<p class="text-center text-gray-500">Aucun plat ajouté.</p>' : Object.entries(menu).map(([category, dishes]) => `<div class="mb-6 last:mb-0"><h3 class="text-xl font-bold font-serif border-b pb-2 mb-3">${category}</h3><ul class="space-y-2">${dishes.map(d => `<li class="flex justify-between items-center p-2 hover:bg-gray-50 rounded-md"><span>${d.name}</span><button class="delete-dish-btn text-red-500 hover:text-red-700 font-medium" data-id="${d.id}">Supprimer</button></li>`).join('')}</ul></div>`).join('')}</div>`;
+            section.innerHTML = `<div class="flex justify-between items-center mb-6"><h1 class="text-4xl font-bold font-serif">Gestion du menu</h1><button id="add-dish-btn" class="bg-brand-color text-white px-5 py-2 rounded-full font-semibold hover:bg-brand-color-dark">Ajouter un plat</button></div><div id="menu-list" class="card">${Object.keys(menu).length === 0 ? '<p class="text-center text-gray-500">Aucun plat ajouté.</p>' : Object.entries(menu).map(([category, dishes]) => `<div class="mb-6 last:mb-0"><h3 class="text-xl font-bold font-serif border-b pb-2 mb-3">${category}</h3><ul class="space-y-2">${dishes.map(d => `<li class="flex justify-between items-center p-2 hover:bg-gray-50 rounded-md"><span>${d.name}</span><div><button class="edit-dish-btn text-blue-500 hover:text-blue-700 font-medium mr-4" data-id="${d.id}" data-name="${d.name}">Modifier</button><button class="delete-dish-btn text-red-500 hover:text-red-700 font-medium" data-id="${d.id}">Supprimer</button></div></li>`).join('')}</ul></div>`).join('')}</div>`;
             document.getElementById('add-dish-btn').addEventListener('click', handleAddDish);
             document.querySelectorAll('.delete-dish-btn').forEach(b => b.addEventListener('click', handleDeleteDish));
+            document.querySelectorAll('.edit-dish-btn').forEach(b => b.addEventListener('click', handleEditDish));
         }
         
         async function handleSaveSettings(e) {
@@ -396,8 +419,41 @@
         }
 
         async function handleAddServer() { const name = prompt("Nom du nouveau serveur :"); if (name && name.trim()) { await fetchWithAuth('/api/servers', { method: 'POST', body: JSON.stringify({ name: name.trim() }) }); renderTeamManagement(); } }
+        async function handleEditServer(e) {
+            const id = e.target.dataset.id;
+            const currentName = e.target.dataset.name;
+            const newName = prompt("Modifier le nom du serveur :", currentName);
+            if (newName && newName.trim() && newName.trim() !== currentName) {
+                try {
+                    await fetchWithAuth(`/api/servers/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ name: newName.trim() })
+                    });
+                    await renderTeamManagement();
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                }
+            }
+        }
         async function handleDeleteServer(e) { const id = e.target.dataset.id; if (confirm("Supprimer ce serveur ?")) { await fetchWithAuth(`/api/servers/${id}`, { method: 'DELETE' }); renderTeamManagement(); } }
+        
         async function handleAddDish() { const name = prompt("Nom du nouveau plat :"); if (!name || !name.trim()) return; const category = prompt("Catégorie (ex: Entrées):"); if (name && category && name.trim() && category.trim()) { await fetchWithAuth('/api/dishes', { method: 'POST', body: JSON.stringify({ name: name.trim(), category: category.trim() }) }); renderMenuManagement(); } }
+        async function handleEditDish(e) {
+            const id = e.target.dataset.id;
+            const currentName = e.target.dataset.name;
+            const newName = prompt("Modifier le nom du plat :", currentName);
+            if (newName && newName.trim() && newName.trim() !== currentName) {
+                try {
+                    await fetchWithAuth(`/api/dishes/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ name: newName.trim() })
+                    });
+                    await renderMenuManagement();
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                }
+            }
+        }
         async function handleDeleteDish(e) { const id = e.target.dataset.id; if (confirm("Supprimer ce plat ?")) { await fetchWithAuth(`/api/dishes/${id}`, { method: 'DELETE' }); renderMenuManagement(); } }
         
         async function loadAppData() {
