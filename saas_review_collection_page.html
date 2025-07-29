@@ -477,16 +477,17 @@
                 });
 
                 if (!response.ok) {
-                    const errorBody = await response.text();
-                    console.error("API Error Response:", errorBody);
-                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                    const errorData = await response.json();
+                    console.error("API Error Response:", errorData);
+                    const errorMessage = errorData.error?.message || `Erreur API: ${response.status}`;
+                    throw new Error(errorMessage);
                 }
 
                 const result = await response.json();
                 
                 if (result.candidates && result.candidates.length > 0 &&
                     result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
+                    result.candidates[0].content.parts.length > 0 && result.candidates[0].content.parts[0].text) {
                     
                     const text = result.candidates[0].content.parts[0].text;
                     const reviewTextArea = document.getElementById('review-text');
@@ -495,15 +496,21 @@
                     reviewTextArea.style.height = (reviewTextArea.scrollHeight) + 'px';
                 } else {
                     console.error("API response is missing expected content:", result);
-                    throw new Error("La réponse de l'IA est invalide ou vide.");
+                    throw new Error("La réponse de l'IA est valide mais le contenu est manquant.");
                 }
 
                 document.getElementById('generation-loader').classList.add('hidden');
                 document.getElementById('result-display').classList.remove('hidden');
 
             } catch (error) {
-                console.error("Error generating review:", error);
-                document.getElementById('review-text').value = "Désolé, une erreur est survenue lors de la génération de l'avis. Veuillez réessayer.";
+                console.error("Error in generateReview function:", error);
+                let userMessage = "Désolé, une erreur est survenue lors de la génération de l'avis. Veuillez réessayer.";
+                if (error.message.includes("PERMISSION_DENIED") || error.message.includes("unregistered callers")) {
+                    userMessage = "Erreur de configuration du service de génération. Il semble y avoir un problème d'autorisation. Veuillez contacter le support.";
+                } else if (error.message) {
+                    userMessage = `Erreur de génération : ${error.message}`;
+                }
+                document.getElementById('review-text').value = userMessage;
                 document.getElementById('generation-loader').classList.add('hidden');
                 document.getElementById('result-display').classList.remove('hidden');
             }
