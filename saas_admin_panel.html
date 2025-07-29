@@ -150,6 +150,16 @@
                 </div>
                 <nav id="sidebar-nav" class="mt-6 flex-1 overflow-y-auto">
                     <a href="#dashboard" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Tableau de bord</span></a>
+                    
+                    <!-- NOUVEL ÉLÉMENT DE NAVIGATION -->
+                    <a href="#strategic-analysis" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50">
+                        <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 100 15 7.5 7.5 0 000-15z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.2-5.2" />
+                        </svg>
+                        <span>Analyse Stratégique</span>
+                    </a>
+
                     <a href="#page-settings" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Page</span></a>
                     <a href="#options-management" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg><span>Options</span></a>
                     <a href="#team-management" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg><span>Équipes</span></a>
@@ -176,6 +186,7 @@
                 <main class="flex-1">
                     <div id="content-area" class="p-4 md:p-8">
                         <section id="dashboard" class="content-section fade-in"></section>
+                        <section id="strategic-analysis" class="content-section"></section> <!-- NOUVELLE SECTION -->
                         <section id="page-settings" class="content-section"></section>
                         <section id="options-management" class="content-section"></section>
                         <section id="team-management" class="content-section"></section>
@@ -249,6 +260,7 @@
                 mainApp.classList.remove('hidden');
                 await Promise.all([
                     renderDashboard(),
+                    renderStrategicAnalysis(), // NOUVEAU
                     renderPageSettings(),
                     renderOptionsManagement(),
                     renderTeamManagement(),
@@ -335,7 +347,7 @@
             localStorage.removeItem('jwt_token');
             mainApp.classList.add('hidden');
             authOverlay.classList.remove('hidden');
-            contentArea.innerHTML = `<section id="dashboard" class="content-section fade-in"></section><section id="page-settings" class="content-section"></section><section id="team-management" class="content-section"></section><section id="menu-management" class="content-section"></section><section id="options-management" class="content-section"></section>`;
+            contentArea.innerHTML = `<section id="dashboard" class="content-section fade-in"></section><section id="strategic-analysis" class="content-section"></section><section id="page-settings" class="content-section"></section><section id="team-management" class="content-section"></section><section id="menu-management" class="content-section"></section><section id="options-management" class="content-section"></section>`;
         }
 
         logoutBtn.addEventListener('click', logout);
@@ -431,6 +443,82 @@
             new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--color-primary)', backgroundColor: 'rgba(214, 158, 46, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
         }
 
+        // --- NOUVELLE FONCTION POUR L'ANALYSE STRATÉGIQUE ---
+        async function renderStrategicAnalysis() {
+            const section = document.getElementById('strategic-analysis');
+            if (!section) return;
+
+            section.innerHTML = `
+                <h1 class="text-3xl md:text-4xl font-bold font-serif">Analyse Stratégique</h1>
+                <div id="analysis-content" class="mt-8 space-y-8">
+                    <div class="text-center p-10">
+                        <button id="launch-analysis-btn" class="bg-brand-accent text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-brand-accent-dark transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                            Lancer mon analyse IA
+                        </button>
+                        <p class="mt-4 text-sm text-gray-600">L'analyse peut prendre quelques minutes en fonction du volume d'avis.</p>
+                    </div>
+                </div>`;
+
+            const launchBtn = document.getElementById('launch-analysis-btn');
+            if (launchBtn) {
+                launchBtn.addEventListener('click', async () => {
+                    const container = document.getElementById('analysis-content');
+                    container.innerHTML = `
+                        <div class="text-center p-10 card">
+                            <h2 class="text-2xl font-serif font-bold mb-4">Analyse en cours...</h2>
+                            <p class="text-gray-600">L'IA réfléchit et compile les informations de vos avis 🤖</p>
+                            <div class="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-brand-accent mx-auto mt-6"></div>
+                        </div>`;
+                    try {
+                        const analysis = await fetchWithAuth('/api/strategic-analysis', { method: 'POST' });
+                        renderAnalysisResults(analysis);
+                    } catch (error) {
+                        container.innerHTML = `<div class="text-center p-10 card bg-red-50 border-red-200"><h2 class="text-2xl font-serif font-bold text-red-700">Erreur lors de l'analyse</h2><p class="text-red-600 mt-2">${error.message}</p></div>`;
+                    }
+                });
+            }
+        }
+
+        function renderAnalysisResults(data) {
+            const container = document.getElementById('analysis-content');
+            if (!data || !data.executive_summary) {
+                container.innerHTML = `<div class="text-center p-10 card bg-red-50 border-red-200"><h2 class="text-2xl font-serif font-bold text-red-700">Erreur de format</h2><p class="text-red-600 mt-2">L'IA a retourné une réponse dans un format inattendu. Veuillez réessayer.</p></div>`;
+                return;
+            }
+            container.innerHTML = `
+                <div class="card fade-in">
+                    <h2 class="text-2xl font-bold font-serif mb-3">Synthèse de l'IA (Executive Summary)</h2>
+                    <p class="text-lg text-gray-700">${data.executive_summary}</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="card fade-in" style="animation-delay: 100ms;">
+                        <h2 class="text-2xl font-bold font-serif mb-4 text-green-700">✅ Points Forts Majeurs</h2>
+                        <ul class="list-disc list-inside space-y-2 text-gray-800">${(data.strengths || []).map(s => `<li>${s}</li>`).join('')}</ul>
+                    </div>
+                    <div class="card fade-in" style="animation-delay: 200ms;">
+                        <h2 class="text-2xl font-bold font-serif mb-4 text-red-700">⚠️ Axes d'Amélioration Prioritaires</h2>
+                        <ul class="list-disc list-inside space-y-2 text-gray-800">${(data.weaknesses || []).map(w => `<li>${w}</li>`).join('')}</ul>
+                    </div>
+                </div>
+                <div class="card fade-in" style="animation-delay: 300ms;">
+                    <h2 class="text-2xl font-bold font-serif mb-4 text-blue-700">💡 Pépites & Opportunités</h2>
+                    <ul class="list-disc list-inside space-y-2 text-gray-800">${(data.opportunities || []).map(o => `<li>${o}</li>`).join('')}</ul>
+                </div>
+                <div class="card fade-in" style="animation-delay: 400ms;">
+                    <h2 class="text-2xl font-bold font-serif mb-4">🚀 Suggestions Proactives</h2>
+                    <ul class="space-y-4">
+                        ${(data.proactive_suggestions || []).map(s => {
+                            const parts = s.split(':');
+                            const category = parts[0] ? `<strong>${parts[0]}:</strong>` : '';
+                            const suggestion = parts.slice(1).join(':').trim();
+                            return `<li class="p-3 bg-gray-50 rounded-lg border border-gray-200">${category} ${suggestion}</li>`
+                        }).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        // --- FIN DE LA SECTION ANALYSE STRATÉGIQUE ---
+
         async function renderPageSettings() {
             const section = document.getElementById('page-settings');
             if (!section) return;
@@ -499,7 +587,6 @@
                 contentHtml += `</div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors text-lg w-full md:w-auto">Enregistrer les options</button></div></form>`;
                 section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion des Options</h1>${contentHtml}`;
                 
-                // Logique pour limiter la sélection à 6
                 const optionsForm = section.querySelector('#options-form');
                 if (optionsForm) {
                     optionsForm.querySelectorAll('.card[data-category]').forEach(card => {
@@ -532,7 +619,7 @@
                         };
 
                         card.addEventListener('change', updateState);
-                        updateState(); // Appel initial pour définir l'état au chargement
+                        updateState();
                     });
                 }
 
@@ -792,4 +879,74 @@
                 if (confirm(`Voulez-vous vraiment supprimer cet élément ?`)) {
                     try {
                         await fetchWithAuth(`/api/${dataType}s/${dataId}`, { method: 'DELETE' });
-  
+                        if (dataType === 'dish') {
+                            renderMenuManagement();
+                        } else {
+                            document.getElementById(`${dataType}-item-${dataId}`).remove();
+                        }
+                    } catch (error) {
+                        alert('Erreur: ' + error.message);
+                    }
+                }
+            }
+
+            if (editBtn) {
+                if (editBtn.matches('.edit-server-btn')) {
+                    const serverId = editBtn.dataset.serverId;
+                    const serverName = editBtn.dataset.serverName;
+                    openModal(`
+                        <form id="edit-server-form" data-server-id="${serverId}" class="card w-full max-w-md modal-content">
+                             <h2 class="text-2xl font-bold font-serif mb-4">Modifier le Membre</h2>
+                             <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Nom</label>
+                                    <input type="text" value="${serverName}" class="form-input" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Changer la photo</label>
+                                    <input type="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0" accept="image/png, image/jpeg">
+                                </div>
+                             </div>
+                             <div class="flex justify-end gap-2 mt-4">
+                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
+                                <button type="submit" class="bg-brand-accent text-white px-4 py-2 rounded-lg font-bold">Enregistrer</button>
+                            </div>
+                        </form>
+                    `);
+                }
+                 if (editBtn.matches('.edit-dish-btn')) {
+                    const dishId = editBtn.dataset.dishId;
+                    const dishName = editBtn.dataset.dishName;
+                    const dishCategory = editBtn.dataset.dishCategory;
+                    const allCategories = Object.keys(await fetchWithAuth('/api/menu'));
+                    
+                    openModal(`
+                        <form id="edit-dish-form" data-dish-id="${dishId}" class="card w-full max-w-md modal-content">
+                             <h2 class="text-2xl font-bold font-serif mb-4">Modifier le Plat</h2>
+                             <div class="space-y-4">
+                                <div>
+                                    <label for="edit-dish-name" class="block text-sm font-medium text-gray-700">Nom du plat</label>
+                                    <input type="text" id="edit-dish-name" value="${dishName}" class="form-input" required>
+                                </div>
+                                <div>
+                                    <label for="edit-dish-category" class="block text-sm font-medium text-gray-700">Catégorie</label>
+                                    <input type="text" id="edit-dish-category" value="${dishCategory}" list="edit-category-suggestions" class="form-input" required>
+                                    <datalist id="edit-category-suggestions">
+                                        ${allCategories.map(cat => `<option value="${cat}"></option>`).join('')}
+                                    </datalist>
+                                </div>
+                             </div>
+                             <div class="flex justify-end gap-2 mt-4">
+                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
+                                <button type="submit" class="bg-brand-accent text-white px-4 py-2 rounded-lg font-bold">Enregistrer</button>
+                            </div>
+                        </form>
+                    `);
+                }
+            }
+        });
+
+    });
+    </script>
+</body>
+</html>
