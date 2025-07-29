@@ -386,11 +386,16 @@
                 return `<button class="button" data-lang-select="${lang}">${langName}</button>`;
             }).join('');
             
-            document.getElementById('server-grid').innerHTML = restaurantData.servers.map(server => `
-                <div class="selection-item" data-server-name="${server.name}">
-                    <img src="${server.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=cccccc`}" alt="${server.name}">
-                    <span>${server.name}</span>
-                </div>`).join('');
+            document.getElementById('server-grid').innerHTML = restaurantData.servers.map(server => {
+                const avatarSrc = server.avatar 
+                    ? `${API_BASE_URL}${server.avatar}` 
+                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=555555`;
+                return `
+                    <div class="selection-item" data-server-name="${server.name}">
+                        <img src="${avatarSrc}" alt="${server.name}">
+                        <span>${server.name}</span>
+                    </div>`;
+            }).join('');
 
             const serviceTags = restaurantData.tags?.service || [];
             document.getElementById('service-qualities-tags').innerHTML = serviceTags.map(tag => `
