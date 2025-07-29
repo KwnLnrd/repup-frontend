@@ -151,11 +151,10 @@
                 <nav id="sidebar-nav" class="mt-6 flex-1 overflow-y-auto">
                     <a href="#dashboard" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Tableau de bord</span></a>
                     
-                    <!-- NOUVEL ÉLÉMENT DE NAVIGATION -->
                     <a href="#strategic-analysis" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50">
                         <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 100 15 7.5 7.5 0 000-15z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.2-5.2" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.231-12.231 9.004 9.004 0 00-16.462 0A9.004 9.004 0 0012 21zm0 0v-6" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 16.036a5.002 5.002 0 00-7.82 0" />
                         </svg>
                         <span>Analyse Stratégique</span>
                     </a>
@@ -186,7 +185,7 @@
                 <main class="flex-1">
                     <div id="content-area" class="p-4 md:p-8">
                         <section id="dashboard" class="content-section fade-in"></section>
-                        <section id="strategic-analysis" class="content-section"></section> <!-- NOUVELLE SECTION -->
+                        <section id="strategic-analysis" class="content-section"></section>
                         <section id="page-settings" class="content-section"></section>
                         <section id="options-management" class="content-section"></section>
                         <section id="team-management" class="content-section"></section>
@@ -260,7 +259,7 @@
                 mainApp.classList.remove('hidden');
                 await Promise.all([
                     renderDashboard(),
-                    renderStrategicAnalysis(), // NOUVEAU
+                    renderStrategicAnalysis(),
                     renderPageSettings(),
                     renderOptionsManagement(),
                     renderTeamManagement(),
@@ -397,13 +396,6 @@
             document.querySelectorAll('.nav-item').forEach(item => {
                 const isActive = item.getAttribute('href') === hash;
                 item.classList.toggle('active', isActive);
-                if(isActive) {
-                    item.style.borderRight = '3px solid var(--color-primary)';
-                    item.style.backgroundColor = 'rgba(214, 158, 46, 0.1)';
-                } else {
-                    item.style.borderRight = '3px solid transparent';
-                    item.style.backgroundColor = 'transparent';
-                }
             });
             document.querySelectorAll('.content-section').forEach(section => section.classList.toggle('active', `#${section.id}` === hash));
         }
@@ -443,37 +435,49 @@
             new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--color-primary)', backgroundColor: 'rgba(214, 158, 46, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
         }
 
-        // --- NOUVELLE FONCTION POUR L'ANALYSE STRATÉGIQUE ---
+        // --- SECTION ANALYSE STRATÉGIQUE AMÉLIORÉE ---
         async function renderStrategicAnalysis() {
             const section = document.getElementById('strategic-analysis');
             if (!section) return;
 
             section.innerHTML = `
-                <h1 class="text-3xl md:text-4xl font-bold font-serif">Analyse Stratégique</h1>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <h1 class="text-3xl md:text-4xl font-bold font-serif">Analyse Stratégique</h1>
+                    <button id="launch-analysis-btn" class="mt-4 md:mt-0 bg-brand-accent text-white px-6 py-3 rounded-full font-bold text-base hover:bg-brand-accent-dark transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1.28a1 1 0 00-.97.72l-1.95 6.41a1.5 1.5 0 01-2.98-.24l1.95-6.41a1 1 0 00-.97-.72H5a1 1 0 01-1-1V8a1 1 0 011-1h3a1 1 0 001-1V3.5z" />
+                        </svg>
+                        Lancer une nouvelle analyse
+                    </button>
+                </div>
+                <div class="bg-blue-50 border-l-4 border-blue-400 text-blue-800 p-4 rounded-r-lg mb-8" role="alert">
+                    <p class="font-bold">Comment ça marche ?</p>
+                    <p class="text-sm">En lançant l'analyse, nous allons chercher vos derniers avis sur Google, les combinons avec vos avis internes, puis notre IA génère un rapport stratégique. Ce processus peut prendre 1 à 2 minutes.</p>
+                </div>
                 <div id="analysis-content" class="mt-8 space-y-8">
-                    <div class="text-center p-10">
-                        <button id="launch-analysis-btn" class="bg-brand-accent text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-brand-accent-dark transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                            Lancer mon analyse IA
-                        </button>
-                        <p class="mt-4 text-sm text-gray-600">L'analyse peut prendre quelques minutes en fonction du volume d'avis.</p>
-                    </div>
+                    <!-- Le contenu de l'analyse sera injecté ici -->
+                    <p class="text-center text-gray-500 py-8">Aucune analyse n'a été lancée. Cliquez sur le bouton ci-dessus pour commencer.</p>
                 </div>`;
 
             const launchBtn = document.getElementById('launch-analysis-btn');
             if (launchBtn) {
                 launchBtn.addEventListener('click', async () => {
                     const container = document.getElementById('analysis-content');
+                    launchBtn.disabled = true;
                     container.innerHTML = `
                         <div class="text-center p-10 card">
                             <h2 class="text-2xl font-serif font-bold mb-4">Analyse en cours...</h2>
                             <p class="text-gray-600">L'IA réfléchit et compile les informations de vos avis 🤖</p>
                             <div class="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-brand-accent mx-auto mt-6"></div>
+                            <p class="text-sm text-gray-500 mt-4">Veuillez patienter, cela peut prendre quelques minutes.</p>
                         </div>`;
                     try {
                         const analysis = await fetchWithAuth('/api/strategic-analysis', { method: 'POST' });
                         renderAnalysisResults(analysis);
                     } catch (error) {
                         container.innerHTML = `<div class="text-center p-10 card bg-red-50 border-red-200"><h2 class="text-2xl font-serif font-bold text-red-700">Erreur lors de l'analyse</h2><p class="text-red-600 mt-2">${error.message}</p></div>`;
+                    } finally {
+                        launchBtn.disabled = false;
                     }
                 });
             }
@@ -482,36 +486,51 @@
         function renderAnalysisResults(data) {
             const container = document.getElementById('analysis-content');
             if (!data || !data.executive_summary) {
-                container.innerHTML = `<div class="text-center p-10 card bg-red-50 border-red-200"><h2 class="text-2xl font-serif font-bold text-red-700">Erreur de format</h2><p class="text-red-600 mt-2">L'IA a retourné une réponse dans un format inattendu. Veuillez réessayer.</p></div>`;
+                container.innerHTML = `<div class="text-center p-10 card bg-yellow-50 border-yellow-200"><h2 class="text-2xl font-serif font-bold text-yellow-800">Format de réponse inattendu</h2><p class="text-yellow-700 mt-2">L'IA a retourné une réponse qui n'a pas pu être interprétée. Veuillez réessayer.</p></div>`;
                 return;
             }
             container.innerHTML = `
                 <div class="card fade-in">
-                    <h2 class="text-2xl font-bold font-serif mb-3">Synthèse de l'IA (Executive Summary)</h2>
-                    <p class="text-lg text-gray-700">${data.executive_summary}</p>
+                    <h2 class="text-2xl font-bold font-serif mb-3 flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        Synthèse de l'IA (Executive Summary)
+                    </h2>
+                    <p class="text-lg text-gray-700 leading-relaxed">${data.executive_summary}</p>
                 </div>
                 <div class="grid md:grid-cols-2 gap-8">
                     <div class="card fade-in" style="animation-delay: 100ms;">
-                        <h2 class="text-2xl font-bold font-serif mb-4 text-green-700">✅ Points Forts Majeurs</h2>
+                        <h2 class="text-2xl font-bold font-serif mb-4 text-green-700 flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.085a2 2 0 00-1.736.97l-1.9 3.8a2 2 0 00.23 2.16l3.5 3.5m7-10h-4.562" /></svg>
+                            Points Forts Majeurs
+                        </h2>
                         <ul class="list-disc list-inside space-y-2 text-gray-800">${(data.strengths || []).map(s => `<li>${s}</li>`).join('')}</ul>
                     </div>
                     <div class="card fade-in" style="animation-delay: 200ms;">
-                        <h2 class="text-2xl font-bold font-serif mb-4 text-red-700">⚠️ Axes d'Amélioration Prioritaires</h2>
+                        <h2 class="text-2xl font-bold font-serif mb-4 text-red-700 flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Axes d'Amélioration
+                        </h2>
                         <ul class="list-disc list-inside space-y-2 text-gray-800">${(data.weaknesses || []).map(w => `<li>${w}</li>`).join('')}</ul>
                     </div>
                 </div>
                 <div class="card fade-in" style="animation-delay: 300ms;">
-                    <h2 class="text-2xl font-bold font-serif mb-4 text-blue-700">💡 Pépites & Opportunités</h2>
+                     <h2 class="text-2xl font-bold font-serif mb-4 text-blue-700 flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        Pépites & Opportunités
+                    </h2>
                     <ul class="list-disc list-inside space-y-2 text-gray-800">${(data.opportunities || []).map(o => `<li>${o}</li>`).join('')}</ul>
                 </div>
                 <div class="card fade-in" style="animation-delay: 400ms;">
-                    <h2 class="text-2xl font-bold font-serif mb-4">🚀 Suggestions Proactives</h2>
+                    <h2 class="text-2xl font-bold font-serif mb-4 flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        Suggestions Proactives
+                    </h2>
                     <ul class="space-y-4">
                         ${(data.proactive_suggestions || []).map(s => {
                             const parts = s.split(':');
-                            const category = parts[0] ? `<strong>${parts[0]}:</strong>` : '';
+                            const category = parts[0] ? `<span class="font-bold text-sm uppercase tracking-wider text-brand-accent">${parts[0]}:</span>` : '';
                             const suggestion = parts.slice(1).join(':').trim();
-                            return `<li class="p-3 bg-gray-50 rounded-lg border border-gray-200">${category} ${suggestion}</li>`
+                            return `<li class="p-4 bg-gray-50 rounded-lg border border-gray-200">${category} <span class="text-gray-800">${suggestion}</span></li>`
                         }).join('')}
                     </ul>
                 </div>
@@ -533,7 +552,7 @@
                 const enabledLanguages = Array.isArray(settings.enabledLanguages) ? settings.enabledLanguages : [];
                 const logoSrc = settings.logoUrl ? `${API_BASE_URL}${settings.logoUrl}` : 'https://placehold.co/100x100/DEE2E6/2D3748?text=Logo';
                 
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Personnalisation de la Page</h1><form id="page-settings-form"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-8"><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Informations Générales</h2><div class="space-y-6"><div><label for="restaurant-name" class="block text-sm font-medium text-gray-700">Nom du Restaurant</label><input type="text" id="restaurant-name" value="${settings.name || ''}" class="form-input"></div><div class="flex items-center gap-6"><img id="logo-preview" src="${logoSrc}" alt="Aperçu du logo" class="w-24 h-24 rounded-lg object-contain bg-gray-100 p-1"><div class="flex-1"><label for="logo-file" class="block text-sm font-medium text-gray-700">Changer le logo</label><input type="file" id="logo-file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" accept="image/png, image/jpeg, image/gif"><p class="text-xs text-gray-500 mt-1">L'aperçu se met à jour automatiquement.</p></div></div><div><label for="primary-color" class="block text-sm font-medium text-gray-700">Couleur principale</label><input type="color" id="primary-color" value="${settings.primaryColor || '#D69E2E'}" class="mt-1 h-10 w-20 rounded-md border-gray-300 p-1"></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Liens de Notation</h2><div class="space-y-4"><div><label for="google-link" class="block text-sm font-medium text-gray-700">Lien Google</label><textarea id="google-link" rows="3" class="form-input" placeholder="https://search.google.com/local/writereview?placeid=...">${settings.googleLink || ''}</textarea></div><div><label for="tripadvisor-link" class="block text-sm font-medium text-gray-700">Lien TripAdvisor</label><textarea id="tripadvisor-link" rows="3" class="form-input" placeholder="https://www.tripadvisor.com/UserReview-g...-d...">${settings.tripadvisorLink || ''}</textarea></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Langues</h2><p class="text-sm text-gray-600 mb-4">Sélectionnez les langues à proposer.</p><div id="languages-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">${Object.entries(availableLangs).map(([code, name]) => `<label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" name="languages" value="${code}" class="h-5 w-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" ${enabledLanguages.includes(code) ? 'checked' : ''}><span class="text-gray-700">${name}</span></label>`).join('')}</div></div></div><div class="lg:col-span-1"><div class="card sticky top-8" id="qr-code-card"></div></div></div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors text-lg w-full md:w-auto">Enregistrer</button></div></form>`;
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Personnalisation de la Page</h1><form id="page-settings-form"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-8"><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Informations Générales</h2><div class="space-y-6"><div><label for="restaurant-name" class="block text-sm font-medium text-gray-700">Nom du Restaurant</label><input type="text" id="restaurant-name" value="${settings.name || ''}" class="form-input"></div><div class="flex items-center gap-6"><img id="logo-preview" src="${logoSrc}" alt="Aperçu du logo" class="w-24 h-24 rounded-lg object-contain bg-gray-100 p-1"><div class="flex-1"><label for="logo-file" class="block text-sm font-medium text-gray-700">Changer le logo</label><input type="file" id="logo-file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" accept="image/png, image/jpeg, image/gif"><p class="text-xs text-gray-500 mt-1">L'aperçu se met à jour automatiquement.</p></div></div><div><label for="primary-color" class="block text-sm font-medium text-gray-700">Couleur principale</label><input type="color" id="primary-color" value="${settings.primaryColor || '#D69E2E'}" class="mt-1 h-10 w-20 rounded-md border-gray-300 p-1"></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Liens de Notation & Scraping</h2><div class="space-y-4"><div><label for="google-link" class="block text-sm font-medium text-gray-700">Lien Google</label><textarea id="google-link" rows="3" class="form-input" placeholder="https://search.google.com/local/writereview?placeid=...">${settings.googleLink || ''}</textarea></div><div><label for="tripadvisor-link" class="block text-sm font-medium text-gray-700">Lien TripAdvisor</label><textarea id="tripadvisor-link" rows="3" class="form-input" placeholder="https://www.tripadvisor.com/UserReview-g...-d...">${settings.tripadvisorLink || ''}</textarea></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Langues</h2><p class="text-sm text-gray-600 mb-4">Sélectionnez les langues à proposer.</p><div id="languages-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">${Object.entries(availableLangs).map(([code, name]) => `<label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" name="languages" value="${code}" class="h-5 w-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" ${enabledLanguages.includes(code) ? 'checked' : ''}><span class="text-gray-700">${name}</span></label>`).join('')}</div></div></div><div class="lg:col-span-1"><div class="card sticky top-8" id="qr-code-card"></div></div></div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors text-lg w-full md:w-auto">Enregistrer</button></div></form>`;
                 
                 const qrCard = document.getElementById('qr-code-card');
                 const slug = settings.slug;
