@@ -482,12 +482,12 @@
                 let contentHtml = `<form id="options-form"><div class="space-y-8">`;
                 for (const category in available_tags) {
                     contentHtml += `
-                        <div class="card">
+                        <div class="card" data-category="${category}">
                             <h2 class="text-2xl font-bold font-serif mb-4">${categoryTitles[category] || category}</h2>
                             <p class="text-sm text-gray-600 mb-4">Cochez les options que vous souhaitez proposer à vos clients.</p>
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                                 ${available_tags[category].map(tag => `
-                                    <label class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer border">
+                                    <label class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer border transition-opacity">
                                         <input type="checkbox" name="option_tag" value="${tag.key}" class="h-5 w-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" ${selected_keys.includes(tag.key) ? 'checked' : ''}>
                                         <span class="text-gray-700">${tag.fr}</span>
                                     </label>
@@ -498,6 +498,44 @@
                 }
                 contentHtml += `</div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors text-lg w-full md:w-auto">Enregistrer les options</button></div></form>`;
                 section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion des Options</h1>${contentHtml}`;
+                
+                // Logique pour limiter la sélection à 6
+                const optionsForm = section.querySelector('#options-form');
+                if (optionsForm) {
+                    optionsForm.querySelectorAll('.card[data-category]').forEach(card => {
+                        const checkboxes = card.querySelectorAll('input[type="checkbox"]');
+                        if (checkboxes.length === 0) return;
+
+                        const limit = 6;
+                        const notificationEl = document.createElement('p');
+                        notificationEl.className = 'text-sm text-amber-600 mt-4 hidden font-semibold';
+                        notificationEl.textContent = `Vous pouvez sélectionner un maximum de ${limit} options pour cette catégorie.`;
+                        card.appendChild(notificationEl);
+
+                        const updateState = () => {
+                            const checkedCount = card.querySelectorAll('input[type="checkbox"]:checked').length;
+                            if (checkedCount >= limit) {
+                                notificationEl.classList.remove('hidden');
+                                checkboxes.forEach(cb => {
+                                    if (!cb.checked) {
+                                        cb.disabled = true;
+                                        cb.closest('label').classList.add('opacity-50', 'cursor-not-allowed');
+                                    }
+                                });
+                            } else {
+                                notificationEl.classList.add('hidden');
+                                checkboxes.forEach(cb => {
+                                    cb.disabled = false;
+                                    cb.closest('label').classList.remove('opacity-50', 'cursor-not-allowed');
+                                });
+                            }
+                        };
+
+                        card.addEventListener('change', updateState);
+                        updateState(); // Appel initial pour définir l'état au chargement
+                    });
+                }
+
             } catch (error) {
                 section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des options. ${error.message}</div>`;
             }
