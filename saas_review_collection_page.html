@@ -7,10 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* --- DESIGN SYSTEM (Inspiré de indexmodel.html) --- */
         :root {
-            --brand-color: #BF5B3F; /* Default color, will be overridden by JS */
+            --brand-color: #BF5B3F; /* Sera surchargé par JS */
             --brand-color-light: rgba(191, 91, 63, 0.1);
             --brand-color-dark: #A64B35;
             --background-color: #F8F9FA;
@@ -18,106 +19,63 @@
             --text-primary: #212529;
             --text-secondary: #6C757D;
             --border-color: #DEE2E6;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Montserrat', sans-serif;
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
         }
+
+        /* --- STYLES GLOBAUX --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: var(--font-sans);
             background-color: var(--background-color);
             color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 1rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .font-serif {
-            font-family: 'Cormorant Garamond', serif;
-        }
-        .main-container {
-            width: 100%;
-            max-width: 480px;
+
+        .review-container {
             background-color: var(--surface-color);
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            padding: 2rem;
-            margin-top: 2rem;
+            border-radius: 12px;
+            padding: 28px 32px;
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 520px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            animation: fadeIn .8s ease-out;
+            margin: 20px 0;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
         }
-        .main-container.loaded {
+        .review-container.loaded {
             opacity: 1;
         }
-        .step {
-            display: none;
-            animation: fadeIn 0.6s ease-out;
-        }
-        .step.active {
-            display: block;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        .star-rating {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin: 2rem 0;
-        }
-        .star-rating svg {
-            width: 2.5rem;
-            height: 2.5rem;
-            color: #E0E0E0;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .star-rating svg.selected, .star-rating:hover svg:hover ~ svg {
-            color: #E0E0E0;
-        }
-        .star-rating:hover svg:hover,
-        .star-rating svg.hovered {
-            color: #FFC107;
-            transform: scale(1.1);
-        }
+        .logo-container { margin-bottom: 24px; }
+        .logo-container img { max-height: 60px; height: auto; margin: 0 auto; object-fit: contain; }
         
-        .btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            background-color: var(--brand-color);
-            color: white;
-            padding: 0.875rem 1rem;
-            border-radius: 9999px;
-            font-weight: 600;
-            transition: background-color 0.3s;
-        }
-        .btn:hover {
-            background-color: var(--brand-color-dark);
-        }
-        .btn.secondary {
-            background-color: transparent;
-            color: var(--brand-color);
-            border: 1px solid var(--brand-color);
-        }
-         .btn.secondary:hover {
-            background-color: var(--brand-color-light);
-        }
+        h1 { font-family: var(--font-serif); font-size: 2rem; margin-bottom: 8px; }
+        p.subtitle { font-size: 1rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 28px; }
+        
+        /* --- SECTIONS DE FORMULAIRE --- */
+        .form-section { display: none; animation: fadeIn 0.6s ease-out; }
+        .form-section.active { display: block; }
+        .form-section h2 { font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 12px; color: var(--text-primary); }
 
-        .lang-btn {
-            background-color: #f3f4f6;
-            border: 1px solid #e5e7eb;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .lang-btn.active {
-            background-color: var(--brand-color);
-            color: white;
-            border-color: var(--brand-color);
-        }
+        /* --- GRILLE DE SÉLECTION (Serveurs) --- */
         .selection-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 1rem;
+            margin-bottom: 2rem;
         }
         .selection-item {
             display: flex;
@@ -128,7 +86,7 @@
             border-radius: 0.75rem;
             padding: 1rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
         .selection-item.selected {
             border-color: var(--brand-color);
@@ -141,73 +99,168 @@
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 0.75rem;
-            background-color: #f0f0f0; /* Placeholder background */
+            background-color: #f0f0f0;
         }
         .selection-item span {
             font-weight: 500;
             font-size: 0.9rem;
         }
+        
+        /* --- ÉVALUATION PAR ÉTOILES --- */
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+        .star-rating svg {
+            width: 3rem;
+            height: 3rem;
+            color: #E0E0E0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .star-rating svg.selected {
+            color: #FFC107;
+        }
+        .star-rating:hover svg:hover,
+        .star-rating:hover svg:hover ~ svg {
+             color: #E0E0E0;
+        }
+        .star-rating:hover svg:hover {
+            color: #FFD700;
+            transform: scale(1.15);
+        }
+        #rating-feedback {
+            min-height: 28px;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--brand-color);
+            margin-top: 1rem;
+        }
+
+        /* --- FORMULAIRES & BOUTONS --- */
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            color: var(--text-primary);
+            box-sizing: border-box;
+            min-height: 120px;
+            resize: vertical;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        textarea:focus {
+            outline: none; border-color: var(--brand-color);
+            box-shadow: 0 0 0 3px rgba(191, 91, 63, 0.2);
+        }
+
+        .button {
+            display: inline-block;
+            background-color: var(--brand-color);
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all .3s ease;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        .button:hover {
+            background-color: var(--brand-color-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .button.secondary {
+            background: var(--surface-color);
+            color: var(--brand-color);
+            border: 1px solid var(--brand-color);
+        }
+        .button.secondary:hover {
+            background-color: var(--brand-color-light);
+            border-color: var(--brand-color);
+        }
+        
+        .language-switcher { margin-bottom: 24px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .lang-btn { background-color: var(--background-color); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 50px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .lang-btn.active { background-color: var(--brand-color); color: white; border-color: var(--brand-color); }
+        
         #loader { text-align: center; padding: 3rem; }
+        #thank-you-message svg { width: 4rem; height: 4rem; margin: 0 auto 1rem; color: #28a745; }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .review-container { padding: 20px 15px; margin: 10px 0; }
+            h1 { font-size: 1.8rem; }
+            .selection-grid { gap: 0.75rem; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="main-container" class="main-container">
+    <div id="review-container" class="review-container">
         <div id="loader">
-            <p>Chargement des informations du restaurant...</p>
+            <p data-translate-key="loading_restaurant">Chargement des informations...</p>
         </div>
+        
         <div id="app-content" class="hidden">
-            <!-- Step 0: Language Selection -->
-            <div id="step-lang" class="step">
-                <h1 class="text-2xl font-bold font-serif text-center mb-6">Choose your language</h1>
-                <div id="lang-selector" class="flex flex-wrap justify-center gap-3">
-                    <!-- Language buttons will be injected here -->
-                </div>
+            <!-- Header: Logo & Language Switcher -->
+            <div id="lang-container" class="language-switcher"></div>
+            <div class="logo-container" id="logo-container"></div>
+
+            <!-- Step 0: Language Selection (if more than one) -->
+            <div id="section-lang" class="form-section">
+                 <h1 data-translate-key="choose_language_title">Choose your language</h1>
+                 <div id="lang-selector" class="flex flex-wrap justify-center gap-3 mt-6"></div>
             </div>
 
             <!-- Step 1: Server Selection -->
-            <div id="step-server" class="step">
-                <h1 id="server-title" class="text-2xl font-bold font-serif text-center mb-2"></h1>
-                <p id="server-subtitle" class="text-center text-gray-500 mb-8"></p>
-                <div id="server-grid" class="selection-grid">
-                    <!-- Server items will be injected here -->
-                </div>
+            <div id="section-server" class="form-section">
+                <h1 id="server-title"></h1>
+                <p id="server-subtitle" class="subtitle"></p>
+                <div id="server-grid" class="selection-grid"></div>
             </div>
 
             <!-- Step 2: Rating -->
-            <div id="step-rating" class="step">
-                <h1 id="rating-title" class="text-2xl font-bold font-serif text-center mb-2"></h1>
-                <p id="rating-subtitle" class="text-center text-gray-500 mb-6"></p>
-                <div id="star-rating" class="star-rating">
-                    <!-- Stars will be injected here -->
-                </div>
-                <p id="rating-feedback" class="text-center font-semibold text-xl" style="min-height: 28px;"></p>
+            <div id="section-rating" class="form-section">
+                <h1 id="rating-title"></h1>
+                <p id="rating-subtitle" class="subtitle"></p>
+                <div id="star-rating" class="star-rating"></div>
+                <p id="rating-feedback"></p>
             </div>
             
             <!-- Step 3: Positive Feedback -->
-            <div id="step-positive-feedback" class="step">
-                <h1 id="positive-title" class="text-2xl font-bold font-serif text-center mb-2"></h1>
-                <p id="positive-subtitle" class="text-center text-gray-500 mb-8"></p>
-                <div id="positive-buttons" class="space-y-4">
-                    <!-- Positive feedback buttons will be injected here -->
-                </div>
+            <div id="section-positive-feedback" class="form-section">
+                <h1 id="positive-title"></h1>
+                <p id="positive-subtitle" class="subtitle"></p>
+                <div id="positive-buttons" class="space-y-4"></div>
             </div>
 
             <!-- Step 4: Negative Feedback -->
-            <div id="step-negative-feedback" class="step">
-                <h1 id="negative-title" class="text-2xl font-bold font-serif text-center mb-2"></h1>
-                <p id="negative-subtitle" class="text-center text-gray-500 mb-8"></p>
-                <form id="internal-feedback-form">
-                    <textarea id="feedback-textarea" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--brand-color)] focus:border-[var(--brand-color)]" required></textarea>
-                    <button id="submit-feedback-btn" type="submit" class="btn mt-4"></button>
+            <div id="section-negative-feedback" class="form-section">
+                <h1 id="negative-title"></h1>
+                <p id="negative-subtitle" class="subtitle"></p>
+                <form id="internal-feedback-form" class="mt-6">
+                    <textarea id="feedback-textarea" rows="5" required></textarea>
+                    <button id="submit-feedback-btn" type="submit" class="button mt-4"></button>
                 </form>
             </div>
             
             <!-- Step 5: Thank You -->
-            <div id="step-thank-you" class="step text-center">
-                 <svg class="w-16 h-16 mx-auto text-green-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <h1 id="thank-you-title" class="text-2xl font-bold font-serif mb-2"></h1>
-                <p id="thank-you-subtitle" class="text-gray-500"></p>
+            <div id="section-thank-you" class="form-section text-center">
+                 <div id="thank-you-message">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <h1 id="thank-you-title"></h1>
+                    <p id="thank-you-subtitle" class="subtitle"></p>
+                 </div>
             </div>
         </div>
     </div>
@@ -217,16 +270,16 @@
         const API_BASE_URL = 'https://repup-test.onrender.com';
 
         // --- DOM Elements ---
-        const mainContainer = document.getElementById('main-container');
+        const reviewContainer = document.getElementById('review-container');
         const loader = document.getElementById('loader');
         const appContent = document.getElementById('app-content');
-        const steps = document.querySelectorAll('.step');
+        const sections = document.querySelectorAll('.form-section');
 
         let restaurantData = {};
-
         const translations = {
             fr: {
                 lang_name: "Français",
+                choose_language_title: "Choisissez votre langue",
                 server_title: "Qui a enchanté votre service ?",
                 server_subtitle: "Sélectionnez la personne qui s'est occupée de vous.",
                 rating_title: (server) => `Comment évalueriez-vous le service de <strong>${server}</strong> ?`,
@@ -235,6 +288,7 @@
                 positive_title: "Merci infiniment !",
                 positive_subtitle: "Votre avis est essentiel. Aidez d'autres gourmands en le partageant sur une plateforme publique.",
                 publish_on: (platform) => `Publier sur ${platform}`,
+                no_thanks: "Non merci",
                 negative_title: "Nous sommes désolés",
                 negative_subtitle: "Votre expérience n'a pas été à la hauteur. Laissez-nous un message privé pour que nous puissions nous améliorer.",
                 feedback_placeholder: "Dites-nous tout...",
@@ -243,9 +297,11 @@
                 thank_you_subtitle: "Nous avons bien reçu votre message. À bientôt !",
                 final_thank_you_title: "Merci !",
                 final_thank_you_subtitle: "Votre soutien est notre plus belle récompense.",
+                loading_restaurant: "Chargement des informations du restaurant...",
             },
             en: {
                 lang_name: "English",
+                choose_language_title: "Choose your language",
                 server_title: "Who provided your service?",
                 server_subtitle: "Select the person who took care of you.",
                 rating_title: (server) => `How would you rate <strong>${server}</strong>'s service?`,
@@ -254,6 +310,7 @@
                 positive_title: "Thank you so much!",
                 positive_subtitle: "Your opinion is essential. Help other food lovers by sharing it on a public platform.",
                 publish_on: (platform) => `Publish on ${platform}`,
+                no_thanks: "No, thank you",
                 negative_title: "We are sorry",
                 negative_subtitle: "Your experience was not up to par. Please leave us a private message so we can improve.",
                 feedback_placeholder: "Tell us everything...",
@@ -262,9 +319,11 @@
                 thank_you_subtitle: "We have received your message. See you soon!",
                 final_thank_you_title: "Thank You!",
                 final_thank_you_subtitle: "Your support is our greatest reward.",
+                loading_restaurant: "Loading restaurant information...",
             },
             es: {
                 lang_name: "Español",
+                choose_language_title: "Elige tu idioma",
                 server_title: "¿Quién le atendió?",
                 server_subtitle: "Seleccione la persona que le atendió.",
                 rating_title: (server) => `¿Cómo calificaría el servicio de <strong>${server}</strong>?`,
@@ -273,6 +332,7 @@
                 positive_title: "¡Muchas gracias!",
                 positive_subtitle: "Su opinión es esencial. Ayude a otros gourmets compartiéndola en una plataforma pública.",
                 publish_on: (platform) => `Publicar en ${platform}`,
+                no_thanks: "No, gracias",
                 negative_title: "Lo sentimos",
                 negative_subtitle: "Su experiencia no estuvo a la altura. Déjenos un mensaje privado para que podamos mejorar.",
                 feedback_placeholder: "Cuéntenos todo...",
@@ -281,62 +341,48 @@
                 thank_you_subtitle: "Hemos recibido su mensaje. ¡Hasta pronto!",
                 final_thank_you_title: "¡Gracias!",
                 final_thank_you_subtitle: "Su apoyo es nuestra mayor recompensa.",
+                loading_restaurant: "Cargando información del restaurante...",
             }
         };
 
-        // --- STATE MANAGEMENT ---
         let currentState = {
-            step: 'lang',
+            section: 'lang',
             lang: 'fr',
             selectedServer: null,
             rating: 0,
         };
 
-        // --- DATA FETCHING ---
         async function fetchRestaurantData() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const slug = urlParams.get('slug');
-                if (!slug) {
-                    throw new Error("Slug du restaurant manquant dans l'URL.");
-                }
+                if (!slug) throw new Error("Slug du restaurant manquant dans l'URL.");
+                
                 const response = await fetch(`${API_BASE_URL}/api/public/restaurant/${slug}`);
-                if (!response.ok) {
-                    throw new Error(`Erreur lors de la récupération des données (code: ${response.status})`);
-                }
+                if (!response.ok) throw new Error(`Erreur de récupération (code: ${response.status})`);
+                
                 const data = await response.json();
-                // Ensure data has the required arrays to prevent crashes
-                restaurantData = {
-                    ...data,
-                    servers: data.servers || [],
-                    languages: data.languages || ['fr', 'en']
-                };
-                // Set default language
+                restaurantData = { ...data, servers: data.servers || [], languages: data.languages || ['fr', 'en'] };
                 currentState.lang = restaurantData.languages.includes('fr') ? 'fr' : restaurantData.languages[0];
                 return true;
             } catch (error) {
-                loader.innerHTML = `<p class="text-red-500 font-semibold">Erreur de chargement</p><p class="text-gray-600 mt-2">${error.message}</p><p class="text-sm text-gray-500 mt-1">Veuillez vérifier le lien ou contacter le restaurant.</p>`;
+                loader.innerHTML = `<p class="text-red-500 font-semibold">Erreur de chargement</p><p class="text-gray-600 mt-2">${error.message}</p>`;
                 return false;
             }
         }
 
-        // --- DYNAMIC STYLING & CONTENT ---
         function applyBranding() {
             const root = document.documentElement;
             const color = restaurantData.primaryColor || '#BF5B3F';
             root.style.setProperty('--brand-color', color);
             const [r, g, b] = color.match(/\w\w/g).map((c) => parseInt(c, 16));
             root.style.setProperty('--brand-color-light', `rgba(${r}, ${g}, ${b}, 0.1)`);
-            const darkColor = `rgb(${Math.max(0, r-20)}, ${Math.max(0, g-20)}, ${Math.max(0, b-20)})`;
-            root.style.setProperty('--brand-color-dark', darkColor);
+            root.style.setProperty('--brand-color-dark', `rgb(${Math.max(0, r-20)}, ${Math.max(0, g-20)}, ${Math.max(0, b-20)})`);
             
             document.title = `Donnez votre avis - ${restaurantData.name}`;
             
-            const logoContainer = document.createElement('div');
-            logoContainer.className = 'text-center mb-8';
-            const logoUrl = restaurantData.logoUrl ? `${API_BASE_URL}${restaurantData.logoUrl}` : `https://placehold.co/200x50/${color.substring(1)}/FFFFFF?text=${encodeURIComponent(restaurantData.name)}`;
-            logoContainer.innerHTML = `<img src="${logoUrl}" alt="Logo de ${restaurantData.name}" class="mx-auto h-12 object-contain">`;
-            appContent.prepend(logoContainer);
+            const logoUrl = restaurantData.logoUrl ? `${API_BASE_URL}${restaurantData.logoUrl}` : `https://placehold.co/200x60/${color.substring(1)}/FFFFFF?text=${encodeURIComponent(restaurantData.name)}`;
+            document.getElementById('logo-container').innerHTML = `<img src="${logoUrl}" alt="Logo de ${restaurantData.name}">`;
         }
 
         function getTranslation(key, ...args) {
@@ -345,27 +391,39 @@
             return typeof translation === 'function' ? translation(...args) : translation;
         }
         
-        function renderStepContent() {
-            // Language Step
+        function renderContent() {
+            // Language Switcher
+            const langContainer = document.getElementById('lang-container');
+            if (restaurantData.languages.length > 1) {
+                langContainer.innerHTML = restaurantData.languages.map(langCode => {
+                    const langData = translations[langCode] || { lang_name: langCode.toUpperCase() };
+                    return `<button class="lang-btn ${currentState.lang === langCode ? 'active' : ''}" data-lang="${langCode}">${langData.lang_name}</button>`;
+                }).join('');
+            } else {
+                langContainer.innerHTML = '';
+            }
+
+            // Language Selection Screen
             const langSelector = document.getElementById('lang-selector');
-            langSelector.innerHTML = restaurantData.languages.map(lang => 
-                `<button class="lang-btn ${currentState.lang === lang ? 'active' : ''}" data-lang="${lang}">${getTranslation('lang_name')}</button>`
-            ).join('');
+            langSelector.innerHTML = restaurantData.languages.map(langCode => {
+                const langData = translations[langCode] || { lang_name: langCode.toUpperCase() };
+                return `<button class="button" data-lang-select="${langCode}">${langData.lang_name}</button>`;
+            }).join('<div class="my-2"></div>');
+            document.querySelector('[data-translate-key="choose_language_title"]').innerText = getTranslation('choose_language_title');
+
 
             // Server Step
             document.getElementById('server-title').innerText = getTranslation('server_title');
             document.getElementById('server-subtitle').innerText = getTranslation('server_subtitle');
-            const serverGrid = document.getElementById('server-grid');
-            serverGrid.innerHTML = restaurantData.servers.map(server => `
+            document.getElementById('server-grid').innerHTML = restaurantData.servers.map(server => `
                 <div class="selection-item" data-server-id="${server.id}" data-server-name="${server.name}">
-                    <img src="${server.avatar || 'https://placehold.co/128x128/eeeeee/cccccc?text=?'}" alt="Avatar de ${server.name}">
+                    <img src="${server.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(server.name)}&background=eeeeee&color=cccccc`}" alt="Avatar de ${server.name}">
                     <span>${server.name}</span>
                 </div>
             `).join('');
 
             // Rating Step
-            const starRatingContainer = document.getElementById('star-rating');
-            starRatingContainer.innerHTML = Array(5).fill(0).map((_, i) => 
+            document.getElementById('star-rating').innerHTML = Array(5).fill(0).map((_, i) => 
                 `<svg data-value="${i + 1}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
             ).join('');
 
@@ -373,29 +431,26 @@
             const positiveButtons = document.getElementById('positive-buttons');
             positiveButtons.innerHTML = '';
             if (restaurantData.links && restaurantData.links.google) {
-                positiveButtons.innerHTML += `<a href="${restaurantData.links.google}" target="_blank" class="btn">${getTranslation('publish_on', 'Google')}</a>`;
+                positiveButtons.innerHTML += `<a href="${restaurantData.links.google}" target="_blank" class="button">${getTranslation('publish_on', 'Google')}</a>`;
             }
             if (restaurantData.links && restaurantData.links.tripadvisor) {
-                positiveButtons.innerHTML += `<a href="${restaurantData.links.tripadvisor}" target="_blank" class="btn secondary">${getTranslation('publish_on', 'TripAdvisor')}</a>`;
+                positiveButtons.innerHTML += `<a href="${restaurantData.links.tripadvisor}" target="_blank" class="button secondary mt-3">${getTranslation('publish_on', 'TripAdvisor')}</a>`;
             }
-            positiveButtons.innerHTML += `<a href="#" id="close-positive-btn" class="block text-center text-sm text-gray-500 mt-4 hover:underline">Non merci</a>`;
+            positiveButtons.innerHTML += `<a href="#" id="close-positive-btn" class="block text-center text-sm text-gray-500 mt-6 hover:underline">${getTranslation('no_thanks')}</a>`;
 
             // Negative Feedback Step
             document.getElementById('feedback-textarea').placeholder = getTranslation('feedback_placeholder');
             document.getElementById('submit-feedback-btn').innerText = getTranslation('submit_feedback');
         }
 
-        // --- NAVIGATION LOGIC ---
-        function goToStep(stepName) {
-            currentState.step = stepName;
-            steps.forEach(step => {
-                step.classList.toggle('active', step.id === `step-${stepName}`);
-            });
-            updateStepContent();
+        function goToSection(sectionName) {
+            currentState.section = sectionName;
+            sections.forEach(s => s.classList.toggle('active', s.id === `section-${sectionName}`));
+            updateSectionContent();
         }
 
-        function updateStepContent() {
-            switch (currentState.step) {
+        function updateSectionContent() {
+            switch (currentState.section) {
                 case 'rating':
                     document.getElementById('rating-title').innerHTML = getTranslation('rating_title', currentState.selectedServer.name);
                     document.getElementById('rating-subtitle').innerText = getTranslation('rating_subtitle');
@@ -414,28 +469,39 @@
                     break;
             }
         }
+        
+        function changeLanguage(langCode) {
+            currentState.lang = langCode;
+            renderContent();
+            updateSectionContent();
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === currentState.lang));
+        }
 
-        // --- EVENT LISTENERS ---
         function setupEventListeners() {
-            document.getElementById('lang-selector').addEventListener('click', (e) => {
+            document.getElementById('lang-container').addEventListener('click', (e) => {
                 if (e.target.matches('.lang-btn')) {
-                    currentState.lang = e.target.dataset.lang;
-                    // Re-render content with new language
-                    renderStepContent(); 
-                    // Update the active button style
-                    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === currentState.lang));
-                    goToStep('server');
+                    changeLanguage(e.target.dataset.lang);
+                }
+            });
+            
+            document.getElementById('lang-selector').addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-lang-select]');
+                if (btn) {
+                    changeLanguage(btn.dataset.langSelect);
+                    goToSection('server');
                 }
             });
 
             document.getElementById('server-grid').addEventListener('click', (e) => {
                 const serverItem = e.target.closest('.selection-item');
                 if (serverItem) {
+                    document.querySelectorAll('.selection-item').forEach(item => item.classList.remove('selected'));
+                    serverItem.classList.add('selected');
                     currentState.selectedServer = {
                         id: serverItem.dataset.serverId,
                         name: serverItem.dataset.serverName
                     };
-                    goToStep('rating');
+                    setTimeout(() => goToSection('rating'), 300);
                 }
             });
 
@@ -443,31 +509,18 @@
             const stars = starRating.querySelectorAll('svg');
             const ratingFeedback = document.getElementById('rating-feedback');
             
-            starRating.addEventListener('mouseover', e => {
-                const targetStar = e.target.closest('svg');
-                if (targetStar) {
-                    const ratingValue = parseInt(targetStar.dataset.value);
-                    stars.forEach((star, index) => star.classList.toggle('hovered', index < ratingValue));
-                }
-            });
-
-            starRating.addEventListener('mouseout', () => {
-                stars.forEach(star => star.classList.remove('hovered'));
-            });
-
             starRating.addEventListener('click', e => {
                 const targetStar = e.target.closest('svg');
                 if (targetStar) {
                     currentState.rating = parseInt(targetStar.dataset.value);
                     stars.forEach((star, index) => {
                         star.classList.toggle('selected', index < currentState.rating);
-                        star.style.color = index < currentState.rating ? '#FFC107' : '#E0E0E0';
                     });
                     ratingFeedback.textContent = getTranslation('rating_feedback')[currentState.rating - 1];
                     
                     setTimeout(() => {
-                        if (currentState.rating >= 4) goToStep('positive-feedback');
-                        else goToStep('negative-feedback');
+                        if (currentState.rating >= 4) goToSection('positive-feedback');
+                        else goToSection('negative-feedback');
                     }, 800);
                 }
             });
@@ -477,36 +530,34 @@
                     e.preventDefault();
                     document.getElementById('thank-you-title').innerText = getTranslation('final_thank_you_title');
                     document.getElementById('thank-you-subtitle').innerText = getTranslation('final_thank_you_subtitle');
-                    goToStep('thank-you');
+                    goToSection('thank-you');
                 }
             });
 
             document.getElementById('internal-feedback-form').addEventListener('submit', e => {
                 e.preventDefault();
-                goToStep('thank-you');
+                goToSection('thank-you');
             });
         }
 
-        // --- INITIALIZATION ---
         async function init() {
-            mainContainer.classList.add('loaded');
+            reviewContainer.classList.add('loaded');
             const success = await fetchRestaurantData();
             if (success) {
                 loader.classList.add('hidden');
                 appContent.classList.remove('hidden');
                 
                 applyBranding();
-                renderStepContent();
+                renderContent();
                 setupEventListeners();
 
                 if (restaurantData.languages && restaurantData.languages.length > 1) {
-                     goToStep('lang');
+                     goToSection('lang');
                 } else if (restaurantData.servers && restaurantData.servers.length > 0) {
-                     goToStep('server');
+                     goToSection('server');
                 } else {
-                    // Fallback if no servers are configured
                     currentState.selectedServer = { id: 0, name: restaurantData.name };
-                    goToStep('rating');
+                    goToSection('rating');
                 }
             }
         }
