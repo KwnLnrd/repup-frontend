@@ -982,4 +982,34 @@
                                 </div>
                                 <div>
                                     <label for="edit-dish-category" class="block text-sm font-medium text-gray-700">Catégorie</label>
-                                    <input type="text" id="edit-di
+                                    <input type="text" id="edit-dish-category" value="${dishCategory}" list="category-suggestions" class="form-input" required>
+                                    <datalist id="category-suggestions">
+                                        ${allCategories.map(cat => `<option value="${cat}"></option>`).join('')}
+                                    </datalist>
+                                </div>
+                             </div>
+                             <div class="flex justify-end gap-2 mt-4">
+                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
+                                <button type="submit" class="bg-brand-accent text-white px-4 py-2 rounded-lg font-bold">Enregistrer</button>
+                            </div>
+                        </form>
+                    `);
+                }
+            }
+        });
+
+        document.addEventListener('change', e => {
+            const logoFileInput = document.getElementById('logo-file');
+            if (e.target === logoFileInput && logoFileInput.files && logoFileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('logo-preview').src = e.target.result;
+                }
+                reader.readAsDataURL(logoFileInput.files[0]);
+            }
+        });
+
+    });
+    </script>
+</body>
+</html>
