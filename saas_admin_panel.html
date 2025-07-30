@@ -11,1003 +11,404 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Palette de couleurs "Luxe - Bleu Ardoise & Or" de index.html */
         :root {
-            --color-bg: #F8F9FA; /* Gris très clair */
-            --color-text: #2D3748; /* Bleu-gris très foncé */
-            --color-primary: #D69E2E; /* Or vieilli */
-            --color-primary-dark: #B7791F; /* Or plus foncé */
-            --color-surface: #FFFFFF; /* Blanc pur */
-            --color-border: #DEE2E6; /* Bordure standard */
-            --font-serif: 'Cormorant Garamond', serif;
-            --font-sans: 'Montserrat', sans-serif;
+            --color-bg: #F8F9FA; --color-text: #2D3748; --color-primary: #D69E2E;
+            --color-primary-dark: #B7791F; --color-surface: #FFFFFF; --color-border: #DEE2E6;
+            --font-serif: 'Cormorant Garamond', serif; --font-sans: 'Montserrat', sans-serif;
         }
-
-        body { 
-            font-family: var(--font-sans); 
-            background-color: var(--color-bg); 
-            color: var(--color-text);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+        body { font-family: var(--font-sans); background-color: var(--color-bg); color: var(--color-text); }
         .font-serif { font-family: var(--font-serif); }
         .brand-accent { color: var(--color-primary); }
         .bg-brand-accent { background-color: var(--color-primary); }
         .hover\:bg-brand-accent-dark:hover { background-color: var(--color-primary-dark); }
         .border-brand-accent { border-color: var(--color-primary); }
         .ring-brand-accent { --tw-ring-color: var(--color-primary); }
-        .nav-item.active { 
-            background-color: rgba(214, 158, 46, 0.1); /* Or léger */
-            color: var(--color-primary); 
-            font-weight: 600; 
-            border-right: 3px solid var(--color-primary);
-        }
+        .nav-item.active { background-color: rgba(214, 158, 46, 0.1); color: var(--color-primary); font-weight: 600; border-right: 3px solid var(--color-primary); }
         .content-section { display: none; }
         .content-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.5s ease-out forwards; }
         button:disabled { opacity: 0.7; cursor: not-allowed; }
-        .form-input, .form-select {
-            margin-top: 0.25rem; display: block; width: 100%;
-            border-radius: 0.5rem; border: 1px solid var(--color-border);
-            padding: 0.75rem 1rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .form-input:focus, .form-select:focus {
-            outline: none; border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(214, 158, 46, 0.2);
-        }
-        .card {
-            background-color: var(--color-surface); padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05), 0 2px 4px -2px rgba(0,0,0,.05);
-            border: 1px solid var(--color-border);
-        }
-        @media (min-width: 768px) {
-            .card { padding: 2rem; }
-        }
-        .item-list-entry {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0.75rem; background-color: #f9fafb; border-radius: 0.5rem;
-            border: 1px solid var(--color-border);
-        }
-        /* Modal Styles */
-        .modal-backdrop {
-            background-color: rgba(0,0,0,0.5);
-            transition: opacity 0.3s ease-in-out;
-        }
-        .modal-content {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        }
-        /* Accordion Styles */
-        .accordion-header {
-            cursor: pointer;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--color-border);
-        }
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-            padding: 0 1rem;
-        }
-        .accordion-content.open {
-            padding: 1rem;
-            max-height: 1000px; /* Adjust as needed */
-        }
-        .accordion-icon {
-            transition: transform 0.3s ease-out;
-        }
-        .accordion-header.open .accordion-icon {
-            transform: rotate(90deg);
-        }
+        .form-input, .form-select { margin-top: 0.25rem; display: block; width: 100%; border-radius: 0.5rem; border: 1px solid var(--color-border); padding: 0.75rem 1rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(214, 158, 46, 0.2); }
+        .card { background-color: var(--color-surface); padding: 1.5rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,.05), 0 2px 4px -2px rgba(0,0,0,.05); border: 1px solid var(--color-border); }
+        @media (min-width: 768px) { .card { padding: 2rem; } }
     </style>
 </head>
 <body class="antialiased">
 
     <div id="auth-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-md">
-            <div class="bg-white p-8 rounded-2xl shadow-2xl text-center">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl">
                 <div class="flex items-center justify-center space-x-2 mb-6">
                     <svg class="h-8 w-8 brand-accent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                     <span class="text-2xl font-serif font-bold">Avis Pro Resto</span>
                 </div>
-                <form id="login-form">
-                    <h2 class="text-xl font-semibold mb-4">Connexion</h2>
-                    <input type="email" id="login-email" placeholder="Email" class="form-input mb-3" required>
-                    <input type="password" id="login-password" placeholder="Mot de passe" class="form-input mb-4" required>
-                    <button type="submit" id="login-button" class="w-full bg-brand-accent text-white py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors">Se connecter</button>
-                    <p id="login-error" class="text-red-500 text-sm mt-2 h-4"></p>
-                </form>
-                <p class="text-gray-500 my-4">ou</p>
-                <form id="register-form">
-                    <h2 class="text-xl font-semibold mb-4">Créer un compte</h2>
-                    <input type="text" id="register-resto-name" placeholder="Nom de votre restaurant" class="form-input mb-3" required>
-                    <input type="email" id="register-email" placeholder="Email" class="form-input mb-3" required>
-                    <input type="password" id="register-password" placeholder="Mot de passe" class="form-input mb-4" required>
-                    <button type="submit" id="register-button" class="w-full bg-gray-700 text-white py-3 rounded-full font-bold hover:bg-gray-800 transition-colors">S'inscrire</button>
-                    <p id="register-error" class="text-red-500 text-sm mt-2 h-4"></p>
-                </form>
+                
+                <!-- Formulaires de connexion, inscription et mot de passe oublié -->
+                <div id="login-view">
+                    <form id="login-form">
+                        <h2 class="text-xl font-semibold mb-4 text-center">Connexion</h2>
+                        <input type="email" id="login-email" placeholder="Email" class="form-input mb-3" required>
+                        <input type="password" id="login-password" placeholder="Mot de passe" class="form-input mb-4" required>
+                        <button type="submit" id="login-button" class="w-full bg-brand-accent text-white py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors">Se connecter</button>
+                        <p id="login-error" class="text-red-500 text-sm mt-2 h-4 text-center"></p>
+                        <button type="button" id="show-forgot-password" class="text-sm text-gray-600 hover:underline mt-3 w-full text-center">Mot de passe oublié ?</button>
+                    </form>
+                    <p class="text-gray-500 my-4 text-center">ou</p>
+                    <button type="button" id="show-register" class="w-full bg-gray-700 text-white py-3 rounded-full font-bold hover:bg-gray-800 transition-colors">Créer un compte</button>
+                </div>
+
+                <div id="register-view" class="hidden">
+                    <form id="register-form">
+                        <h2 class="text-xl font-semibold mb-4 text-center">Créer un compte</h2>
+                        <input type="text" id="register-resto-name" placeholder="Nom de votre restaurant" class="form-input mb-3" required>
+                        <input type="email" id="register-email" placeholder="Email" class="form-input mb-3" required>
+                        <input type="password" id="register-password" placeholder="Mot de passe" class="form-input mb-4" required>
+                        <button type="submit" id="register-button" class="w-full bg-brand-accent text-white py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors">S'inscrire</button>
+                        <p id="register-error" class="text-red-500 text-sm mt-2 h-4 text-center"></p>
+                    </form>
+                     <button type="button" id="back-to-login-1" class="text-sm text-gray-600 hover:underline mt-4 w-full text-center">Retour à la connexion</button>
+                </div>
+
+                <div id="forgot-password-view" class="hidden">
+                    <form id="forgot-password-form">
+                        <h2 class="text-xl font-semibold mb-4 text-center">Mot de passe oublié</h2>
+                        <p class="text-sm text-gray-600 mb-4 text-center">Entrez votre email pour recevoir un lien de réinitialisation.</p>
+                        <input type="email" id="forgot-email" placeholder="Email" class="form-input mb-4" required>
+                        <button type="submit" id="forgot-password-button" class="w-full bg-brand-accent text-white py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors">Envoyer le lien</button>
+                        <p id="forgot-password-message" class="text-green-600 text-sm mt-2 h-4 text-center"></p>
+                    </form>
+                    <button type="button" id="back-to-login-2" class="text-sm text-gray-600 hover:underline mt-4 w-full text-center">Retour à la connexion</button>
+                </div>
+
             </div>
         </div>
     </div>
 
     <div id="main-app" class="hidden">
         <div class="relative min-h-screen md:flex">
-            <div id="sidebar-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 md:hidden"></div>
             <aside id="sidebar" class="fixed inset-y-0 left-0 bg-white border-r border-gray-200 w-64 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40 flex flex-col">
-                <div class="h-20 flex items-center justify-between px-4 border-b shrink-0">
-                    <a href="#dashboard" id="sidebar-logo-link" class="flex items-center justify-center h-full">
-                         <svg class="h-8 w-8 brand-accent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                         <span class="text-2xl font-serif font-bold ml-2">Avis Pro Resto</span>
+                <div class="h-20 flex items-center justify-center px-4 border-b shrink-0">
+                     <a href="#dashboard" class="flex items-center space-x-2">
+                        <svg class="h-8 w-8 brand-accent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <span class="text-2xl font-serif font-bold">Avis Pro Resto</span>
                     </a>
-                    <button id="sidebar-close-btn" class="md:hidden">
-                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
                 </div>
                 <nav id="sidebar-nav" class="mt-6 flex-1 overflow-y-auto">
                     <a href="#dashboard" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Tableau de bord</span></a>
-                    
-                    <a href="#strategic-analysis" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50">
-                        <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.231-12.231 9.004 9.004 0 00-16.462 0A9.004 9.004 0 0012 21zm0 0v-6" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 16.036a5.002 5.002 0 00-7.82 0" />
-                        </svg>
-                        <span>Analyse Stratégique</span>
-                    </a>
-
-                    <a href="#page-settings" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Page</span></a>
-                    <a href="#options-management" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg><span>Options</span></a>
-                    <a href="#team-management" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg><span>Équipes</span></a>
-                    <a href="#menu-management" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg><span>Menu</span></a>
+                    <a href="#page-settings" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Page & QR Code</span></a>
+                    <a href="#account" class="nav-item flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg><span>Mon Compte</span></a>
                 </nav>
                 <div class="p-4 border-t shrink-0">
                     <button id="logout-btn" class="w-full text-left flex items-center px-2 py-2 text-gray-600 hover:bg-red-50 hover:text-red-700 rounded-md"><svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg><span>Déconnexion</span></button>
                 </div>
             </aside>
 
-            <div class="md:ml-64 flex flex-col flex-1">
-                <header class="md:hidden sticky top-0 bg-white shadow-md z-20">
-                    <div class="flex justify-between items-center p-4">
-                        <button id="sidebar-open-btn">
-                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
-                        </button>
-                        <a href="#dashboard" id="mobile-logo-link" class="flex items-center justify-center h-full">
-                           <!-- Le logo mobile sera injecté ici -->
-                        </a>
-                        <div class="w-6"></div>
-                    </div>
-                </header>
-
-                <main class="flex-1">
-                    <div id="content-area" class="p-4 md:p-8">
-                        <section id="dashboard" class="content-section fade-in"></section>
-                        <section id="strategic-analysis" class="content-section"></section>
-                        <section id="page-settings" class="content-section"></section>
-                        <section id="options-management" class="content-section"></section>
-                        <section id="team-management" class="content-section"></section>
-                        <section id="menu-management" class="content-section"></section>
-                    </div>
-                </main>
-            </div>
+            <main class="md:ml-64 flex flex-col flex-1">
+                <div id="content-area" class="p-4 md:p-8">
+                    <section id="dashboard" class="content-section fade-in"></section>
+                    <section id="page-settings" class="content-section"></section>
+                    <section id="account" class="content-section"></section>
+                </div>
+            </main>
         </div>
     </div>
     
-    <!-- Modals pour l'édition -->
-    <div id="edit-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40 modal-backdrop"></div>
-    <div id="edit-modal-container" class="fixed inset-0 hidden z-50 flex items-center justify-center p-4">
-        <!-- Le contenu du modal sera injecté ici par JS -->
-    </div>
-
-
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const API_BASE_URL = 'https://repup-test.onrender.com';
+        const API_BASE_URL = 'http://127.0.0.1:5000'; // Mettez l'URL de votre backend
 
+        // Vues d'authentification
         const authOverlay = document.getElementById('auth-overlay');
-        const mainApp = document.getElementById('main-app');
+        const loginView = document.getElementById('login-view');
+        const registerView = document.getElementById('register-view');
+        const forgotPasswordView = document.getElementById('forgot-password-view');
+        
+        // Formulaires
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
+        const forgotPasswordForm = document.getElementById('forgot-password-form');
+        
+        // Boutons de navigation Auth
+        const showRegisterBtn = document.getElementById('show-register');
+        const showForgotPasswordBtn = document.getElementById('show-forgot-password');
+        const backToLoginBtn1 = document.getElementById('back-to-login-1');
+        const backToLoginBtn2 = document.getElementById('back-to-login-2');
+
+        // Application principale
+        const mainApp = document.getElementById('main-app');
         const logoutBtn = document.getElementById('logout-btn');
         const contentArea = document.getElementById('content-area');
-
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOpenBtn = document.getElementById('sidebar-open-btn');
-        const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
-        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
         const sidebarNav = document.getElementById('sidebar-nav');
-        const sidebarLogoLink = document.getElementById('sidebar-logo-link');
-        const mobileLogoLink = document.getElementById('mobile-logo-link');
-        
-        const modalBackdrop = document.getElementById('edit-modal-backdrop');
-        const modalContainer = document.getElementById('edit-modal-container');
 
-        function openSidebar() {
-            if (sidebar) sidebar.classList.remove('-translate-x-full');
-            if (sidebarBackdrop) sidebarBackdrop.classList.remove('hidden');
+        // --- Gestion des vues d'authentification ---
+        function showView(viewToShow) {
+            [loginView, registerView, forgotPasswordView].forEach(view => view.classList.add('hidden'));
+            viewToShow.classList.remove('hidden');
         }
+        showRegisterBtn.addEventListener('click', () => showView(registerView));
+        showForgotPasswordBtn.addEventListener('click', () => showView(forgotPasswordView));
+        backToLoginBtn1.addEventListener('click', () => showView(loginView));
+        backToLoginBtn2.addEventListener('click', () => showView(loginView));
 
-        function closeSidebar() {
-            if (sidebar) sidebar.classList.add('-translate-x-full');
-            if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
-        }
-        
-        function openModal(content) {
-            modalContainer.innerHTML = content;
-            modalContainer.classList.remove('hidden');
-            modalBackdrop.classList.remove('hidden');
-        }
-
-        function closeModal() {
-            modalContainer.classList.add('hidden');
-            modalBackdrop.classList.add('hidden');
-            modalContainer.innerHTML = '';
-        }
-
-        sidebarOpenBtn.addEventListener('click', openSidebar);
-        sidebarCloseBtn.addEventListener('click', closeSidebar);
-        sidebarBackdrop.addEventListener('click', closeSidebar);
-        modalBackdrop.addEventListener('click', closeModal);
-        
-        async function loadAppData() {
-            try {
-                console.log("Début du chargement des données de l'application.");
-                authOverlay.classList.add('hidden');
-                mainApp.classList.remove('hidden');
-
-                console.log("1. Rendu du Tableau de bord...");
-                await renderDashboard();
-                console.log("2. Rendu de l'Analyse Stratégique...");
-                await renderStrategicAnalysis();
-                console.log("3. Rendu des Paramètres de la page...");
-                await renderPageSettings();
-                console.log("4. Rendu de la Gestion des options...");
-                await renderOptionsManagement();
-                console.log("5. Rendu de la Gestion de l'équipe...");
-                await renderTeamManagement();
-                console.log("6. Rendu de la Gestion du menu...");
-                await renderMenuManagement();
-                console.log("Toutes les données ont été chargées avec succès.");
-
-                switchTab(window.location.hash || '#dashboard');
-            } catch (error) {
-                console.error("ERREUR FATALE lors du chargement des données de l'application:", error);
-                alert("Une erreur critique est survenue lors du chargement de votre tableau de bord. Vous allez être déconnecté. Message d'erreur : " + error.message);
-                logout();
-            }
-        }
-
-        async function fetchPublic(url, options = {}) {
-            const headers = { 'Content-Type': 'application/json', ...options.headers };
-            const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
-            if (!response.ok) {
-                let errorMsg = `Erreur du serveur (code: ${response.status})`;
-                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) { console.error("Could not parse error response as JSON.", e); }
-                throw new Error(errorMsg);
-            }
-            return response.json();
-        }
-
-        // VERSION DE DÉBOGAGE de fetchWithAuth
-        async function fetchWithAuth(url, options = {}) {
-            console.log(`[fetchWithAuth] Appel vers: ${url}`);
+        // --- Fonctions API ---
+        async function fetchAPI(endpoint, options = {}) {
             const token = localStorage.getItem('jwt_token');
-            
-            if (!token || token === 'undefined' || token === 'null') {
-                console.error('[fetchWithAuth] ERREUR: Token non trouvé dans localStorage. Déconnexion.');
-                logout();
-                throw new Error('Token d\'authentification manquant ou invalide.');
+            const headers = { 'Content-Type': 'application/json', ...options.headers };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
             }
             
-            console.log(`[fetchWithAuth] Token trouvé: ${token.substring(0, 15)}...`);
-
-            const requestOptions = {
-                ...options,
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    ...options.headers,
-                },
-            };
-
-            if (requestOptions.body && typeof requestOptions.body === 'object' && !(requestOptions.body instanceof FormData)) {
-                requestOptions.body = JSON.stringify(requestOptions.body);
-                if (!requestOptions.headers['Content-Type']) {
-                    requestOptions.headers['Content-Type'] = 'application/json';
-                }
-            }
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
             
-            console.log('[fetchWithAuth] En-têtes envoyés:', JSON.stringify(requestOptions.headers, null, 2));
+            const data = await response.json();
 
-            const response = await fetch(`${API_BASE_URL}${url}`, requestOptions);
-
-            console.log(`[fetchWithAuth] Réponse reçue de ${url} avec le statut: ${response.status}`);
-
-            if (response.status === 401 || response.status === 422) {
-                console.error(`[fetchWithAuth] ERREUR ${response.status} reçue de l'API. Le token est probablement invalide ou expiré.`);
-                logout();
-                const errorText = response.status === 401 ? 'Token invalide ou expiré.' : 'Requête invalide (422).';
-                throw new Error(`Session expirée. ${errorText} Veuillez vous reconnecter.`);
-            }
-            
             if (!response.ok) {
-                let errorMsg = `Erreur du serveur (code: ${response.status})`;
-                try {
-                    const errorData = await response.json();
-                    errorMsg = errorData.error || errorData.message || errorMsg;
-                } catch (e) { /* ignore */ }
-                console.error(`[fetchWithAuth] Erreur non-gérée: ${errorMsg}`);
-                throw new Error(errorMsg);
+                if (response.status === 401 && token) { // Non autorisé, token peut-être expiré
+                    logout();
+                }
+                throw new Error(data.error || data.message || `Erreur ${response.status}`);
             }
-
-            if (response.status === 204) { return null; }
-            return response.json();
+            return data;
         }
 
+        // --- Logique d'authentification ---
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorP = document.getElementById('login-error');
+            errorP.textContent = '';
+            try {
+                const data = await fetchAPI('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+                localStorage.setItem('jwt_token', data.access_token);
+                await loadAppData();
+            } catch (error) {
+                errorP.textContent = error.message;
+            }
+        });
 
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const restaurant_name = document.getElementById('register-resto-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const errorP = document.getElementById('register-error');
+            errorP.textContent = '';
+            try {
+                const data = await fetchAPI('/api/register', { method: 'POST', body: JSON.stringify({ restaurant_name, email, password }) });
+                alert(data.message);
+                showView(loginView);
+                registerForm.reset();
+            } catch (error) {
+                errorP.textContent = error.message;
+            }
+        });
+
+        forgotPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+            const messageP = document.getElementById('forgot-password-message');
+            messageP.className = 'text-sm mt-2 h-4 text-center';
+            messageP.textContent = '';
+            try {
+                const data = await fetchAPI('/api/forgot-password', { method: 'POST', body: JSON.stringify({ email }) });
+                messageP.classList.add('text-green-600');
+                messageP.textContent = data.message;
+            } catch (error) {
+                messageP.classList.add('text-red-500');
+                messageP.textContent = error.message;
+            }
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await fetchAPI('/api/logout', { method: 'POST' });
+            } catch (error) {
+                console.error("Erreur lors de la déconnexion côté serveur, déconnexion côté client forcée.", error);
+            } finally {
+                logout();
+            }
+        });
+        
         function logout() {
             localStorage.removeItem('jwt_token');
             mainApp.classList.add('hidden');
             authOverlay.classList.remove('hidden');
-            contentArea.innerHTML = `<section id="dashboard" class="content-section fade-in"></section><section id="strategic-analysis" class="content-section"></section><section id="page-settings" class="content-section"></section><section id="team-management" class="content-section"></section><section id="menu-management" class="content-section"></section><section id="options-management" class="content-section"></section>`;
+            showView(loginView);
         }
 
-        logoutBtn.addEventListener('click', logout);
-
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const button = document.getElementById('login-button');
-            const errorP = document.getElementById('login-error');
-            errorP.textContent = '';
-            button.disabled = true; button.textContent = 'Connexion...';
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            try {
-                const data = await fetchPublic('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
-                console.log('[Login] Réponse de /api/login:', data);
-
-                if (data && data.access_token && typeof data.access_token === 'string') {
-                    console.log(`[Login] Token reçu: ${data.access_token.substring(0, 15)}...`);
-                    localStorage.setItem('jwt_token', data.access_token);
-                    console.log('[Login] Token sauvegardé dans localStorage.');
-                    
-                    // Test de validation du token
-                    console.log('[Login] Appel de test vers /api/test-auth...');
-                    await fetchWithAuth('/api/test-auth');
-                    console.log("[Login] Token validé avec succès.");
-                    await loadAppData();
-                } else { 
-                    throw new Error('Réponse de connexion invalide.'); 
-                }
-            } catch (error) {
-                console.error('[Login] Erreur pendant le processus de connexion:', error);
-                errorP.textContent = error.message;
-                localStorage.removeItem('jwt_token');
-            } finally {
-                button.disabled = false; button.textContent = 'Se connecter';
-            }
-        });
-        
-        if (localStorage.getItem('jwt_token')) {
-            (async () => {
-                try {
-                    await fetchWithAuth('/api/test-auth');
-                    console.log("Session existante validée.");
-                    loadAppData();
-                } catch (e) {
-                    console.log("Session existante invalide, déconnexion.");
-                    logout();
-                }
-            })();
+        // --- Chargement de l'application ---
+        async function loadAppData() {
+            authOverlay.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            await renderDashboard();
+            await renderPageSettings();
+            await renderAccount();
+            switchTab(window.location.hash || '#dashboard');
         }
-
-
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const button = document.getElementById('register-button');
-            const errorP = document.getElementById('register-error');
-            errorP.textContent = '';
-            button.disabled = true; button.textContent = 'Inscription...';
-            const restaurant_name = document.getElementById('register-resto-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            try {
-                const data = await fetchPublic('/api/register', { method: 'POST', body: JSON.stringify({ restaurant_name, email, password }) });
-                alert(data.message + " Vous pouvez maintenant vous connecter.");
-                loginForm.reset(); registerForm.reset();
-            } catch (error) {
-                errorP.textContent = error.message;
-            } finally {
-                button.disabled = false; button.textContent = "S'inscrire";
-            }
-        });
 
         function switchTab(hash) {
             document.querySelectorAll('.nav-item').forEach(item => {
-                const isActive = item.getAttribute('href') === hash;
-                item.classList.toggle('active', isActive);
+                item.classList.toggle('active', item.getAttribute('href') === hash);
             });
-            document.querySelectorAll('.content-section').forEach(section => section.classList.toggle('active', `#${section.id}` === hash));
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.toggle('active', `#${section.id}` === hash);
+            });
         }
 
         sidebarNav.addEventListener('click', (e) => {
             const navLink = e.target.closest('a');
-            if (navLink) { 
-                e.preventDefault(); 
-                const targetId = navLink.getAttribute('href'); 
-                window.location.hash = targetId; 
+            if (navLink) {
+                e.preventDefault();
+                const targetId = navLink.getAttribute('href');
+                window.location.hash = targetId;
                 switchTab(targetId);
-                if(window.innerWidth < 768) {
-                    closeSidebar();
-                }
             }
         });
-        
-        function updateLogo(logoUrl) {
-            let logoContent;
-            if (logoUrl) {
-                logoContent = `<img src="${API_BASE_URL}${logoUrl}" alt="Logo" class="h-10 object-contain">`;
-            } else {
-                logoContent = `<div class="flex items-center space-x-2">
-                    <svg class="h-8 w-8 brand-accent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                    <span class="text-2xl font-serif font-bold">Avis Pro Resto</span>
-                </div>`;
-            }
-            sidebarLogoLink.innerHTML = logoContent;
-            mobileLogoLink.innerHTML = logoContent;
-        }
 
+        // --- Rendu des sections ---
         async function renderDashboard() {
             const section = document.getElementById('dashboard');
-            if (!section) return;
-            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Tableau de bord</h1><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8"><div class="card"><h3 class="text-sm font-semibold text-gray-500">Avis (30j)</h3><p class="text-3xl font-bold mt-1">128</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Note moyenne</h3><p class="text-3xl font-bold mt-1">4.8 <span class="text-yellow-400">★</span></p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Serveur du mois</h3><p class="text-3xl font-bold mt-1">Clara</p></div><div class="card"><h3 class="text-sm font-semibold text-gray-500">Feedbacks privés</h3><p class="text-3xl font-bold mt-1">3</p></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Tendance des avis</h2><div class="h-80"><canvas id="reviewsTrendChart"></canvas></div></div>`;
-            const ctx = document.getElementById('reviewsTrendChart').getContext('2d');
-            new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--color-primary)', backgroundColor: 'rgba(214, 158, 46, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
-        }
-
-        async function renderStrategicAnalysis() {
-            const section = document.getElementById('strategic-analysis');
-            if (!section) return;
-
-            section.innerHTML = `
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                    <h1 class="text-3xl md:text-4xl font-bold font-serif">Analyse Stratégique</h1>
-                    <button id="launch-analysis-btn" class="mt-4 md:mt-0 bg-brand-accent text-white px-6 py-3 rounded-full font-bold text-base hover:bg-brand-accent-dark transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1.28a1 1 0 00-.97.72l-1.95 6.41a1.5 1.5 0 01-2.98-.24l1.95-6.41a1 1 0 00-.97-.72H5a1 1 0 01-1-1V8a1 1 0 011-1h3a1 1 0 001-1V3.5z" />
-                        </svg>
-                        Lancer une nouvelle analyse
-                    </button>
-                </div>
-                <div class="bg-blue-50 border-l-4 border-blue-400 text-blue-800 p-4 rounded-r-lg mb-8" role="alert">
-                    <p class="font-bold">Comment ça marche ?</p>
-                    <p class="text-sm">En lançant l'analyse, nous allons chercher vos derniers avis sur Google, les combinons avec vos avis internes, puis notre IA génère un rapport stratégique. Ce processus peut prendre 1 à 2 minutes.</p>
-                </div>
-                <div id="analysis-content" class="mt-8 space-y-8">
-                    <p class="text-center text-gray-500 py-8">Aucune analyse n'a été lancée. Cliquez sur le bouton ci-dessus pour commencer.</p>
-                </div>`;
-
-            const launchBtn = document.getElementById('launch-analysis-btn');
-            if (launchBtn) {
-                launchBtn.addEventListener('click', async () => {
-                    const container = document.getElementById('analysis-content');
-                    launchBtn.disabled = true;
-                    container.innerHTML = `
-                        <div class="text-center p-10 card">
-                            <h2 class="text-2xl font-serif font-bold mb-4">Analyse en cours...</h2>
-                            <p class="text-gray-600">L'IA réfléchit et compile les informations de vos avis 🤖</p>
-                            <div class="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-brand-accent mx-auto mt-6"></div>
-                            <p class="text-sm text-gray-500 mt-4">Veuillez patienter, cela peut prendre quelques minutes.</p>
-                        </div>`;
-                    try {
-                        const analysis = await fetchWithAuth('/api/strategic-analysis', { method: 'POST' });
-                        renderAnalysisResults(analysis);
-                    } catch (error) {
-                        container.innerHTML = `<div class="text-center p-10 card bg-red-50 border-red-200"><h2 class="text-2xl font-serif font-bold text-red-700">Erreur lors de l'analyse</h2><p class="text-red-600 mt-2">${error.message}</p></div>`;
-                    } finally {
-                        launchBtn.disabled = false;
-                    }
-                });
-            }
-        }
-
-        function renderAnalysisResults(data) {
-            const container = document.getElementById('analysis-content');
-            if (!data || !data.executive_summary) {
-                container.innerHTML = `<div class="text-center p-10 card bg-yellow-50 border-yellow-200"><h2 class="text-2xl font-serif font-bold text-yellow-800">Format de réponse inattendu</h2><p class="text-yellow-700 mt-2">L'IA a retourné une réponse qui n'a pas pu être interprétée. Veuillez réessayer.</p></div>`;
-                return;
-            }
-            container.innerHTML = `
-                <div class="card fade-in">
-                    <h2 class="text-2xl font-bold font-serif mb-3 flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                        Synthèse de l'IA (Executive Summary)
-                    </h2>
-                    <p class="text-lg text-gray-700 leading-relaxed">${data.executive_summary}</p>
-                </div>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="card fade-in" style="animation-delay: 100ms;">
-                        <h2 class="text-2xl font-bold font-serif mb-4 text-green-700 flex items-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.085a2 2 0 00-1.736.97l-1.9 3.8a2 2 0 00.23 2.16l3.5 3.5m7-10h-4.562" /></svg>
-                            Points Forts Majeurs
-                        </h2>
-                        <ul class="list-disc list-inside space-y-2 text-gray-800">${(data.strengths || []).map(s => `<li>${s}</li>`).join('')}</ul>
-                    </div>
-                    <div class="card fade-in" style="animation-delay: 200ms;">
-                        <h2 class="text-2xl font-bold font-serif mb-4 text-red-700 flex items-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            Axes d'Amélioration
-                        </h2>
-                        <ul class="list-disc list-inside space-y-2 text-gray-800">${(data.weaknesses || []).map(w => `<li>${w}</li>`).join('')}</ul>
-                    </div>
-                </div>
-                <div class="card fade-in" style="animation-delay: 300ms;">
-                     <h2 class="text-2xl font-bold font-serif mb-4 text-blue-700 flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                        Pépites & Opportunités
-                    </h2>
-                    <ul class="list-disc list-inside space-y-2 text-gray-800">${(data.opportunities || []).map(o => `<li>${o}</li>`).join('')}</ul>
-                </div>
-                <div class="card fade-in" style="animation-delay: 400ms;">
-                    <h2 class="text-2xl font-bold font-serif mb-4 flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                        Suggestions Proactives
-                    </h2>
-                    <ul class="space-y-4">
-                        ${(data.proactive_suggestions || []).map(s => {
-                            const parts = s.split(':');
-                            const category = parts[0] ? `<span class="font-bold text-sm uppercase tracking-wider text-brand-accent">${parts[0]}:</span>` : '';
-                            const suggestion = parts.slice(1).join(':').trim();
-                            return `<li class="p-4 bg-gray-50 rounded-lg border border-gray-200">${category} <span class="text-gray-800">${suggestion}</span></li>`
-                        }).join('')}
-                    </ul>
-                </div>
-            `;
+            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Tableau de bord</h1><div class="card"><p>Bienvenue sur votre tableau de bord. D'autres fonctionnalités seront bientôt disponibles ici.</p></div>`;
         }
 
         async function renderPageSettings() {
             const section = document.getElementById('page-settings');
-            if (!section) return;
             section.innerHTML = `<div class="text-center p-10">Chargement...</div>`;
             try {
-                const settings = await fetchWithAuth('/api/restaurant');
-                updateLogo(settings.logoUrl);
-                const availableLangs = { 
-                    'fr': 'Français', 'en': 'English', 'es': 'Español', 
-                    'it': 'Italiano', 'pt': 'Português', 'zh': '简体中文' 
-                };
-                const enabledLanguages = Array.isArray(settings.enabledLanguages) ? settings.enabledLanguages : [];
-                const logoSrc = settings.logoUrl ? `${API_BASE_URL}${settings.logoUrl}` : 'https://placehold.co/100x100/DEE2E6/2D3748?text=Logo';
-                
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Personnalisation de la Page</h1><form id="page-settings-form"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-8"><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Informations Générales</h2><div class="space-y-6"><div><label for="restaurant-name" class="block text-sm font-medium text-gray-700">Nom du Restaurant</label><input type="text" id="restaurant-name" value="${settings.name || ''}" class="form-input"></div><div class="flex items-center gap-6"><img id="logo-preview" src="${logoSrc}" alt="Aperçu du logo" class="w-24 h-24 rounded-lg object-contain bg-gray-100 p-1"><div class="flex-1"><label for="logo-file" class="block text-sm font-medium text-gray-700">Changer le logo</label><input type="file" id="logo-file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" accept="image/png, image/jpeg, image/gif"><p class="text-xs text-gray-500 mt-1">L'aperçu se met à jour automatiquement.</p></div></div><div><label for="primary-color" class="block text-sm font-medium text-gray-700">Couleur principale</label><input type="color" id="primary-color" value="${settings.primaryColor || '#D69E2E'}" class="mt-1 h-10 w-20 rounded-md border-gray-300 p-1"></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Liens de Notation & Scraping</h2><div class="space-y-4"><div><label for="google-link" class="block text-sm font-medium text-gray-700">Lien Google</label><textarea id="google-link" rows="3" class="form-input" placeholder="https://search.google.com/local/writereview?placeid=...">${settings.googleLink || ''}</textarea></div><div><label for="tripadvisor-link" class="block text-sm font-medium text-gray-700">Lien TripAdvisor</label><textarea id="tripadvisor-link" rows="3" class="form-input" placeholder="https://www.tripadvisor.com/UserReview-g...-d...">${settings.tripadvisorLink || ''}</textarea></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Langues</h2><p class="text-sm text-gray-600 mb-4">Sélectionnez les langues à proposer.</p><div id="languages-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">${Object.entries(availableLangs).map(([code, name]) => `<label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" name="languages" value="${code}" class="h-5 w-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" ${enabledLanguages.includes(code) ? 'checked' : ''}><span class="text-gray-700">${name}</span></label>`).join('')}</div></div></div><div class="lg:col-span-1"><div class="card sticky top-8" id="qr-code-card"></div></div></div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors text-lg w-full md:w-auto">Enregistrer</button></div></form>`;
-                
-                const qrCard = document.getElementById('qr-code-card');
-                const slug = settings.slug;
-                if (!slug) { qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">Votre QR Code</h2><div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg text-center"><p class="font-bold">Erreur</p><p class="text-sm mt-1">Le "slug" du restaurant est manquant.</p></div>`; } 
-                else {
-                    qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">Votre QR Code</h2><p class="text-sm text-gray-600 mb-4">Vos clients scannent ce code pour laisser un avis.</p><div class="flex justify-center items-center bg-gray-50 p-4 rounded-lg"><div id="qrcode-container" class="p-2 bg-white rounded-md shadow-inner"></div></div><a id="download-qr-btn" href="#" class="mt-4 block w-full text-center bg-gray-800 text-white px-4 py-2 rounded-full font-bold hover:bg-gray-900">Télécharger</a><div class="mt-4"><label class="text-sm font-medium text-gray-700">Votre lien direct :</label><input type="text" id="review-page-link" readonly class="form-input bg-gray-100 mt-1 cursor-pointer" title="Cliquez pour copier"></div>`;
-                    const reviewPageUrl = new URL('saas_review_collection_page.html', window.location.origin + window.location.pathname.replace('saas_admin_panel.html', ''));
-                    reviewPageUrl.searchParams.set('slug', slug);
-                    document.getElementById('review-page-link').value = reviewPageUrl.href;
-                    new QRCode(document.getElementById('qrcode-container'), { text: reviewPageUrl.href, width: 200, height: 200, colorDark: "#2D3748", colorLight: "#ffffff" });
-                    document.getElementById('download-qr-btn').addEventListener('click', (e) => { e.preventDefault(); const canvas = document.getElementById('qrcode-container').querySelector('canvas'); if (canvas) { const link = document.createElement('a'); link.download = `qrcode-${slug}.png`; link.href = canvas.toDataURL('image/png'); link.click(); } });
-                    document.getElementById('review-page-link').addEventListener('click', () => { const input = document.getElementById('review-page-link'); input.select(); document.execCommand('copy'); alert('Lien copié !'); });
-                }
+                const settings = await fetchAPI('/api/restaurant');
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Page & QR Code</h1><p class="text-gray-600">Ici, vous pourrez bientôt gérer les informations de votre page publique et télécharger votre QR Code.</p><div class="card mt-6"><pre class="bg-gray-100 p-4 rounded-md overflow-x-auto"><code>${JSON.stringify(settings, null, 2)}</code></pre></div>`;
             } catch(error) {
                 section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des paramètres.</div>`;
             }
         }
 
-        async function renderOptionsManagement() {
-            const section = document.getElementById('options-management');
-            if(!section) return;
-            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion des Options</h1><div class="text-center p-10">Chargement...</div>`;
-
+        async function renderAccount() {
+            const section = document.getElementById('account');
+            section.innerHTML = `<div class="text-center p-10">Chargement...</div>`;
             try {
-                const data = await fetchWithAuth('/api/options');
-                const { available_tags, selected_keys } = data;
-
-                const categoryTitles = {
-                    service: "Qualités du Service",
-                    occasion: "Occasions",
-                    atmosphere: "Atmosphère"
-                };
-
-                let contentHtml = `<form id="options-form"><div class="space-y-8">`;
-                for (const category in available_tags) {
-                    contentHtml += `
-                        <div class="card" data-category="${category}">
-                            <h2 class="text-2xl font-bold font-serif mb-4">${categoryTitles[category] || category}</h2>
-                            <p class="text-sm text-gray-600 mb-4">Cochez les options que vous souhaitez proposer à vos clients.</p>
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                ${available_tags[category].map(tag => `
-                                    <label class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer border transition-opacity">
-                                        <input type="checkbox" name="option_tag" value="${tag.key}" class="h-5 w-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" ${selected_keys.includes(tag.key) ? 'checked' : ''}>
-                                        <span class="text-gray-700">${tag.fr}</span>
-                                    </label>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-                contentHtml += `</div><div class="mt-8 text-right bg-white p-4 rounded-lg shadow-md sticky bottom-4 md:bottom-auto"><button type="submit" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-dark transition-colors text-lg w-full md:w-auto">Enregistrer les options</button></div></form>`;
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion des Options</h1>${contentHtml}`;
-                
-                const optionsForm = section.querySelector('#options-form');
-                if (optionsForm) {
-                    optionsForm.querySelectorAll('.card[data-category]').forEach(card => {
-                        const checkboxes = card.querySelectorAll('input[type="checkbox"]');
-                        if (checkboxes.length === 0) return;
-
-                        const limit = 6;
-                        const notificationEl = document.createElement('p');
-                        notificationEl.className = 'text-sm text-amber-600 mt-4 hidden font-semibold';
-                        notificationEl.textContent = `Vous pouvez sélectionner un maximum de ${limit} options pour cette catégorie.`;
-                        card.appendChild(notificationEl);
-
-                        const updateState = () => {
-                            const checkedCount = card.querySelectorAll('input[type="checkbox"]:checked').length;
-                            if (checkedCount >= limit) {
-                                notificationEl.classList.remove('hidden');
-                                checkboxes.forEach(cb => {
-                                    if (!cb.checked) {
-                                        cb.disabled = true;
-                                        cb.closest('label').classList.add('opacity-50', 'cursor-not-allowed');
-                                    }
-                                });
-                            } else {
-                                notificationEl.classList.add('hidden');
-                                checkboxes.forEach(cb => {
-                                    cb.disabled = false;
-                                    cb.closest('label').classList.remove('opacity-50', 'cursor-not-allowed');
-                                });
-                            }
-                        };
-
-                        card.addEventListener('change', updateState);
-                        updateState();
-                    });
-                }
-
-            } catch (error) {
-                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement des options. ${error.message}</div>`;
-            }
-        }
-
-        async function renderTeamManagement() {
-            const section = document.getElementById('team-management');
-            if(!section) return;
-            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion de l'Équipe</h1><div class="text-center p-10">Chargement...</div>`;
-
-            try {
-                const servers = await fetchWithAuth('/api/servers');
-                let contentHtml = `
-                    <div class="card mb-8">
-                        <h2 class="text-2xl font-bold font-serif mb-4">Ajouter un Membre</h2>
-                        <form id="add-server-form" class="space-y-4">
-                            <div>
-                                <label for="server-name" class="block text-sm font-medium text-gray-700">Nom du membre</label>
-                                <input type="text" id="server-name" class="form-input" required>
-                            </div>
-                            <div>
-                                <label for="server-avatar" class="block text-sm font-medium text-gray-700">Photo (optionnel)</label>
-                                <input type="file" id="server-avatar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" accept="image/png, image/jpeg">
-                            </div>
-                            <div class="text-right">
-                                <button type="submit" class="bg-brand-accent text-white px-6 py-2 rounded-lg font-bold hover:bg-brand-accent-dark transition-colors">Ajouter</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="card">
-                        <h2 class="text-2xl font-bold font-serif mb-4">Membres Actuels</h2>
-                        <div id="servers-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            ${servers.map(server => `
-                                <div class="border rounded-lg p-4 text-center" id="server-item-${server.id}">
-                                    <img src="${server.avatar_url ? API_BASE_URL + server.avatar_url : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(server.name) + '&background=eeeeee&color=2D3748'}" alt="${server.name}" class="w-24 h-24 rounded-full mx-auto mb-2 object-cover bg-gray-200">
-                                    <p class="font-semibold">${server.name}</p>
-                                    <div class="flex justify-center gap-4 mt-2">
-                                        <button class="edit-server-btn text-sm text-blue-500 hover:underline" data-server-id="${server.id}" data-server-name="${server.name}">Modifier</button>
-                                        <button class="delete-server-btn text-sm text-red-500 hover:underline" data-server-id="${server.id}">Supprimer</button>
-                                    </div>
+                const profile = await fetchAPI('/api/profile');
+                section.innerHTML = `
+                    <h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Mon Compte</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Mise à jour du profil -->
+                        <div class="card">
+                            <h2 class="text-2xl font-bold font-serif mb-4">Informations du Profil</h2>
+                            <form id="update-profile-form">
+                                <div class="mb-4">
+                                    <label for="profile-email" class="block text-sm font-medium text-gray-700">Adresse Email</label>
+                                    <input type="email" id="profile-email" value="${profile.email}" class="form-input bg-gray-100" readonly>
                                 </div>
-                            `).join('')}
-                            ${servers.length === 0 ? '<p class="text-gray-500 col-span-full">Aucun membre dans l\'équipe.</p>' : ''}
+                                <div class="mb-4">
+                                    <label for="profile-resto-name" class="block text-sm font-medium text-gray-700">Nom du Restaurant</label>
+                                    <input type="text" id="profile-resto-name" value="${profile.restaurant_name}" class="form-input">
+                                </div>
+                                <button type="submit" class="w-full bg-brand-accent text-white py-2 rounded-lg font-bold">Mettre à jour le nom</button>
+                                <p id="update-profile-message" class="text-sm mt-2 h-4 text-center"></p>
+                            </form>
+                        </div>
+
+                        <!-- Changer le mot de passe -->
+                        <div class="card">
+                            <h2 class="text-2xl font-bold font-serif mb-4">Changer le Mot de Passe</h2>
+                            <form id="change-password-form">
+                                <div class="mb-4">
+                                    <label for="current-password" class="block text-sm font-medium text-gray-700">Mot de passe actuel</label>
+                                    <input type="password" id="current-password" class="form-input" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="new-password" class="block text-sm font-medium text-gray-700">Nouveau mot de passe</label>
+                                    <input type="password" id="new-password" class="form-input" required>
+                                </div>
+                                <button type="submit" class="w-full bg-brand-accent text-white py-2 rounded-lg font-bold">Changer le mot de passe</button>
+                                <p id="change-password-message" class="text-sm mt-2 h-4 text-center"></p>
+                            </form>
+                        </div>
+                        
+                        <!-- Changer l'adresse e-mail -->
+                        <div class="card md:col-span-2">
+                            <h2 class="text-2xl font-bold font-serif mb-4">Changer l'Adresse Email</h2>
+                            <form id="change-email-form">
+                                <div class="mb-4">
+                                    <label for="new-email" class="block text-sm font-medium text-gray-700">Nouvelle adresse email</label>
+                                    <input type="email" id="new-email" class="form-input" required>
+                                </div>
+                                <button type="submit" class="w-full bg-brand-accent text-white py-2 rounded-lg font-bold">Envoyer le lien de vérification</button>
+                                <p id="change-email-message" class="text-sm mt-2 h-4 text-center"></p>
+                            </form>
                         </div>
                     </div>
                 `;
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion de l'Équipe</h1>${contentHtml}`;
-            } catch (error) {
-                 section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement de l'équipe.</div>`;
+                setupAccountForms();
+            } catch(error) {
+                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement du profil.</div>`;
             }
         }
-
-        async function renderMenuManagement() {
-            const section = document.getElementById('menu-management');
-            if(!section) return;
-            section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion du Menu</h1><div class="text-center p-10">Chargement...</div>`;
-
-            try {
-                const menu = await fetchWithAuth('/api/menu');
-                const categories = Object.keys(menu).sort();
-                
-                let contentHtml = `
-                    <div class="card mb-8">
-                        <h2 class="text-2xl font-bold font-serif mb-4">Ajouter un Plat</h2>
-                        <form id="add-dish-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                            <div class="md:col-span-1">
-                                <label for="dish-name" class="block text-sm font-medium text-gray-700">Nom du plat</label>
-                                <input type="text" id="dish-name" class="form-input" required>
-                            </div>
-                            <div class="md:col-span-1">
-                                <label for="dish-category" class="block text-sm font-medium text-gray-700">Catégorie</label>
-                                <input type="text" id="dish-category" list="category-suggestions" class="form-input" placeholder="Ex: Entrées, Plats..." required>
-                                <datalist id="category-suggestions">
-                                    ${categories.map(cat => `<option value="${cat}"></option>`).join('')}
-                                </datalist>
-                            </div>
-                            <div class="md:col-span-1">
-                                <button type="submit" class="bg-brand-accent text-white px-6 py-3 rounded-lg font-bold hover:bg-brand-accent-dark transition-colors w-full h-full">Ajouter le plat</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div id="menu-accordion-container" class="card p-0">
-                `;
-
-                if (categories.length > 0) {
-                    categories.forEach(category => {
-                        contentHtml += `
-                            <div class="accordion-item border-b last:border-b-0">
-                                <div class="accordion-header">
-                                    <h3 class="text-xl font-semibold">${category}</h3>
-                                    <svg class="w-6 h-6 accordion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                </div>
-                                <div class="accordion-content">
-                                    <div class="space-y-2">
-                                        ${menu[category].map(dish => `
-                                            <div class="item-list-entry" id="dish-item-${dish.id}">
-                                                <span>${dish.name}</span>
-                                                <div class="flex items-center gap-2">
-                                                    <button class="edit-dish-btn text-gray-500 hover:text-blue-700" data-dish-id="${dish.id}" data-dish-name="${dish.name}" data-dish-category="${category}">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
-                                                    </button>
-                                                    <button class="delete-dish-btn text-gray-500 hover:text-red-700" data-dish-id="${dish.id}">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    contentHtml += '<div class="p-6 text-center text-gray-500"><p>Votre menu est vide. Ajoutez des plats pour commencer.</p></div>';
-                }
-
-                contentHtml += '</div>';
-                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-6">Gestion du Menu</h1>${contentHtml}`;
-            } catch (error) {
-                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement du menu.</div>`;
-            }
-        }
-
-        // --- GESTION DES ÉVÉNEMENTS ---
-        contentArea.addEventListener('submit', async (e) => {
-            if (e.target.matches('#page-settings-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const button = form.querySelector('button[type="submit"]');
-                button.disabled = true;
-                button.textContent = 'Enregistrement...';
-
-                const formData = new FormData();
-                formData.append('name', form.querySelector('#restaurant-name').value);
-                formData.append('primaryColor', form.querySelector('#primary-color').value);
-                formData.append('googleLink', form.querySelector('#google-link').value);
-                formData.append('tripadvisorLink', form.querySelector('#tripadvisor-link').value);
-                
-                const selectedLangs = Array.from(form.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value);
-                formData.append('enabledLanguages', JSON.stringify(selectedLangs));
-
-                const logoFile = form.querySelector('#logo-file').files[0];
-                if (logoFile) {
-                    formData.append('logo', logoFile);
-                }
-
-                try {
-                    const result = await fetchWithAuth('/api/restaurant', { method: 'PUT', body: formData });
-                    alert('Paramètres enregistrés avec succès !');
-                    updateLogo(result.logoUrl);
-                    if(result.logoUrl) {
-                        document.getElementById('logo-preview').src = API_BASE_URL + result.logoUrl;
+        
+        function setupAccountForms() {
+            const updateProfileForm = document.getElementById('update-profile-form');
+            if(updateProfileForm) {
+                updateProfileForm.addEventListener('submit', async e => {
+                    e.preventDefault();
+                    const messageP = document.getElementById('update-profile-message');
+                    messageP.textContent = '';
+                    const restaurant_name = document.getElementById('profile-resto-name').value;
+                    try {
+                        const data = await fetchAPI('/api/profile', { method: 'PUT', body: JSON.stringify({ restaurant_name }) });
+                        messageP.className = 'text-green-600 text-sm mt-2 h-4 text-center';
+                        messageP.textContent = data.message;
+                    } catch (error) {
+                        messageP.className = 'text-red-500 text-sm mt-2 h-4 text-center';
+                        messageP.textContent = error.message;
                     }
-                } catch (error) {
-                    alert('Erreur lors de la sauvegarde: ' + error.message);
-                } finally {
-                    button.disabled = false;
-                    button.textContent = 'Enregistrer';
-                }
+                });
+            }
+
+            const changePasswordForm = document.getElementById('change-password-form');
+            if(changePasswordForm) {
+                changePasswordForm.addEventListener('submit', async e => {
+                    e.preventDefault();
+                    const messageP = document.getElementById('change-password-message');
+                    messageP.textContent = '';
+                    const current_password = document.getElementById('current-password').value;
+                    const new_password = document.getElementById('new-password').value;
+                    try {
+                        const data = await fetchAPI('/api/profile/change-password', { method: 'POST', body: JSON.stringify({ current_password, new_password }) });
+                        messageP.className = 'text-green-600 text-sm mt-2 h-4 text-center';
+                        messageP.textContent = data.message;
+                        changePasswordForm.reset();
+                    } catch (error) {
+                        messageP.className = 'text-red-500 text-sm mt-2 h-4 text-center';
+                        messageP.textContent = error.message;
+                    }
+                });
             }
             
-            if (e.target.matches('#options-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const selected_keys = Array.from(form.querySelectorAll('input[name="option_tag"]:checked')).map(cb => cb.value);
-                
-                try {
-                    // CORRECTIF: Le corps de la requête est maintenant un objet JS
-                    await fetchWithAuth('/api/options', { 
-                        method: 'POST', 
-                        body: { selected_keys } 
-                    });
-                    alert('Options enregistrées avec succès !');
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
-            if (e.target.matches('#add-server-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const formData = new FormData();
-                formData.append('name', form.querySelector('#server-name').value);
-                const avatarFile = form.querySelector('#server-avatar').files[0];
-                if (avatarFile) {
-                    formData.append('avatar', avatarFile);
-                }
-                try {
-                    await fetchWithAuth('/api/servers', { method: 'POST', body: formData });
-                    renderTeamManagement();
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
-            if (e.target.matches('#add-dish-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const name = form.querySelector('#dish-name').value;
-                const category = form.querySelector('#dish-category').value;
-                try {
-                    // CORRECTIF: Le corps de la requête est maintenant un objet JS
-                    await fetchWithAuth('/api/menu', { method: 'POST', body: { name, category } });
-                    renderMenuManagement();
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
-            // MODAL SUBMISSIONS
-            if (e.target.matches('#edit-server-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const serverId = form.dataset.serverId;
-                const formData = new FormData();
-                formData.append('name', form.querySelector('input[type="text"]').value);
-                const avatarFile = form.querySelector('input[type="file"]').files[0];
-                if (avatarFile) {
-                    formData.append('avatar', avatarFile);
-                }
-                try {
-                    await fetchWithAuth(`/api/servers/${serverId}`, { method: 'PUT', body: formData });
-                    closeModal();
-                    renderTeamManagement();
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
-            if (e.target.matches('#edit-dish-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const dishId = form.dataset.dishId;
-                const name = form.querySelector('#edit-dish-name').value;
-                const category = form.querySelector('#edit-dish-category').value;
-                 try {
-                    // CORRECTIF: Le corps de la requête est maintenant un objet JS
-                    await fetchWithAuth(`/api/menu/${dishId}`, { method: 'PUT', body: { name, category } });
-                    closeModal();
-                    renderMenuManagement();
-                } catch (error) {
-                    alert('Erreur: ' + error.message);
-                }
-            }
-        });
-
-        contentArea.addEventListener('click', async (e) => {
-            const deleteBtn = e.target.closest('.delete-server-btn, .delete-dish-btn');
-            const editBtn = e.target.closest('.edit-server-btn, .edit-dish-btn');
-            const accordionHeader = e.target.closest('.accordion-header');
-
-            if (accordionHeader) {
-                const content = accordionHeader.nextElementSibling;
-                accordionHeader.classList.toggle('open');
-                content.classList.toggle('open');
-            }
-
-            if (deleteBtn) {
-                const dataType = deleteBtn.className.includes('server') ? 'server' : 'dish';
-                const dataId = deleteBtn.dataset[`${dataType}Id`];
-                if (confirm(`Voulez-vous vraiment supprimer cet élément ?`)) {
+            const changeEmailForm = document.getElementById('change-email-form');
+            if(changeEmailForm) {
+                changeEmailForm.addEventListener('submit', async e => {
+                    e.preventDefault();
+                    const messageP = document.getElementById('change-email-message');
+                    messageP.textContent = '';
+                    const new_email = document.getElementById('new-email').value;
                     try {
-                        await fetchWithAuth(`/api/${dataType}s/${dataId}`, { method: 'DELETE' });
-                        if (dataType === 'dish') {
-                            renderMenuManagement();
-                        } else {
-                            document.getElementById(`${dataType}-item-${dataId}`).remove();
-                        }
+                        const data = await fetchAPI('/api/profile/change-email', { method: 'POST', body: JSON.stringify({ new_email }) });
+                        messageP.className = 'text-green-600 text-sm mt-2 h-4 text-center';
+                        messageP.textContent = data.message;
                     } catch (error) {
-                        alert('Erreur: ' + error.message);
+                        messageP.className = 'text-red-500 text-sm mt-2 h-4 text-center';
+                        messageP.textContent = error.message;
                     }
-                }
+                });
             }
+        }
 
-            if (editBtn) {
-                if (editBtn.matches('.edit-server-btn')) {
-                    const serverId = editBtn.dataset.serverId;
-                    const serverName = editBtn.dataset.serverName;
-                    openModal(`
-                        <form id="edit-server-form" data-server-id="${serverId}" class="card w-full max-w-md modal-content">
-                             <h2 class="text-2xl font-bold font-serif mb-4">Modifier le Membre</h2>
-                             <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Nom</label>
-                                    <input type="text" value="${serverName}" class="form-input" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Changer la photo</label>
-                                    <input type="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0" accept="image/png, image/jpeg">
-                                </div>
-                             </div>
-                             <div class="flex justify-end gap-2 mt-4">
-                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
-                                <button type="submit" class="bg-brand-accent text-white px-4 py-2 rounded-lg font-bold">Enregistrer</button>
-                            </div>
-                        </form>
-                    `);
-                }
-                 if (editBtn.matches('.edit-dish-btn')) {
-                    const dishId = editBtn.dataset.dishId;
-                    const dishName = editBtn.dataset.dishName;
-                    const dishCategory = editBtn.dataset.dishCategory;
-                    const allCategories = Object.keys(await fetchWithAuth('/api/menu'));
-                    
-                    openModal(`
-                        <form id="edit-dish-form" data-dish-id="${dishId}" class="card w-full max-w-md modal-content">
-                             <h2 class="text-2xl font-bold font-serif mb-4">Modifier le Plat</h2>
-                             <div class="space-y-4">
-                                <div>
-                                    <label for="edit-dish-name" class="block text-sm font-medium text-gray-700">Nom du plat</label>
-                                    <input type="text" id="edit-dish-name" value="${dishName}" class="form-input" required>
-                                </div>
-                                <div>
-                                    <label for="edit-dish-category" class="block text-sm font-medium text-gray-700">Catégorie</label>
-                                    <input type="text" id="edit-dish-category" value="${dishCategory}" list="category-suggestions" class="form-input" required>
-                                    <datalist id="category-suggestions">
-                                        ${allCategories.map(cat => `<option value="${cat}"></option>`).join('')}
-                                    </datalist>
-                                </div>
-                             </div>
-                             <div class="flex justify-end gap-2 mt-4">
-                                <button type="button" class="px-4 py-2 rounded-lg" onclick="document.getElementById('edit-modal-backdrop').click()">Annuler</button>
-                                <button type="submit" class="bg-brand-accent text-white px-4 py-2 rounded-lg font-bold">Enregistrer</button>
-                            </div>
-                        </form>
-                    `);
-                }
-            }
-        });
-
-        document.addEventListener('change', e => {
-            const logoFileInput = document.getElementById('logo-file');
-            if (e.target === logoFileInput && logoFileInput.files && logoFileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('logo-preview').src = e.target.result;
-                }
-                reader.readAsDataURL(logoFileInput.files[0]);
-            }
-        });
-
+        // --- Initialisation ---
+        if (localStorage.getItem('jwt_token')) {
+            loadAppData();
+        }
     });
     </script>
 </body>
