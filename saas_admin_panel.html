@@ -291,13 +291,18 @@
             return response.json();
         }
 
-        // CORRECTIF : Nouvelle fonction fetchWithAuth
+        // VERSION DE DÉBOGAGE de fetchWithAuth
         async function fetchWithAuth(url, options = {}) {
+            console.log(`[fetchWithAuth] Appel vers: ${url}`);
             const token = localStorage.getItem('jwt_token');
+            
             if (!token || token === 'undefined' || token === 'null') {
+                console.error('[fetchWithAuth] ERREUR: Token non trouvé dans localStorage. Déconnexion.');
                 logout();
                 throw new Error('Token d\'authentification manquant ou invalide.');
             }
+            
+            console.log(`[fetchWithAuth] Token trouvé: ${token.substring(0, 15)}...`);
 
             const requestOptions = {
                 ...options,
@@ -307,19 +312,21 @@
                 },
             };
 
-            // Gère automatiquement le corps de la requête JSON
             if (requestOptions.body && typeof requestOptions.body === 'object' && !(requestOptions.body instanceof FormData)) {
                 requestOptions.body = JSON.stringify(requestOptions.body);
-                // Ajoute le Content-Type seulement s'il n'est pas déjà défini
                 if (!requestOptions.headers['Content-Type']) {
                     requestOptions.headers['Content-Type'] = 'application/json';
                 }
             }
+            
+            console.log('[fetchWithAuth] En-têtes envoyés:', JSON.stringify(requestOptions.headers, null, 2));
 
             const response = await fetch(`${API_BASE_URL}${url}`, requestOptions);
 
+            console.log(`[fetchWithAuth] Réponse reçue de ${url} avec le statut: ${response.status}`);
+
             if (response.status === 401 || response.status === 422) {
-                console.error(`Erreur ${response.status} reçue de l'API. Le token est probablement invalide ou expiré.`);
+                console.error(`[fetchWithAuth] ERREUR ${response.status} reçue de l'API. Le token est probablement invalide ou expiré.`);
                 logout();
                 const errorText = response.status === 401 ? 'Token invalide ou expiré.' : 'Requête invalide (422).';
                 throw new Error(`Session expirée. ${errorText} Veuillez vous reconnecter.`);
@@ -330,7 +337,8 @@
                 try {
                     const errorData = await response.json();
                     errorMsg = errorData.error || errorData.message || errorMsg;
-                } catch (e) { /* ignore si la réponse n'est pas du JSON */ }
+                } catch (e) { /* ignore */ }
+                console.error(`[fetchWithAuth] Erreur non-gérée: ${errorMsg}`);
                 throw new Error(errorMsg);
             }
 
@@ -358,16 +366,23 @@
             const password = document.getElementById('login-password').value;
             try {
                 const data = await fetchPublic('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+                console.log('[Login] Réponse de /api/login:', data);
+
                 if (data && data.access_token && typeof data.access_token === 'string') {
+                    console.log(`[Login] Token reçu: ${data.access_token.substring(0, 15)}...`);
                     localStorage.setItem('jwt_token', data.access_token);
+                    console.log('[Login] Token sauvegardé dans localStorage.');
+                    
                     // Test de validation du token
+                    console.log('[Login] Appel de test vers /api/test-auth...');
                     await fetchWithAuth('/api/test-auth');
-                    console.log("Token validé avec succès.");
+                    console.log("[Login] Token validé avec succès.");
                     await loadAppData();
                 } else { 
                     throw new Error('Réponse de connexion invalide.'); 
                 }
             } catch (error) {
+                console.error('[Login] Erreur pendant le processus de connexion:', error);
                 errorP.textContent = error.message;
                 localStorage.removeItem('jwt_token');
             } finally {
