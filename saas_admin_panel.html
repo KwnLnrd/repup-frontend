@@ -187,6 +187,22 @@
             return response.status === 204 ? null : response.json();
         }
         
+        async function putWithAuthFormData(url, formData) {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) { logout(); throw new Error('Token manquant.'); }
+            const response = await fetch(`${API_BASE_URL}${url}`, { method: 'PUT', body: formData, headers: { 'Authorization': `Bearer ${token}` } });
+            if (!response.ok) { throw new Error('Erreur de mise à jour'); }
+            return response.json();
+        }
+        
+        async function postWithAuthFormData(url, formData) {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) { logout(); throw new Error('Token manquant.'); }
+            const response = await fetch(`${API_BASE_URL}${url}`, { method: 'POST', body: formData, headers: { 'Authorization': `Bearer ${token}` } });
+            if (!response.ok) { throw new Error('Erreur de création'); }
+            return response.json();
+        }
+
         function logout() {
             localStorage.removeItem('jwt_token');
             mainApp.classList.add('hidden');
@@ -249,46 +265,38 @@
             new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--color-primary)', backgroundColor: 'rgba(214, 158, 46, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
         
-        // --- SECTION "TOUS LES AVIS" AMÉLIORÉE ---
         let reviewFilters = { page: 1, sortBy: 'newest' };
 
         async function fetchAndRenderReviews() {
             const container = document.getElementById('reviews-list-container');
             const paginationContainer = document.getElementById('reviews-pagination');
-            container.innerHTML = `<p class="text-center text-gray-500 py-8">Chargement des avis...</p>`;
-            paginationContainer.innerHTML = '';
+            if(container) container.innerHTML = `<p class="text-center text-gray-500 py-8">Chargement des avis...</p>`;
+            if(paginationContainer) paginationContainer.innerHTML = '';
 
-            const params = new URLSearchParams({
-                page: reviewFilters.page,
-                sort_by: reviewFilters.sortBy
-            });
+            const params = new URLSearchParams({ page: reviewFilters.page, sort_by: reviewFilters.sortBy });
             
             try {
                 const data = await fetchWithAuth(`/api/reviews?${params.toString()}`);
-                if (data.reviews && data.reviews.length > 0) {
-                    container.innerHTML = data.reviews.map(renderReviewCard).join('');
-                } else {
-                    container.innerHTML = `<p class="text-center text-gray-500 py-8">Aucun avis ne correspond à vos critères.</p>`;
+                if (container) {
+                    container.innerHTML = (data.reviews && data.reviews.length > 0) 
+                        ? data.reviews.map(renderReviewCard).join('') 
+                        : `<p class="text-center text-gray-500 py-8">Aucun avis ne correspond à vos critères.</p>`;
                 }
-                renderPagination(data);
+                if (paginationContainer) renderPagination(data);
             } catch (error) {
-                container.innerHTML = `<p class="text-center text-red-500 py-8">Erreur chargement: ${error.message}</p>`;
+                if(container) container.innerHTML = `<p class="text-center text-red-500 py-8">Erreur chargement: ${error.message}</p>`;
             }
         }
         
         function renderPagination(data) {
             const paginationContainer = document.getElementById('reviews-pagination');
-            if (data.total_pages <= 1) {
-                paginationContainer.innerHTML = '';
-                return;
-            }
+            if (!paginationContainer || data.total_pages <= 1) return;
             paginationContainer.innerHTML = `
                 <div class="flex justify-between items-center mt-6">
                     <button id="prev-page-btn" class="px-4 py-2 bg-white border rounded-md text-sm font-medium hover:bg-gray-50 disabled:opacity-50" ${!data.has_prev ? 'disabled' : ''}>Précédent</button>
                     <span class="text-sm text-gray-700">Page ${data.current_page} sur ${data.total_pages}</span>
                     <button id="next-page-btn" class="px-4 py-2 bg-white border rounded-md text-sm font-medium hover:bg-gray-50 disabled:opacity-50" ${!data.has_next ? 'disabled' : ''}>Suivant</button>
-                </div>
-            `;
+                </div>`;
             document.getElementById('prev-page-btn').addEventListener('click', () => { reviewFilters.page--; fetchAndRenderReviews(); });
             document.getElementById('next-page-btn').addEventListener('click', () => { reviewFilters.page++; fetchAndRenderReviews(); });
         }
@@ -320,15 +328,13 @@
                     </div>
                 </div>
                 <div id="reviews-list-container" class="space-y-4"></div>
-                <div id="reviews-pagination"></div>
-            `;
+                <div id="reviews-pagination"></div>`;
             
             document.getElementById('review-sort-filter').addEventListener('change', (e) => {
                 reviewFilters.sortBy = e.target.value;
                 reviewFilters.page = 1;
                 fetchAndRenderReviews();
             });
-
             await fetchAndRenderReviews();
         }
 
@@ -360,8 +366,80 @@
         }
 
 
-        async function renderStrategicAnalysis() { /* ... Contenu inchangé ... */ }
-        async function renderPageSettings() { /* ... Contenu inchangé ... */ }
+        async function renderStrategicAnalysis() {
+            const section = document.getElementById('strategic-analysis');
+            if (!section) return;
+            section.innerHTML = `
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <h1 class="text-3xl md:text-4xl font-bold font-serif">Analyse Stratégique</h1>
+                    <button id="launch-analysis-btn" class="mt-4 md:mt-0 bg-brand-accent text-white px-6 py-3 rounded-full font-bold text-base hover:bg-brand-accent-dark transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1.28a1 1 0 00-.97.72l-1.95 6.41a1.5 1.5 0 01-2.98-.24l1.95-6.41a1 1 0 00-.97-.72H5a1 1 0 01-1-1V8a1 1 0 011-1h3a1 1 0 001-1V3.5z" /></svg>
+                        Lancer une nouvelle analyse
+                    </button>
+                </div>
+                <div id="analysis-content" class="mt-8 space-y-8"><p class="text-center text-gray-500 py-8">Cliquez sur le bouton pour commencer.</p></div>`;
+
+            const launchBtn = document.getElementById('launch-analysis-btn');
+            if (launchBtn) {
+                launchBtn.addEventListener('click', async () => {
+                    const container = document.getElementById('analysis-content');
+                    launchBtn.disabled = true;
+                    container.innerHTML = `<div class="text-center p-10 card"><h2 class="text-2xl font-serif font-bold mb-4">Analyse en cours...</h2><p class="text-gray-600">L'IA compile vos avis 🤖</p><div class="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-brand-accent mx-auto mt-6"></div></div>`;
+                    try {
+                        const analysis = await fetchWithAuth('/api/strategic-analysis', { method: 'POST' });
+                        renderAnalysisResults(analysis);
+                    } catch (error) {
+                        container.innerHTML = `<div class="text-center p-10 card bg-red-50 border-red-200"><h2 class="text-2xl font-serif font-bold text-red-700">Erreur</h2><p class="text-red-600 mt-2">${error.message}</p></div>`;
+                    } finally {
+                        launchBtn.disabled = false;
+                    }
+                });
+            }
+        }
+
+        function renderAnalysisResults(data) {
+            const container = document.getElementById('analysis-content');
+            if (!data || !data.executive_summary) {
+                container.innerHTML = `<div class="text-center p-10 card bg-yellow-50"><h2 class="text-2xl font-serif font-bold text-yellow-800">Réponse inattendue</h2><p class="text-yellow-700 mt-2">L'IA a retourné un format invalide. Veuillez réessayer.</p></div>`;
+                return;
+            }
+            container.innerHTML = `
+                <div class="card fade-in"><h2 class="text-2xl font-bold font-serif mb-3 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>Synthèse de l'IA</h2><p class="text-lg text-gray-700 leading-relaxed">${data.executive_summary}</p></div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="card fade-in" style="animation-delay: 100ms;"><h2 class="text-2xl font-bold font-serif mb-4 text-green-700 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.085a2 2 0 00-1.736.97l-1.9 3.8a2 2 0 00.23 2.16l3.5 3.5m7-10h-4.562" /></svg>Points Forts</h2><ul class="list-disc list-inside space-y-2 text-gray-800">${(data.strengths || []).map(s => `<li>${s}</li>`).join('')}</ul></div>
+                    <div class="card fade-in" style="animation-delay: 200ms;"><h2 class="text-2xl font-bold font-serif mb-4 text-red-700 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>Axes d'Amélioration</h2><ul class="list-disc list-inside space-y-2 text-gray-800">${(data.weaknesses || []).map(w => `<li>${w}</li>`).join('')}</ul></div>
+                </div>
+                <div class="card fade-in" style="animation-delay: 300ms;"><h2 class="text-2xl font-bold font-serif mb-4 text-blue-700 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>Pépites & Opportunités</h2><ul class="list-disc list-inside space-y-2 text-gray-800">${(data.opportunities || []).map(o => `<li>${o}</li>`).join('')}</ul></div>
+                <div class="card fade-in" style="animation-delay: 400ms;"><h2 class="text-2xl font-bold font-serif mb-4 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>Suggestions Proactives</h2><ul class="space-y-4">${(data.proactive_suggestions || []).map(s => { const p = s.split(':'); return `<li class="p-4 bg-gray-50 rounded-lg border"><span class="font-bold text-sm uppercase tracking-wider text-brand-accent">${p[0]}:</span> <span class="text-gray-800">${p.slice(1).join(':').trim()}</span></li>` }).join('')}</ul></div>`;
+        }
+        
+        async function renderPageSettings() {
+             const section = document.getElementById('page-settings');
+            if (!section) return;
+            section.innerHTML = `<div class="text-center p-10">Chargement...</div>`;
+            try {
+                const settings = await fetchWithAuth('/api/restaurant');
+                updateLogo(settings.logoUrl);
+                const availableLangs = { 'fr': 'Français', 'en': 'English', 'es': 'Español', 'it': 'Italiano', 'pt': 'Português', 'zh': '简体中文' };
+                const enabledLanguages = settings.enabledLanguages || [];
+                const logoSrc = settings.logoUrl ? `${API_BASE_URL}${settings.logoUrl}` : 'https://placehold.co/100x100/DEE2E6/2D3748?text=Logo';
+                
+                section.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold font-serif mb-8">Personnalisation</h1><form id="page-settings-form"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-8"><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Infos Générales</h2><div class="space-y-6"><div><label for="restaurant-name" class="block text-sm font-medium">Nom du Restaurant</label><input type="text" id="restaurant-name" value="${settings.name || ''}" class="form-input"></div><div class="flex items-center gap-6"><img id="logo-preview" src="${logoSrc}" alt="Logo" class="w-24 h-24 rounded-lg object-contain bg-gray-100 p-1"><div class="flex-1"><label for="logo-file" class="block text-sm font-medium">Changer le logo</label><input type="file" id="logo-file" class="mt-1 block w-full text-sm" accept="image/*"></div></div><div><label for="primary-color" class="block text-sm font-medium">Couleur principale</label><input type="color" id="primary-color" value="${settings.primaryColor || '#D69E2E'}" class="mt-1 h-10 w-20 rounded-md"></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Liens de Notation</h2><div class="space-y-4"><div><label for="google-link" class="block text-sm font-medium">Lien Google</label><textarea id="google-link" rows="3" class="form-input">${settings.googleLink || ''}</textarea></div><div><label for="tripadvisor-link" class="block text-sm font-medium">Lien TripAdvisor</label><textarea id="tripadvisor-link" rows="3" class="form-input">${settings.tripadvisorLink || ''}</textarea></div></div></div><div class="card"><h2 class="text-2xl font-bold font-serif mb-4">Langues</h2><div id="languages-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">${Object.entries(availableLangs).map(([c, n]) => `<label class="flex items-center space-x-3"><input type="checkbox" name="languages" value="${c}" class="h-5 w-5 rounded" ${enabledLanguages.includes(c) ? 'checked' : ''}><span>${n}</span></label>`).join('')}</div></div></div><div class="lg:col-span-1"><div class="card sticky top-8" id="qr-code-card"></div></div></div><div class="mt-8 text-right"><button type="submit" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold">Enregistrer</button></div></form>`;
+                
+                const qrCard = document.getElementById('qr-code-card');
+                if (settings.slug) {
+                    qrCard.innerHTML = `<h2 class="text-2xl font-bold font-serif mb-2">QR Code</h2><div class="flex justify-center"><div id="qrcode-container" class="p-2 bg-white rounded-md"></div></div><a id="download-qr-btn" href="#" class="mt-4 block w-full text-center bg-gray-800 text-white px-4 py-2 rounded-full font-bold">Télécharger</a><div class="mt-4"><label class="text-sm font-medium">Lien direct :</label><input type="text" id="review-page-link" readonly class="form-input bg-gray-100 mt-1"></div>`;
+                    const url = new URL('saas_review_collection_page.html', window.location.href);
+                    url.searchParams.set('slug', settings.slug);
+                    document.getElementById('review-page-link').value = url.href;
+                    new QRCode(document.getElementById('qrcode-container'), { text: url.href, width: 200, height: 200 });
+                    document.getElementById('download-qr-btn').addEventListener('click', (e) => { e.preventDefault(); const canvas = qrCard.querySelector('canvas'); if(canvas) { const link = document.createElement('a'); link.download = `qrcode.png`; link.href = canvas.toDataURL(); link.click(); } });
+                }
+            } catch(error) {
+                section.innerHTML = `<div class="text-center p-10 text-red-600">Erreur de chargement.</div>`;
+            }
+        }
+
         async function renderOptionsManagement() { /* ... Contenu inchangé ... */ }
         async function renderTeamManagement() { /* ... Contenu inchangé ... */ }
         async function renderMenuManagement() { /* ... Contenu inchangé ... */ }
@@ -398,7 +476,40 @@
             }
         });
         
-        // ... autres gestionnaires d'événements ...
+        contentArea.addEventListener('submit', async (e) => {
+            if (e.target.matches('#page-settings-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const button = form.querySelector('button[type="submit"]');
+                button.disabled = true;
+                button.textContent = 'Enregistrement...';
+
+                const formData = new FormData();
+                formData.append('name', form.querySelector('#restaurant-name').value);
+                formData.append('primaryColor', form.querySelector('#primary-color').value);
+                formData.append('googleLink', form.querySelector('#google-link').value);
+                formData.append('tripadvisorLink', form.querySelector('#tripadvisor-link').value);
+                
+                const selectedLangs = Array.from(form.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value);
+                formData.append('enabledLanguages', JSON.stringify(selectedLangs));
+
+                const logoFile = form.querySelector('#logo-file').files[0];
+                if (logoFile) {
+                    formData.append('logo', logoFile);
+                }
+
+                try {
+                    const result = await putWithAuthFormData('/api/restaurant', formData);
+                    alert('Paramètres enregistrés !');
+                    updateLogo(result.logoUrl);
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                } finally {
+                    button.disabled = false;
+                    button.textContent = 'Enregistrer';
+                }
+            }
+        });
     });
     </script>
 </body>
