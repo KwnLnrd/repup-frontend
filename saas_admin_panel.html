@@ -205,7 +205,6 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // CORRECTION: Utilisation de l'URL de l'API de production Render
         const API_BASE_URL = 'https://repup-test.onrender.com';
 
         const authOverlay = document.getElementById('auth-overlay');
@@ -259,7 +258,6 @@
                 authOverlay.classList.add('hidden');
                 mainApp.classList.remove('hidden');
 
-                // Chargement séquentiel pour un débogage plus facile
                 console.log("1. Rendu du Tableau de bord...");
                 await renderDashboard();
                 console.log("2. Rendu de l'Analyse Stratégique...");
@@ -277,7 +275,6 @@
                 switchTab(window.location.hash || '#dashboard');
             } catch (error) {
                 console.error("ERREUR FATALE lors du chargement des données de l'application:", error);
-                // Alerte pour un feedback utilisateur direct en cas d'échec
                 alert("Une erreur critique est survenue lors du chargement de votre tableau de bord. Vous allez être déconnecté. Message d'erreur : " + error.message);
                 logout();
             }
@@ -302,22 +299,25 @@
             console.log(`Fetching with auth: ${url}`);
             const token = localStorage.getItem('jwt_token');
             
-            // Ajout de logs pour le débogage du token
-            console.log('Token from localStorage:', token);
-
-            // Vérification plus robuste pour un token invalide ou manquant
             if (!token || token === 'undefined' || token === 'null') {
                 console.error('Tentative d\'appel API sans token valide. Déconnexion.');
                 logout(); 
                 throw new Error('Token d\'authentification manquant ou invalide.'); 
             }
 
-            const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...options.headers };
-            
-            // Log des en-têtes pour vérifier la présence du Bearer token
-            console.log('En-têtes de la requête:', headers);
+            // CORRECTION: Ne construire les en-têtes qu'avec ce qui est nécessaire.
+            const requestOptions = { ...options };
+            requestOptions.headers = { 'Authorization': `Bearer ${token}`, ...options.headers };
 
-            const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+            // CORRECTION: Ajouter 'Content-Type' seulement s'il y a un corps de requête.
+            // Les requêtes GET ne devraient pas avoir cet en-tête.
+            if (requestOptions.body) {
+                requestOptions.headers['Content-Type'] = 'application/json';
+            }
+
+            console.log('En-têtes de la requête:', requestOptions.headers);
+
+            const response = await fetch(`${API_BASE_URL}${url}`, requestOptions);
             
             if (response.status === 401 || response.status === 422) {
                 console.error(`Erreur ${response.status} reçue de l'API. Le token est probablement invalide ou expiré.`);
@@ -389,7 +389,6 @@
             const password = document.getElementById('login-password').value;
             try {
                 const data = await fetchPublic('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
-                // Ajout d'une vérification pour s'assurer que le token est bien une chaîne de caractères non vide
                 if (data && data.access_token && typeof data.access_token === 'string') {
                     console.log("Connexion réussie. Token reçu:", data.access_token);
                     localStorage.setItem('jwt_token', data.access_token);
@@ -468,7 +467,6 @@
             new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--color-primary)', backgroundColor: 'rgba(214, 158, 46, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
         }
 
-        // --- SECTION ANALYSE STRATÉGIQUE AMÉLIORÉE ---
         async function renderStrategicAnalysis() {
             const section = document.getElementById('strategic-analysis');
             if (!section) return;
@@ -488,7 +486,6 @@
                     <p class="text-sm">En lançant l'analyse, nous allons chercher vos derniers avis sur Google, les combinons avec vos avis internes, puis notre IA génère un rapport stratégique. Ce processus peut prendre 1 à 2 minutes.</p>
                 </div>
                 <div id="analysis-content" class="mt-8 space-y-8">
-                    <!-- Le contenu de l'analyse sera injecté ici -->
                     <p class="text-center text-gray-500 py-8">Aucune analyse n'a été lancée. Cliquez sur le bouton ci-dessus pour commencer.</p>
                 </div>`;
 
@@ -569,7 +566,6 @@
                 </div>
             `;
         }
-        // --- FIN DE LA SECTION ANALYSE STRATÉGIQUE ---
 
         async function renderPageSettings() {
             const section = document.getElementById('page-settings');
