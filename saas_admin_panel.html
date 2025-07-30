@@ -312,21 +312,31 @@
             }
 
             const method = (options.method || 'GET').toUpperCase();
-            const headers = {
-                'Authorization': `Bearer ${token}`,
-                ...options.headers
+            
+            // On crée un nouvel objet Headers pour une manipulation plus sûre
+            const headers = new Headers(options.headers || {});
+            headers.set('Authorization', `Bearer ${token}`);
+
+            const fetchOptions = {
+                ...options,
+                method: method,
+                headers: headers
             };
 
             // CORRECTION PRINCIPALE : Ne pas envoyer 'Content-Type' sur les requêtes GET.
-            // Cela peut causer des erreurs 422 avec certains serveurs/proxys.
-            if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
-                // On s'assure de ne pas l'ajouter si on envoie du FormData (le navigateur le fait automatiquement)
-                if (!(options.body instanceof FormData)) {
-                    headers['Content-Type'] = 'application/json';
+            // On l'ajoute seulement si un corps est présent et que ce n'est pas du FormData.
+            if (fetchOptions.body && !(fetchOptions.body instanceof FormData)) {
+                if (!headers.has('Content-Type')) {
+                    headers.set('Content-Type', 'application/json');
                 }
             }
+            
+            // SÉCURITÉ ADDITIONNELLE : S'assurer que les requêtes GET n'ont pas de corps.
+            if (method === 'GET' || method === 'HEAD') {
+                delete fetchOptions.body;
+            }
 
-            const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+            const response = await fetch(`${API_BASE_URL}${url}`, fetchOptions);
 
             if (!response.ok) {
                 // AMÉLIORATION: Gestion d'erreur plus détaillée pour le débogage.
@@ -357,16 +367,6 @@
                 return null;
             }
             return response.json();
-        }
-        
-        async function putWithAuthFormData(url, formData) {
-            // Cette fonction utilise fetchWithAuth, qui gère maintenant correctement les en-têtes pour FormData
-            return await fetchWithAuth(url, { method: 'PUT', body: formData });
-        }
-        
-        async function postWithAuthFormData(url, formData) {
-            // Cette fonction utilise fetchWithAuth, qui gère maintenant correctement les en-têtes pour FormData
-            return await fetchWithAuth(url, { method: 'POST', body: formData });
         }
 
         // AMÉLIORATION: La déconnexion nettoie aussi l'URL
@@ -741,7 +741,7 @@
                 }
 
                 try {
-                    const result = await putWithAuthFormData('/api/restaurant', formData);
+                    const result = await fetchWithAuth('/api/restaurant', { method: 'PUT', body: formData });
                     alert('Paramètres enregistrés avec succès !');
                     updateLogo(result.logoUrl);
                     if(result.logoUrl) {
@@ -780,7 +780,7 @@
                     formData.append('avatar', avatarFile);
                 }
                 try {
-                    await postWithAuthFormData('/api/servers', formData);
+                    await fetchWithAuth('/api/servers', { method: 'POST', body: formData });
                     renderTeamManagement();
                 } catch (error) {
                     alert('Erreur: ' + error.message);
@@ -810,7 +810,7 @@
                     formData.append('avatar', avatarFile);
                 }
                 try {
-                    await putWithAuthFormData(`/api/servers/${serverId}`, formData);
+                    await fetchWithAuth(`/api/servers/${serverId}`, { method: 'PUT', body: formData });
                     closeModal();
                     renderTeamManagement();
                 } catch (error) {
