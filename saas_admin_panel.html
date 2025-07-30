@@ -305,14 +305,21 @@
                 throw new Error('Token d\'authentification manquant ou invalide.'); 
             }
 
-            const requestOptions = { ...options, headers: { ...options.headers } };
-            requestOptions.headers['Authorization'] = `Bearer ${token}`;
+            // CORRECTION DÉFINITIVE : Initialisation correcte et gestion des en-têtes
+            const requestOptions = { 
+                ...options, 
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    ...(options.headers || {}) // Fusionne les en-têtes existants en toute sécurité
+                }
+            };
 
-            // CORRECTION ROBUSTE : S'assurer que Content-Type n'est défini QUE si un corps de requête est présent.
-            // On supprime d'abord un éventuel Content-Type pour être sûr, puis on le rajoute si nécessaire.
-            delete requestOptions.headers['Content-Type'];
+            // Gérer le Content-Type uniquement si un corps de requête est présent
             if (requestOptions.body) {
                 requestOptions.headers['Content-Type'] = 'application/json';
+            } else {
+                // S'assurer qu'aucun Content-Type n'est envoyé pour les requêtes GET, DELETE, etc.
+                delete requestOptions.headers['Content-Type'];
             }
 
             console.log('En-têtes de la requête:', requestOptions.headers);
