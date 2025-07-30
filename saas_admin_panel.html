@@ -298,27 +298,61 @@
             return response.json();
         }
 
+        // =================================================================
+        // CORRECTION : La fonction fetchWithAuth a été modifiée
+        // =================================================================
         async function fetchWithAuth(url, options = {}) {
             const token = localStorage.getItem('jwt_token');
-            if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
-            const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...options.headers };
+            if (!token) {
+                logout();
+                throw new Error('Token d\'authentification manquant.');
+            }
+
+            // On construit les en-têtes de base
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                ...options.headers
+            };
+
+            // On détermine la méthode HTTP (par défaut GET)
+            const method = (options.method || 'GET').toUpperCase();
+
+            // On ajoute l'en-tête 'Content-Type' SEULEMENT pour les méthodes qui ont un corps de requête.
+            // C'est la correction clé pour éviter les erreurs 422 sur les requêtes GET.
+            if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+                // On s'assure de ne pas l'ajouter si on envoie du FormData (qui a son propre Content-Type)
+                if (!(options.body instanceof FormData)) {
+                    headers['Content-Type'] = 'application/json';
+                }
+            }
+
             const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+            
             if (response.status === 401 || response.status === 422) {
                 logout();
                 throw new Error('Session expirée. Veuillez vous reconnecter.');
             }
             if (!response.ok) {
                 let errorMsg = `Erreur du serveur (code: ${response.status})`;
-                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) {}
+                try {
+                    const errorData = await response.json();
+                    errorMsg = errorData.error || errorData.message || errorMsg;
+                } catch (e) {
+                    // La réponse n'est pas du JSON, on utilise le texte brut
+                    errorMsg = await response.text();
+                }
                 throw new Error(errorMsg);
             }
-            if (response.status === 204) { return null; }
+            if (response.status === 204) {
+                return null;
+            }
             return response.json();
         }
         
         async function putWithAuthFormData(url, formData) {
             const token = localStorage.getItem('jwt_token');
             if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
+            // Ne PAS mettre de Content-Type, le navigateur le fera pour nous avec FormData
             const headers = { 'Authorization': `Bearer ${token}` };
             const response = await fetch(`${API_BASE_URL}${url}`, { method: 'PUT', body: formData, headers });
             if (!response.ok) { throw new Error('Erreur lors de la mise à jour'); }
@@ -328,6 +362,7 @@
         async function postWithAuthFormData(url, formData) {
             const token = localStorage.getItem('jwt_token');
             if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
+            // Ne PAS mettre de Content-Type, le navigateur le fera pour nous avec FormData
             const headers = { 'Authorization': `Bearer ${token}` };
             const response = await fetch(`${API_BASE_URL}${url}`, { method: 'POST', body: formData, headers });
              if (!response.ok) { throw new Error('Erreur lors de la création'); }
