@@ -5,19 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avis Pro Resto | Transformez vos clients en ambassadeurs 5 étoiles</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts -->
+    <!-- Google Fonts (chargées en premier) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Alpine.js for interactivity (Menu, Pricing Toggle) -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
+    <!-- Styles personnalisés (chargés avant les scripts pour éviter le flash de contenu non stylé) -->
     <style>
-        /* Palette de couleurs "Luxe - Bleu Ardoise & Or" */
+        /* Palette de couleurs et polices personnalisées */
         :root {
             --color-bg: #F8F9FA; /* Gris très clair, presque blanc */
             --color-text: #2D3748; /* Bleu-gris très foncé (Charbon) */
@@ -36,6 +31,7 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
+        /* Classes utilitaires personnalisées */
         .font-serif { font-family: var(--font-serif); }
         .font-sans { font-family: var(--font-sans); }
 
@@ -59,11 +55,16 @@
             transform: translateY(0);
         }
     </style>
+    
+    <!-- Scripts (chargés après les styles) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
 </head>
 <body x-data="{ isMenuOpen: false, pricing: 'monthly' }">
 
     <!-- ===== Barre d'urgence/offre (Pre-Header) ===== -->
-    <div class="text-center py-2.5 px-4 text-sm font-semibold" style="background-color: #2D3748; color: #F8F9FA;">
+    <div class="text-center py-2.5 px-4 text-sm font-semibold text-white" style="background-color: var(--color-text);">
         ✨ Offre de lancement : Profitez de 15 jours d'essai gratuit sur notre plan Premium ! ✨
     </div>
 
@@ -352,7 +353,7 @@
                         </div>
                     </div>
                     <!-- Témoignage Vidéo Placeholder -->
-                    <div class="p-8 rounded-xl shadow-lg text-white flex flex-col justify-center items-center text-center" style="background-color: #2D3748;">
+                    <div class="p-8 rounded-xl shadow-lg text-white flex flex-col justify-center items-center text-center" style="background-color: var(--color-text);">
                         <a href="#" class="block hover:scale-110 transition-transform">
                             <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mb-4">
                                 <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -387,7 +388,7 @@
     </main>
 
     <!-- ===== Footer Adapté ===== -->
-    <footer class="text-white" style="background-color: #2D3748;">
+    <footer class="text-white" style="background-color: var(--color-text);">
         <div class="container mx-auto px-6 py-16">
             <div class="grid lg:grid-cols-12 gap-8">
                 <div class="lg:col-span-4">
@@ -432,26 +433,28 @@
         </div>
     </footer>
 
-    <script>
+    <script defer>
         // Set current year in footer
         document.getElementById('copyright-year').textContent = new Date().getFullYear();
         
         // --- Code pour les animations au scroll ---
-        const animatedElements = document.querySelectorAll('.fade-in-up');
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedElements = document.querySelectorAll('.fade-in-up');
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                }
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
             });
-        }, {
-            threshold: 0.1
-        });
 
-        animatedElements.forEach(el => {
-            observer.observe(el);
+            animatedElements.forEach(el => {
+                observer.observe(el);
+            });
         });
     </script>
 
