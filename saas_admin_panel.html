@@ -277,8 +277,10 @@
 
                 switchTab(window.location.hash || '#dashboard');
             } catch (error) {
-                console.error("Erreur lors du chargement des données de l'application:", error);
-                alert("Une erreur est survenue lors du chargement. Vous allez être déconnecté. Détails: " + error.message);
+                console.error("Erreur critique lors du chargement des données de l'application:", error);
+                // L'alerte et la déconnexion sont déjà gérées dans fetchWithAuth,
+                // mais on garde un fallback au cas où.
+                alert("Une erreur critique est survenue. L'application va se réinitialiser.");
                 logout();
             }
         }
@@ -299,7 +301,8 @@
         }
 
         // =================================================================
-        // CORRECTION : La fonction fetchWithAuth a été modifiée
+        // CORRECTION & AMÉLIORATION : La fonction fetchWithAuth a été revue
+        // pour être plus robuste et fournir de meilleures informations de débogage.
         // =================================================================
         async function fetchWithAuth(url, options = {}) {
             const token = localStorage.getItem('jwt_token');
@@ -308,71 +311,71 @@
                 throw new Error('Token d\'authentification manquant.');
             }
 
-            // On construit les en-têtes de base
+            const method = (options.method || 'GET').toUpperCase();
             const headers = {
                 'Authorization': `Bearer ${token}`,
                 ...options.headers
             };
 
-            // On détermine la méthode HTTP (par défaut GET)
-            const method = (options.method || 'GET').toUpperCase();
-
-            // On ajoute l'en-tête 'Content-Type' SEULEMENT pour les méthodes qui ont un corps de requête.
-            // C'est la correction clé pour éviter les erreurs 422 sur les requêtes GET.
+            // CORRECTION PRINCIPALE : Ne pas envoyer 'Content-Type' sur les requêtes GET.
+            // Cela peut causer des erreurs 422 avec certains serveurs/proxys.
             if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
-                // On s'assure de ne pas l'ajouter si on envoie du FormData (qui a son propre Content-Type)
+                // On s'assure de ne pas l'ajouter si on envoie du FormData (le navigateur le fait automatiquement)
                 if (!(options.body instanceof FormData)) {
                     headers['Content-Type'] = 'application/json';
                 }
             }
 
             const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
-            
-            if (response.status === 401 || response.status === 422) {
-                logout();
-                throw new Error('Session expirée. Veuillez vous reconnecter.');
-            }
+
             if (!response.ok) {
-                let errorMsg = `Erreur du serveur (code: ${response.status})`;
+                // AMÉLIORATION: Gestion d'erreur plus détaillée pour le débogage.
+                let errorMsg = `Erreur ${response.status}: ${response.statusText}`;
+                let errorDetails = '';
                 try {
-                    const errorData = await response.json();
-                    errorMsg = errorData.error || errorData.message || errorMsg;
-                } catch (e) {
-                    // La réponse n'est pas du JSON, on utilise le texte brut
-                    errorMsg = await response.text();
+                    const errorText = await response.text();
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        errorDetails = errorJson.error || errorJson.message || JSON.stringify(errorJson);
+                    } catch (e) {
+                        errorDetails = errorText.substring(0, 200); // Affiche les 200 premiers caractères de l'erreur
+                    }
+                } catch (e) { /* Impossible de lire le corps de l'erreur */ }
+
+                if (response.status === 401 || response.status === 422) {
+                    const specificError = response.status === 422 
+                        ? "La requête n'a pas pu être traitée (erreur 422), cela peut être dû à un token invalide." 
+                        : "Votre session a expiré (erreur 401).";
+                    logout(); // Déconnexion immédiate
+                    throw new Error(`${specificError} Veuillez vous reconnecter. Détails: ${errorDetails}`);
                 }
-                throw new Error(errorMsg);
+                
+                throw new Error(`${errorMsg}. Détails: ${errorDetails}`);
             }
-            if (response.status === 204) {
+
+            if (response.status === 204) { // No Content
                 return null;
             }
             return response.json();
         }
         
         async function putWithAuthFormData(url, formData) {
-            const token = localStorage.getItem('jwt_token');
-            if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
-            // Ne PAS mettre de Content-Type, le navigateur le fera pour nous avec FormData
-            const headers = { 'Authorization': `Bearer ${token}` };
-            const response = await fetch(`${API_BASE_URL}${url}`, { method: 'PUT', body: formData, headers });
-            if (!response.ok) { throw new Error('Erreur lors de la mise à jour'); }
-            return response.json();
+            // Cette fonction utilise fetchWithAuth, qui gère maintenant correctement les en-têtes pour FormData
+            return await fetchWithAuth(url, { method: 'PUT', body: formData });
         }
         
         async function postWithAuthFormData(url, formData) {
-            const token = localStorage.getItem('jwt_token');
-            if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
-            // Ne PAS mettre de Content-Type, le navigateur le fera pour nous avec FormData
-            const headers = { 'Authorization': `Bearer ${token}` };
-            const response = await fetch(`${API_BASE_URL}${url}`, { method: 'POST', body: formData, headers });
-             if (!response.ok) { throw new Error('Erreur lors de la création'); }
-            return response.json();
+            // Cette fonction utilise fetchWithAuth, qui gère maintenant correctement les en-têtes pour FormData
+            return await fetchWithAuth(url, { method: 'POST', body: formData });
         }
 
+        // AMÉLIORATION: La déconnexion nettoie aussi l'URL
         function logout() {
             localStorage.removeItem('jwt_token');
+            window.location.hash = ''; // Réinitialise l'URL pour éviter d'être sur une page protégée
             mainApp.classList.add('hidden');
             authOverlay.classList.remove('hidden');
+            // Réinitialise le contenu pour ne pas afficher de données obsolètes
             contentArea.innerHTML = `<section id="dashboard" class="content-section fade-in"></section><section id="all-reviews" class="content-section"></section><section id="strategic-analysis" class="content-section"></section><section id="page-settings" class="content-section"></section><section id="team-management" class="content-section"></section><section id="menu-management" class="content-section"></section><section id="options-management" class="content-section"></section>`;
         }
 
@@ -445,7 +448,6 @@
             new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'], datasets: [{ label: 'Avis reçus', data: [65, 59, 80, 81, 56, 55, 128], borderColor: 'var(--color-primary)', backgroundColor: 'rgba(214, 158, 46, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
         }
         
-        // --- NOUVELLE SECTION: TOUS LES AVIS ---
         async function renderAllReviews() {
             const section = document.getElementById('all-reviews');
             if (!section) return;
