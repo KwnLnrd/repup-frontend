@@ -280,10 +280,6 @@
             }
         }
 
-        if (localStorage.getItem('jwt_token')) {
-            loadAppData();
-        }
-
         async function fetchPublic(url, options = {}) {
             const headers = { 'Content-Type': 'application/json', ...options.headers };
             const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
@@ -296,34 +292,29 @@
         }
 
         async function fetchWithAuth(url, options = {}) {
-            console.log(`Fetching with auth: ${url}`);
             const token = localStorage.getItem('jwt_token');
-            
             if (!token || token === 'undefined' || token === 'null') {
-                console.error('Tentative d\'appel API sans token valide. Déconnexion.');
                 logout(); 
                 throw new Error('Token d\'authentification manquant ou invalide.'); 
             }
 
-            // CORRECTION DÉFINITIVE : Initialisation correcte et gestion des en-têtes
             const requestOptions = { 
                 ...options, 
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    ...(options.headers || {}) // Fusionne les en-têtes existants en toute sécurité
+                    ...(options.headers || {})
                 }
             };
 
-            // Gérer le Content-Type uniquement si un corps de requête est présent
             if (requestOptions.body) {
-                requestOptions.headers['Content-Type'] = 'application/json';
+                if (!(requestOptions.body instanceof FormData)) {
+                    requestOptions.headers['Content-Type'] = 'application/json';
+                }
             } else {
-                // S'assurer qu'aucun Content-Type n'est envoyé pour les requêtes GET, DELETE, etc.
                 delete requestOptions.headers['Content-Type'];
             }
 
-            console.log('En-têtes de la requête:', requestOptions.headers);
-
+            console.log(`Fetching with auth: ${url}`, requestOptions);
             const response = await fetch(`${API_BASE_URL}${url}`, requestOptions);
             
             if (response.status === 401 || response.status === 422) {
@@ -338,42 +329,6 @@
                 throw new Error(errorMsg);
             }
             if (response.status === 204) { return null; }
-            return response.json();
-        }
-        
-        async function putWithAuthFormData(url, formData) {
-            const token = localStorage.getItem('jwt_token');
-            if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
-            const headers = { 'Authorization': `Bearer ${token}` };
-            const response = await fetch(`${API_BASE_URL}${url}`, { method: 'PUT', body: formData, headers });
-            if (response.status === 401 || response.status === 422) {
-                logout();
-                const errorText = response.status === 401 ? 'Token invalide ou expiré.' : 'Requête invalide.';
-                throw new Error(`Session expirée. ${errorText} Veuillez vous reconnecter.`);
-            }
-            if (!response.ok) {
-                let errorMsg = `Erreur du serveur (code: ${response.status})`;
-                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) {}
-                throw new Error(errorMsg);
-            }
-            return response.json();
-        }
-        
-        async function postWithAuthFormData(url, formData) {
-            const token = localStorage.getItem('jwt_token');
-            if (!token) { logout(); throw new Error('Token d\'authentification manquant.'); }
-            const headers = { 'Authorization': `Bearer ${token}` };
-            const response = await fetch(`${API_BASE_URL}${url}`, { method: 'POST', body: formData, headers });
-            if (response.status === 401 || response.status === 422) {
-                logout();
-                const errorText = response.status === 401 ? 'Token invalide ou expiré.' : 'Requête invalide.';
-                throw new Error(`Session expirée. ${errorText} Veuillez vous reconnecter.`);
-            }
-            if (!response.ok) {
-                let errorMsg = `Erreur du serveur (code: ${response.status})`;
-                try { const errorData = await response.json(); errorMsg = errorData.error || errorData.message || errorMsg; } catch (e) {}
-                throw new Error(errorMsg);
-            }
             return response.json();
         }
 
@@ -397,19 +352,35 @@
             try {
                 const data = await fetchPublic('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
                 if (data && data.access_token && typeof data.access_token === 'string') {
-                    console.log("Connexion réussie. Token reçu:", data.access_token);
                     localStorage.setItem('jwt_token', data.access_token);
+                    // Test de validation du token
+                    await fetchWithAuth('/api/test-auth');
+                    console.log("Token validé avec succès.");
                     await loadAppData();
                 } else { 
-                    console.error('Réponse de connexion invalide reçue du serveur:', data);
                     throw new Error('Réponse de connexion invalide.'); 
                 }
             } catch (error) {
                 errorP.textContent = error.message;
+                localStorage.removeItem('jwt_token');
             } finally {
                 button.disabled = false; button.textContent = 'Se connecter';
             }
         });
+        
+        if (localStorage.getItem('jwt_token')) {
+            (async () => {
+                try {
+                    await fetchWithAuth('/api/test-auth');
+                    console.log("Session existante validée.");
+                    loadAppData();
+                } catch (e) {
+                    console.log("Session existante invalide, déconnexion.");
+                    logout();
+                }
+            })();
+        }
+
 
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -825,7 +796,7 @@
                 }
 
                 try {
-                    const result = await putWithAuthFormData('/api/restaurant', formData);
+                    const result = await fetchWithAuth('/api/restaurant', { method: 'PUT', body: formData });
                     alert('Paramètres enregistrés avec succès !');
                     updateLogo(result.logoUrl);
                     if(result.logoUrl) {
@@ -864,7 +835,7 @@
                     formData.append('avatar', avatarFile);
                 }
                 try {
-                    await postWithAuthFormData('/api/servers', formData);
+                    await fetchWithAuth('/api/servers', { method: 'POST', body: formData });
                     renderTeamManagement();
                 } catch (error) {
                     alert('Erreur: ' + error.message);
@@ -894,7 +865,7 @@
                     formData.append('avatar', avatarFile);
                 }
                 try {
-                    await putWithAuthFormData(`/api/servers/${serverId}`, formData);
+                    await fetchWithAuth(`/api/servers/${serverId}`, { method: 'PUT', body: formData });
                     closeModal();
                     renderTeamManagement();
                 } catch (error) {
